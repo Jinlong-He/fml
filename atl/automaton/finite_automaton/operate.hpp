@@ -187,7 +187,7 @@ namespace atl {
             typedef typename DFA::StatePairMap& StatePairMap;
             typedef typename DFA::state_property_type StateProperty;
             typedef typename DFA::automaton_property_type AutomatonProperty;
-            if constexpr (!std::is_same<AutomatonProperty, no_type>::value) {
+            if constexpr (!std::is_same<AutomatonProperty, boost::no_property>::value) {
                 atl::set_property(a_out, fa_merge(atl::get_property(a_lhs), 
                                                   atl::get_property(a_rhs)));
             }

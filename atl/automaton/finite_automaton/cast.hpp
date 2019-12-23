@@ -293,18 +293,17 @@ namespace atl {
         }
     };
 
-    template <typename NFA,
-              typename Merge = union_merge<typename NFA::state_property_type> >
+    template <typename NFA>
     inline void
     determinize(const NFA& a_in, 
-                typename NFA::DFA& a_out,
-                Merge merge = Merge()) {
-        if (!is_undeterministic(a_in)) {
-            clear(a_out);
-            //a_out = a_in;
-        } else {
-            determinize_impl::apply(a_in, a_out, merge);
+                typename NFA::DFA& a_out) {
+        if (is_undeterministic(a_in)) {
+            determinize_impl::apply(a_in, a_out, 
+                             intersect_merge<typename NFA::state_property_type>(),
+                             intersect_merge<typename NFA::symbol_property_type>());
             set_forwar_reachable_flag(a_out);
+        } else {
+            //copy.
         }
     }
 
