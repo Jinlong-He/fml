@@ -9,13 +9,11 @@
 #ifndef atl_finite_automaton_operate_hpp 
 #define atl_finite_automaton_operate_hpp 
 
-#include <queue>
-#include "../detail/automaton.hpp"
-#include "deterministic_finite_automaton.hpp"
-#include "nondeterministic_finite_automaton.hpp"
+#include "../detail/finite_automaton/deterministic_finite_automaton.hpp"
+#include "../detail/finite_automaton/nondeterministic_finite_automaton.hpp"
 #include "closure.hpp"
 #include "merge.hpp"
-using std::queue;
+#include "copy.hpp"
 using std::cout;
 using std::endl;
 
@@ -172,25 +170,28 @@ namespace atl {
         }
 
         template <typename DFA,
-                  typename StateMerge,
                   typename SymbolPropertyMerge,
+                  typename StateMerge,
                   typename FAMerge>
         static void 
         apply(const DFA& a_lhs,
               const DFA& a_rhs,
               DFA& a_out,
-              StateMerge state_merge,
               SymbolPropertyMerge symbol_property_merge,
+              StateMerge state_merge,
               FAMerge fa_merge) {
             typedef typename DFA::State State;
             typedef typename DFA::StatePair StatePair;
-            typedef typename DFA::StatePairMap& StatePairMap;
+            typedef typename DFA::StatePairMap StatePairMap;
             typedef typename DFA::state_property_type StateProperty;
             typedef typename DFA::automaton_property_type AutomatonProperty;
             if constexpr (!std::is_same<AutomatonProperty, boost::no_property>::value) {
                 atl::set_property(a_out, fa_merge(atl::get_property(a_lhs), 
                                                   atl::get_property(a_rhs)));
             }
+            typename DFA::SymbolSet alphabet_;
+            util::set_intersection(alphabet(a_lhs), alphabet(a_rhs), alphabet_);
+            set_alphabet(a_out, alphabet_);
             
             State initial_state_lhs = initial_state(a_lhs),
                   initial_state_rhs = initial_state(a_rhs),
@@ -203,7 +204,7 @@ namespace atl {
                                                   atl::get_property(a_rhs, initial_state_rhs)));
             }
 
-            StatePairMap pair_map({{StatePair(initial_state_lhs, initial_state_lhs),
+            StatePairMap pair_map({{StatePair(initial_state_lhs, initial_state_rhs),
                                     initial_state_out}}); 
             do_intersect(a_lhs, a_rhs, a_out, 
                          initial_state_lhs, initial_state_rhs, 
@@ -211,46 +212,172 @@ namespace atl {
         }
     };
 
+    template <typename DFA>
+    inline void
+    intersect_fa(const DFA& a_lhs,
+                 const DFA& a_rhs,
+                 DFA& a_out) {
+        intersect_impl::apply(a_lhs, a_rhs, a_out, 
+                              intersect_merge<typename DFA::symbol_property_type>(),
+                              intersect_merge<typename DFA::state_property_type>(),
+                              intersect_merge<typename DFA::automaton_property_type>());
+    }
+
     template <typename DFA,
-              typename StateMerge,
-              typename SymbolPropertyMerge,
-              typename FAMerge>
+              typename Merge>
     inline void
     intersect_fa(const DFA& a_lhs,
                  const DFA& a_rhs,
                  DFA& a_out,
-                 StateMerge state_merge = intersect_merge<typename DFA::state_property_type>(),
-                 SymbolPropertyMerge symbol_property_merge = 
-                    intersect_merge<typename DFA::symbol_property_merge>(),
-                 FAMerge fa_merge = intersect_merge<typename DFA::automaton_property_type>()) {
-        intersect_impl::apply(a_lhs, a_rhs, a_out, state_merge, symbol_property_merge, fa_merge);
+                 Merge merge) {
+        if constexpr (std::is_same<typename DFA::symbol_property_type, no_type>::value) {
+            intersect_impl::apply(a_lhs, a_rhs, a_out, merge, merge,
+                                  intersect_merge<typename DFA::automaton_property_type>());
+        } else {
+            intersect_impl::apply(a_lhs, a_rhs, a_out, merge,
+                                  intersect_merge<typename DFA::state_property_type>(),
+                                  intersect_merge<typename DFA::automaton_property_type>());
+        }
     }
 
     template <typename DFA,
-              typename StateMerge,
-              typename SymbolPropertyMerge,
-              typename FAMerge>
-    inline DFA 
-    get_intersect_fa(const DFA& a_lhs,
-                     const DFA& a_rhs,
-                     StateMerge state_merge,
-                     SymbolPropertyMerge symbol_property_merge,
-                     FAMerge fa_merge) {
-        DFA a_out;
-        intersect_impl::apply(a_lhs, a_rhs, a_out, state_merge, symbol_property_merge, fa_merge);
-        return a_out;
+              typename Merge1,
+              typename Merge2>
+    inline void
+    intersect_fa(const DFA& a_lhs,
+                 const DFA& a_rhs,
+                 DFA& a_out,
+                 Merge1 merge1,
+                 Merge2 merge2) {
+        if constexpr (std::is_same<typename DFA::symbol_property_type, no_type>::value) {
+            intersect_impl::apply(a_lhs, a_rhs, a_out, merge1, merge1, merge2);
+        } else {
+            intersect_impl::apply(a_lhs, a_rhs, a_out, merge1, merge2,
+                                  intersect_merge<typename DFA::automaton_property_type>());
+        }
     }
 
+    template <typename DFA,
+              typename Merge1,
+              typename Merge2,
+              typename Merge3>
+    inline void
+    intersect_fa(const DFA& a_lhs,
+                 const DFA& a_rhs,
+                 DFA& a_out,
+                 Merge1 merge1,
+                 Merge2 merge2,
+                 Merge3 merge3) {
+        if constexpr (std::is_same<typename DFA::symbol_property_type, no_type>::value) {
+            intersect_impl::apply(a_lhs, a_rhs, a_out, merge1, merge1, merge2);
+        } else {
+            intersect_impl::apply(a_lhs, a_rhs, a_out, merge1, merge2, merge3);
+        }
+    }
+
+    struct union_impl {
+        template <typename DFA,
+                  typename SymbolPropertyMerge,
+                  typename StateMerge,
+                  typename FAMerge>
+        static void 
+        apply(const DFA& a_lhs,
+              const DFA& a_rhs,
+              DFA& a_out,
+              SymbolPropertyMerge symbol_property_merge,
+              StateMerge state_merge,
+              FAMerge fa_merge) {
+            typedef typename DFA::State State;
+            typedef typename DFA::StateSet StateSet;
+            typedef typename DFA::StatePair StatePair;
+            typedef typename DFA::State2Map State2Map;
+            typedef typename DFA::StatePairMap StatePairMap;
+            typedef typename DFA::state_property_type StateProperty;
+            typedef typename DFA::automaton_property_type AutomatonProperty;
+            if constexpr (!std::is_same<AutomatonProperty, boost::no_property>::value) {
+                atl::set_property(a_out, fa_merge(atl::get_property(a_lhs), 
+                                                  atl::get_property(a_rhs)));
+            }
+            typename DFA::SymbolSet alphabet_;
+            util::set_union(alphabet(a_lhs), alphabet(a_rhs), alphabet_);
+            set_alphabet(a_out, alphabet_);
+            typename DFA::NFA nfa;
+            State2Map state2_map_lhs, state2_map_rhs;
+            State state_lhs, state_rhs, state;
+            copy_fa_impl::copy_states(a_lhs, nfa, state2_map_lhs, StateSet());
+            copy_fa_impl::copy_transitions(a_lhs, nfa, state2_map_lhs);
+            state_lhs = initial_state(nfa);
+            copy_fa_impl::copy_states(a_rhs, nfa, state2_map_rhs, StateSet());
+            copy_fa_impl::copy_transitions(a_rhs, nfa, state2_map_rhs);
+            state_rhs = initial_state(nfa);
+            state = add_initial_state(nfa);
+            add_transition(nfa, state, state_lhs, epsilon(nfa));
+            add_transition(nfa, state, state_rhs, epsilon(nfa));
+            minimize(nfa, a_out);
+        }
+    };
+
     template <typename DFA>
-    inline DFA 
-    get_intersect_fa(const DFA& a_lhs,
-                     const DFA& a_rhs) {
-        DFA a_out;
-        intersect_impl::apply(a_lhs, a_rhs, a_out, 
-                              intersect_merge<typename DFA::state_property_type>(),
-                              intersect_merge<typename DFA::symbol_property_type>(),
-                              intersect_merge<typename DFA::automaton_property_type>());
-        return minimize(a_out);
+    inline void
+    union_fa(const DFA& a_lhs,
+                 const DFA& a_rhs,
+                 DFA& a_out) {
+        union_impl::apply(a_lhs, a_rhs, a_out, 
+                          union_merge<typename DFA::symbol_property_type>(),
+                          union_merge<typename DFA::state_property_type>(),
+                          union_merge<typename DFA::automaton_property_type>());
+    }
+
+    template <typename DFA,
+              typename Merge>
+    inline void
+    union_fa(const DFA& a_lhs,
+             const DFA& a_rhs,
+             DFA& a_out,
+             Merge merge) {
+        if constexpr (std::is_same<typename DFA::symbol_property_type, no_type>::value) {
+            intersect_impl::apply(a_lhs, a_rhs, a_out, merge, merge,
+                                  union_merge<typename DFA::automaton_property_type>());
+        } else {
+            intersect_impl::apply(a_lhs, a_rhs, a_out, merge,
+                                  union_merge<typename DFA::state_property_type>(),
+                                  union_merge<typename DFA::automaton_property_type>());
+        }
+    }
+
+    template <typename DFA,
+              typename Merge1,
+              typename Merge2>
+    inline void
+    union_fa(const DFA& a_lhs,
+             const DFA& a_rhs,
+             DFA& a_out,
+             Merge1 merge1,
+             Merge2 merge2) {
+        if constexpr (std::is_same<typename DFA::symbol_property_type, no_type>::value) {
+            union_impl::apply(a_lhs, a_rhs, a_out, merge1, merge1, merge2);
+        } else {
+            union_impl::apply(a_lhs, a_rhs, a_out, merge1, merge2,
+                              union_merge<typename DFA::automaton_property_type>());
+        }
+    }
+
+    template <typename DFA,
+              typename Merge1,
+              typename Merge2,
+              typename Merge3>
+    inline void
+    union_fa(const DFA& a_lhs,
+             const DFA& a_rhs,
+             DFA& a_out,
+             Merge1 merge1,
+             Merge2 merge2,
+             Merge3 merge3) {
+        if constexpr (std::is_same<typename DFA::symbol_property_type, no_type>::value) {
+            union_impl::apply(a_lhs, a_rhs, a_out, merge1, merge1, merge2);
+        } else {
+            union_impl::apply(a_lhs, a_rhs, a_out, merge1, merge2, merge3);
+        }
     }
 }
 

@@ -9,8 +9,9 @@
 #ifndef atl_nondeterministic_finite_automaton_hpp 
 #define atl_nondeterministic_finite_automaton_hpp
 
-#include "../detail/finite_automaton/nondeterministic_finite_automaton.hpp"
 #include "deterministic_finite_automaton.hpp"
+#include "operate.hpp"
+#include "cast.hpp"
 
 namespace atl {
     template <class Symbol = char, 
@@ -29,6 +30,7 @@ namespace atl {
                                                                   SymbolProperty,
                                                                   StateProperty,
                                                                   AutomatonProperty> Base;
+            typedef nondeterministic_finite_automaton NFA;
             typedef deterministic_finite_automaton<Symbol, epsilon_,
                                                    SymbolProperty,
                                                    StateProperty,
@@ -58,6 +60,41 @@ namespace atl {
                 return *this;
             }
 
+            DFA
+            operator&(const DFA& x) {
+                DFA out, dfa_lhs, dfa_rhs;
+                minimize(*this, dfa_lhs);
+                minimize(x, dfa_rhs);
+                intersect_fa(dfa_lhs, dfa_rhs, out);
+                return out;
+            }
+
+            DFA
+            operator&(const nondeterministic_finite_automaton& x) {
+                DFA out, dfa_lhs, dfa_rhs;
+                minimize(*this, dfa_lhs);
+                minimize(x, dfa_rhs);
+                intersect_fa(dfa_lhs, dfa_rhs, out);
+                return out;
+            }
+
+            DFA
+            operator|(const DFA& x) {
+                DFA out, dfa_lhs, dfa_rhs;
+                minimize(*this, dfa_lhs);
+                minimize(x, dfa_rhs);
+                union_fa(dfa_lhs, dfa_rhs, out);
+                return out;
+            }
+
+            DFA
+            operator|(const nondeterministic_finite_automaton& x) {
+                DFA out, dfa_lhs, dfa_rhs;
+                minimize(*this, dfa_lhs);
+                minimize(x, dfa_rhs);
+                union_fa(dfa_lhs, dfa_rhs, out);
+                return out;
+            }
         private:
         };
 }

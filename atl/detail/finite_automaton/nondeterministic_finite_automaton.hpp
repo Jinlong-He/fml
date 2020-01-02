@@ -51,8 +51,8 @@ namespace atl {
             typedef unordered_map<StateSet, State> StateSetMap;
 
             typedef typename std::conditional<std::is_same<SymbolProperty, no_type>::value,
-                                  unordered_map<Symbol, StateSet>,
-                                  unordered_map<Symbol, 
+                                  std::map<Symbol, StateSet>,
+                                  std::map<Symbol, 
                                   unordered_map<SymbolProperty, StateSet> > > ::type
                     Symbol2StateSetMap;
 

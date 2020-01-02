@@ -31,11 +31,16 @@ namespace atl {
                 : symbol(c),
                   symbol_property(p) {}
 
+            TransitionProperty(long c) 
+                : symbol(c),
+                  symbol_property() {}
+
             friend std::ostream& operator<< (std::ostream& os, const TransitionProperty& x) {
-                os << x.symbol << ", " << x.symbol_property;
+                os << x.symbol << " {" << x.symbol_property << "}";
                 return os;
             }
         };
+
         template <class Symbol, 
                   long epsilon_,
                   class SymbolProperty,
@@ -111,9 +116,23 @@ namespace atl {
                 alphabet_.clear();
             }
 
-            Symbol 
+            virtual State 
+            add_state(const state_property_type& p) {
+                State state = Base::add_state(p);
+                state_set_.insert(state);
+                return state;
+            }
+
+            virtual State 
+            add_state() {
+                State state = Base::add_state();
+                state_set_.insert(state);
+                return state;
+            }
+
+            transition_property_type 
             epsilon() const {
-                return Symbol(epsilon_);
+                return transition_property_type(epsilon_);
             }
 
             State
@@ -174,6 +193,7 @@ namespace atl {
             virtual pair<Transition, bool>
             add_transition(State s, State t,
                            const transition_property_type& c) {
+                if (c == epsilon()) this -> set_flag(4, 1);
                 return Base::add_transition(s, t, c);
             }
 
@@ -182,8 +202,10 @@ namespace atl {
                            const Symbol& c,
                            const SymbolProperty& p) {
                 if constexpr (std::is_same<SymbolProperty, no_type>::value) {
+                    if (c == epsilon()) this -> set_flag(4, 1);
                     return Base::add_transition(s, t, c);
                 } else {
+                    if (c == epsilon().symbol) this -> set_flag(4, 1);
                     return Base::add_transition(s, t, transition_property(c, p));
                 }
             }
@@ -269,7 +291,7 @@ namespace atl {
     }
 
     template <typename FA>
-    inline typename FA::symbol_type
+    inline typename FA::transition_property_type
     epsilon(const FA& fa) {
         return fa.epsilon();
     }

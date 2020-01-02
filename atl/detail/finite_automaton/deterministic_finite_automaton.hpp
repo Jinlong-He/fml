@@ -9,6 +9,7 @@
 #ifndef atl_detail_deterministic_finite_automaton_hpp 
 #define atl_detail_deterministic_finite_automaton_hpp
 
+#include <map>
 #include <boost/unordered_map.hpp>
 #include "finite_automaton.hpp"
 
@@ -50,11 +51,11 @@ namespace atl {
                                       Symbol2StatePairMap;
 
             typedef typename std::conditional<std::is_same<SymbolProperty, no_type>::value,
-                                  unordered_map<Symbol, State>,
-                                  unordered_map<Symbol, 
+                                  std::map<Symbol, State>,
+                                  std::map<Symbol, 
                                   unordered_map<SymbolProperty, State> > >::type Symbol2StateMap;
 
-            typedef unordered_map<Symbol, Symbol2StateMap> TransitionMap;
+            typedef unordered_map<State, Symbol2StateMap> TransitionMap;
 
         public:
             deterministic_finite_automaton_gen()

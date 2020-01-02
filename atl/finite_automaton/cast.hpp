@@ -10,11 +10,11 @@
 #define atl_finite_automaton_cast_hpp 
 
 #include <queue>
-#include "../detail/automaton.hpp"
-#include "deterministic_finite_automaton.hpp"
-#include "nondeterministic_finite_automaton.hpp"
+#include "../detail/finite_automaton/deterministic_finite_automaton.hpp"
+#include "../detail/finite_automaton/nondeterministic_finite_automaton.hpp"
 #include "closure.hpp"
 #include "merge.hpp"
+#include "copy.hpp"
 using std::queue;
 using std::cout;
 using std::endl;
@@ -244,12 +244,12 @@ namespace atl {
         }
 
         template <typename NFA, 
-                  typename StateMerge,
-                  typename SymbolPropertyMerge>
+                  typename SymbolPropertyMerge,
+                  typename StateMerge>
         static void apply(const NFA& a_in,
                           typename NFA::DFA& a_out,
-                          StateMerge state_merge,
-                          SymbolPropertyMerge symbol_property_merge) {
+                          SymbolPropertyMerge symbol_property_merge,
+                          StateMerge state_merge) {
             typedef typename NFA::state_property_type StateProperty;
             typedef typename NFA::symbol_property_type SymbolProperty;
             typedef typename NFA::automaton_property_type AutomatonProperty;
@@ -278,6 +278,7 @@ namespace atl {
                                symbol_property_merge);
             } else {
                 NFA nfa;
+                typename NFA::StateSet state_set({initial_state(a_in)});
                 remove_epsolon_transition(a_in, nfa, state_merge, symbol_property_merge);
                 typename NFA::State initial_state = -1;
                 if constexpr (std::is_same<StateProperty, boost::no_property>::value) {
@@ -290,8 +291,44 @@ namespace atl {
                 do_determinize(a_in, nfa, initial_state(a_out), state_set, state_set_map,
                                symbol_property_merge);
             }
+            set_forward_reachable_flag(a_out, 1);
         }
     };
+
+    template <typename NFA,
+              typename Merge1,
+              typename Merge2>
+    inline void
+    determinize(const NFA& a_in, 
+                typename NFA::DFA& a_out,
+                Merge1 merge1,
+                Merge2 merge2) {
+        typedef typename NFA::symbol_property_type SymbolProperty;
+        if (is_undeterministic(a_in)) {
+            determinize_impl::apply(a_in, a_out, merge1, merge2);
+        } else {
+            copy_fa(a_in, a_out);
+        }
+    }
+
+    template <typename NFA,
+              typename Merge>
+    inline void
+    determinize(const NFA& a_in, 
+                typename NFA::DFA& a_out,
+                Merge merge) {
+        typedef typename NFA::symbol_property_type SymbolProperty;
+        if (is_undeterministic(a_in)) {
+            if constexpr (std::is_same<SymbolProperty, no_type>::value) {
+                determinize_impl::apply(a_in, a_out, merge, merge);
+            } else {
+                determinize_impl::apply(a_in, a_out, merge,
+                                        intersect_merge<typename NFA::symbol_property_type>());
+            }
+        } else {
+            copy_fa(a_in, a_out);
+        }
+    }
 
     template <typename NFA>
     inline void
@@ -301,20 +338,9 @@ namespace atl {
             determinize_impl::apply(a_in, a_out, 
                              intersect_merge<typename NFA::state_property_type>(),
                              intersect_merge<typename NFA::symbol_property_type>());
-            set_forwar_reachable_flag(a_out);
         } else {
-            //copy.
+            copy_fa(a_in, a_out);
         }
-    }
-
-    template <typename NFA>
-    inline typename NFA::DFA 
-    determinize(const NFA& a_in) {
-        typename NFA::DFA a_out;
-        determinize_impl::apply(a_in, a_out, 
-                         intersect_merge<typename NFA::state_property_type>(),
-                         intersect_merge<typename NFA::symbol_property_type>());
-        return a_out;
     }
 
     struct minimize_impl {
@@ -324,36 +350,9 @@ namespace atl {
                           DFA& a_out) {
             typedef typename DFA::state_property_type StateProperty;
             typedef typename DFA::automaton_property_type AutomatonProperty;
-            atl::clear(a_out);
-            atl::set_alphabet(a_out, alphabet(a_in));
-            if constexpr (!std::is_same<AutomatonProperty, boost::no_property>::value) {
-                atl::set_property(a_out, atl::get_property(a_in));
-            }
             typename DFA::StateSet reachable_closure;
             atl::reachable_closure(a_in, reachable_closure);
-            typename DFA::State2Map copy_map;;
-            for (auto state : reachable_closure) {
-                typename DFA::State state_copy;
-                if constexpr (std::is_same<StateProperty, boost::no_property>::value) {
-                    state_copy = add_state(a_out);
-                } else {
-                    state_copy = add_state(a_out, atl::get_property(a_in, state));
-                }
-
-                copy_map[state] = state_copy;
-                if (is_initial_state(a_in, state)) set_initial_state(a_out, state_copy);
-                if (is_final_state(a_in, state)) set_final_state(a_out, state_copy);
-            }
-
-            for (auto state : reachable_closure) {
-                typename DFA::OutTransitionIter it, end;
-                for (tie(it, end) = out_transitions(a_in, state); it != end; it++) {
-                    auto target_state = atl::target(a_in, *it);
-                    if (reachable_closure.count(target_state) == 0) continue;
-                    add_transition(a_out, copy_map[state], copy_map[target_state],
-                                   atl::get_property(a_in, *it));
-                }
-            }
+            copy_fa(a_in, a_out, reachable_closure);
         }
 
         template <typename DFA>
@@ -403,7 +402,6 @@ namespace atl {
                          typename DFA::State2Map& state2_map) {
             typedef typename DFA::State State;
             typedef typename DFA::StateSet StateSet;
-            typedef typename DFA::State2Map State2_map;
             typedef typename DFA::state_property_type StateProperty;
 
             ID cur_size = eqs.size(), last_size = 0;
@@ -447,6 +445,67 @@ namespace atl {
 
         template <typename DFA>
         static void 
+        add_minimize_transition(const DFA& a_in, 
+                                DFA& a_out,
+                                typename DFA::State source,
+                                typename DFA::State state,
+                                typename DFA::State2Map const& old_state2_map,
+                                typename DFA::State2Map& new_state2_map,
+                                typename DFA::transition_property_type const& t) {
+            typedef typename DFA::State State;
+            typedef typename DFA::state_property_type StateProperty;
+            State old_target = old_state2_map.at(state), target = -1;
+            auto map_iter = new_state2_map.find(old_target);
+            if (map_iter == new_state2_map.end()) {
+                if constexpr (std::is_same<StateProperty, boost::no_property>::value) {
+                    target = add_state(a_out);
+                } else {
+                    target = add_state(a_out, atl::get_property(a_in, state));
+                }
+                new_state2_map[old_target] = target;
+                do_minimize(a_in, a_out, state, target, old_state2_map, new_state2_map);
+            } else {
+                target = map_iter -> second;
+            }
+            add_transition(a_out, source, target, t);
+        }
+
+        template <typename DFA>
+        static void 
+        do_minimize(const DFA& a_in,
+                    DFA& a_out,
+                    typename DFA::State state,
+                    typename DFA::State source,
+                    typename DFA::State2Map const& old_state2_map,
+                    typename DFA::State2Map& new_state2_map) {
+            typedef typename DFA::State State;
+            typedef typename DFA::symbol_property_type SymbolProperty;
+            typedef typename DFA::transition_property_type TransitionProperty;
+
+            if (is_final_state(a_in, state)) set_final_state(a_out, source);
+            const auto& transition_map_ = transition_map(a_in);
+            if (transition_map_.count(state) == 0) return;
+            const auto& map = transition_map_.at(state);
+            for (const auto& map_pair : map) {
+                const auto& symbol = map_pair.first;
+                if constexpr (std::is_same<SymbolProperty, no_type>::value) {
+                    auto target = map_pair.second;
+                    add_minimize_transition(a_in, a_out, source, target,
+                                            old_state2_map, new_state2_map, symbol);
+                } else {
+                    for (const auto& map_pair1 : map_pair.second) {
+                        const auto& symbol_property = map_pair1.first;
+                        auto target = map_pair1.second;
+                        add_minimize_transition(a_in, a_out, source, target,
+                                                old_state2_map, new_state2_map,
+                                                TransitionProperty(symbol, symbol_property));
+                    }
+                }
+            }
+        }
+
+        template <typename DFA>
+        static void 
         apply(const DFA& a_in,
               DFA& a_out) {
             typedef typename DFA::State State;
@@ -485,129 +544,76 @@ namespace atl {
                 atl::set_property(a_out, atl::get_property(dfa));
             }
             
-            State initial_state = -1;
+            State initial_state_ = -1;
             if constexpr (std::is_same<StateProperty, boost::no_property>::value) {
-                initial_state = add_initial_state(a_out);
+                initial_state_ = add_initial_state(a_out);
             } else {
-                initial_state = add_initial_state(a_out, atl::get_property(dfa, 
+                initial_state_ = add_initial_state(a_out, atl::get_property(dfa, 
                                                               initial_state(dfa)));
             }
-
-            if (is_final_state(dfa, dfa.initial_state())) 
-                set_final_state(a_out, initial_state);
-
-            State2Map new_state2_map({{dfa.initial_state(), initial_state}}),
-                      map({{state2_map[dfa.initial_state()], initial_state}});
-            for (auto& map_pair : state2_map) {
-                State state = map_pair.second;
-                if (map.count(state) == 0) {
-                    State new_state = -1;
-                    if constexpr (std::is_same<StateProperty, boost::no_property>::value) {
-                        new_state = add_state(a_out);
-                    } else {
-                        new_state = add_state(a_out, atl::get_property(dfa, map_pair.first));
-                    }
-
-                    if (is_final_state(dfa, map_pair.first)) 
-                        set_final_state(a_out, new_state);
-                    new_state2_map[map_pair.first] = new_state;
-                    map[state] = new_state;
-                } else {
-                    new_state2_map[map_pair.first] = map[state];
-                }
-            }
-
-            const auto& transition_map_ = transition_map(dfa);
-            for (auto& map_pair : new_state2_map) {
-                if (map_pair.first == -1 || map_pair.second == -1) continue;
-                ID count1 = transition_map_.count(map_pair.first), 
-                   count2 = transition_map(a_out).count(map_pair.second);
-                if (count1 > 0 && count2 == 0) {
-                    const auto &map = transition_map_.at(map_pair.first);
-                    for (auto& map_pair1 : map) {
-                        if constexpr (std::is_same<SymbolProperty, no_type>::value) {
-                            add_transition(a_out,
-                                           map_pair.second, new_state2_map.at(map_pair1.second),
-                                           map_pair1.first);
-                        } else {
-                            for (auto& map_pair2 : map_pair1.second) {
-                                add_transition(a_out,
-                                               map_pair.second, 
-                                               new_state2_map.at(map_pair2.second),
-                                               map_pair1.first, map_pair2.first);
-                            }
-                        }
-                    }
-                }
-            }
+            State2Map new_state2_map({{state2_map[initial_state(dfa)], initial_state_}});
+            do_minimize(dfa, a_out, initial_state(dfa), initial_state_, 
+                        state2_map, new_state2_map);
+            set_minimal_flag(a_out, 1);
         }
     };
+
+    template <typename FA,
+              typename Merge1,
+              typename Merge2>
+    inline void
+    minimize(const FA& a_in,
+             typename FA::DFA& a_out,
+             Merge1 merge1,
+             Merge2 merge2) {
+        if constexpr (std::is_same<FA, typename FA::DFA>::value) {
+            if (!is_minimal(a_in)) {
+                minimize_impl::apply(a_in, a_out);
+            } else {
+                copy_fa(a_in, a_out);
+            }
+        } else {
+            typename FA::DFA dfa;
+            determinize(a_in, dfa, merge1, merge2);
+            minimize_impl::apply(dfa, a_out);
+        }
+    }
+
+    template <typename FA,
+              typename Merge>
+    inline void
+    minimize(const FA& a_in,
+             typename FA::DFA& a_out,
+             Merge merge) {
+        if constexpr (std::is_same<FA, typename FA::DFA>::value) {
+            if (!is_minimal(a_in)) {
+                minimize_impl::apply(a_in, a_out);
+            } else {
+                copy_fa(a_in, a_out);
+            }
+        } else {
+            typename FA::DFA dfa;
+            determinize(a_in, dfa, merge);
+            minimize_impl::apply(dfa, a_out);
+        }
+    }
 
     template <typename FA>
     inline void
     minimize(const FA& a_in,
              typename FA::DFA& a_out) {
         if constexpr (std::is_same<FA, typename FA::DFA>::value) {
-            minimize_impl::apply(a_in, a_out);
+            if (!is_minimal(a_in)) {
+                minimize_impl::apply(a_in, a_out);
+            } else {
+                copy_fa(a_in, a_out);
+            }
         } else {
             typename FA::DFA dfa;
             determinize(a_in, dfa);
             minimize_impl::apply(dfa, a_out);
         }
     }
-
-    template <typename FA>
-    inline typename FA::DFA
-    minimize(const FA& a_in) {
-        typename FA::DFA a_out;
-        if constexpr (std::is_same<FA, typename FA::DFA>::value) {
-            minimize_impl::apply(a_in, a_out);
-        } else {
-            typename FA::DFA dfa;
-            determinize(a_in, dfa);
-            minimize_impl::apply(dfa, a_out);
-        }
-        return a_out;
-    }
-
-    //template <typename FiniteAutomaton,
-    //          typename DeterministicFiniteAutomaton>
-    //inline void
-    //minimize(const FiniteAutomaton& a_in, 
-    //         DeterministicFiniteAutomaton& a_out) {
-    //    if (is_minimal(a_in)) {
-    //        copy_fa(a_in, a_out);
-    //    } else {
-    //        if (typeid(a_in) != typeid(DeterministicFiniteAutomaton)) {
-    //            DeterministicFiniteAutomaton dfa;
-    //            determinize(dynamic_cast< 
-    //                        typename FiniteAutomaton::NondeterministicFiniteAutomatonType const&>
-    //                        (a_in), dfa);
-    //            MinimizeImpl::apply(dfa, a_out);
-    //        } else {
-    //            MinimizeImpl::apply(dynamic_cast<const DeterministicFiniteAutomaton&>(a_in),
-    //                                a_out);
-    //        }
-    //        set_minimal_flag(a_out);
-    //    }
-    //}
-
-    //template <typename FiniteAutomaton,
-    //          typename DeterministicFiniteAutomaton>
-    //inline void
-    //minimize(const FiniteAutomaton& a_in, 
-    //         std::shared_ptr<const DeterministicFiniteAutomaton>& a_out) {
-    //    if (!is_minimal(a_in)) {
-    //        std::shared_ptr<DeterministicFiniteAutomaton> dfa_ptr = nullptr;
-    //        dfa_ptr = std::make_shared<DeterministicFiniteAutomaton>();
-    //        minimize(a_in, *dfa_ptr);
-    //        a_out = dfa_ptr;
-    //    } else {
-    //        std::shared_ptr<const DeterministicFiniteAutomaton> 
-    //        ptr(dynamic_cast<const DeterministicFiniteAutomaton*>(&a_in));
-    //        a_out = ptr;
-    //    }
-    //}
 }
 
 #endif /* atl_finite_automaton_cast_hpp */
