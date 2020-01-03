@@ -165,6 +165,11 @@ namespace atl {
                 final_state_set_ = final_state_set;
             }
 
+            void
+            clear_finale_state_set() {
+                final_state_set_.clear();
+            }
+
             const SymbolSet&
             alphabet() const {
                 return alphabet_;
@@ -188,6 +193,11 @@ namespace atl {
             void 
             set_final_state(State state) {
                 final_state_set_.insert(state);
+            }
+
+            void 
+            remove_final_state(State state) {
+                final_state_set_.erase(state);
             }
             
             virtual pair<Transition, bool>
@@ -282,6 +292,19 @@ namespace atl {
     set_final_state(FA& fa, 
                     typename FA::State state) {
         fa.set_final_state(state);
+    }
+    
+    template <typename FA>
+    inline void  
+    remove_final_state(FA& fa, 
+                       typename FA::State state) {
+        fa.remove_final_state(state);
+    }
+
+    template <typename FA>
+    inline void  
+    clear_finale_state_set(FA& fa) {
+        fa.clear_finale_state_set();
     }
 
     template <typename FA>

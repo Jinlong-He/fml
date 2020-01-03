@@ -109,6 +109,52 @@ namespace atl {
                 return out;
             }
 
+            deterministic_finite_automaton
+            operator-(const deterministic_finite_automaton& x) {
+                DFA out, dfa_lhs, dfa_rhs, dfa;
+                minimize(*this, dfa_lhs);
+                minimize(x, dfa_rhs);
+                complement_fa(dfa_rhs, dfa);
+                intersect_fa(dfa_lhs, dfa, out);
+                return out;
+            }
+
+            deterministic_finite_automaton
+            operator-(const NFA& x) {
+                DFA out, dfa_lhs, dfa_rhs, dfa;
+                minimize(*this, dfa_lhs);
+                minimize(x, dfa_rhs);
+                complement_fa(dfa_rhs, dfa);
+                intersect_fa(dfa_lhs, dfa, out);
+                return out;
+            }
+            
+            deterministic_finite_automaton
+            operator+(const deterministic_finite_automaton& x) {
+                DFA out, dfa_lhs, dfa_rhs;
+                minimize(*this, dfa_lhs);
+                minimize(x, dfa_rhs);
+                concat_fa(dfa_lhs, dfa_rhs, out);
+                return out;
+            }
+
+            deterministic_finite_automaton
+            operator+(const NFA& x) {
+                DFA out, dfa_lhs, dfa_rhs;
+                minimize(*this, dfa_lhs);
+                minimize(x, dfa_rhs);
+                concat_fa(dfa_lhs, dfa_rhs, out);
+                return out;
+            }
+
+            deterministic_finite_automaton
+            operator!() {
+                DFA dfa, out;
+                minimize(*this, dfa);
+                complement_fa(dfa, out);
+                return out;
+            }
+
         private:
         };
 }
