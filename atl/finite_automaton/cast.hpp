@@ -374,24 +374,47 @@ namespace atl {
             auto &map1 = transition_map_.at(s1);
             auto &map2 = transition_map_.at(s2);
             if (map1.size() != map2.size()) return false;
-            for (auto& map_pair : map1) {
-                if (map2.count(map_pair.first) == 0) return false;
-
+            auto iter1 = map1.begin(), end1 = map1.end(),
+                 iter2 = map2.begin(), end2 = map2.end();
+            while (iter1 != end1) {
+                if (iter1 -> first != iter2 -> first) return false;
                 if constexpr (std::is_same<SymbolProperty, no_type>::value) {
-                    if (state2_map.at(map_pair.second) != 
-                        state2_map.at(map2.at(map_pair.first))) return false;
+                    if (iter1 -> second != iter2 -> second) return false;
                 } else {
-                    auto& map1_ = map_pair.second;
-                    auto& map2_ = map2.at(map_pair.first);
+                    auto& map1_ = iter1 -> second;
+                    auto& map2_ = iter2 -> second;
                     if (map1_.size() != map2_.size()) return false;
-                    for (auto& map_pair1 : map1_) {
-                        if (map2_.count(map_pair1.first) == 0) return false;
-                        if (state2_map.at(map_pair1.second) != 
-                            state2_map.at(map2_.at(map_pair1.first))) return false;
+                    auto iter1_ = map1_.begin(), end1_ = map1_.end(),
+                         iter2_ = map2_.begin(), end2_ = map2_.end();
+                    while (iter1_ != end1_) {
+                        if (iter1_ -> first != iter2_ -> first) return false;
+                        if (iter1_ -> second != iter2_ -> second) return false;
+                        iter1_++;
+                        iter2_++;
                     }
                 }
+                iter1++;
+                iter2++;
             }
             return true;
+            //for (auto& map_pair : map1) {
+            //    if (map2.count(map_pair.first) == 0) return false;
+
+            //    if constexpr (std::is_same<SymbolProperty, no_type>::value) {
+            //        if (state2_map.at(map_pair.second) != 
+            //            state2_map.at(map2.at(map_pair.first))) return false;
+            //    } else {
+            //        auto& map1_ = map_pair.second;
+            //        auto& map2_ = map2.at(map_pair.first);
+            //        if (map1_.size() != map2_.size()) return false;
+            //        for (auto& map_pair1 : map1_) {
+            //            if (map2_.count(map_pair1.first) == 0) return false;
+            //            if (state2_map.at(map_pair1.second) != 
+            //                state2_map.at(map2_.at(map_pair1.first))) return false;
+            //        }
+            //    }
+            //}
+            //return true;
         }
 
         template <typename DFA>

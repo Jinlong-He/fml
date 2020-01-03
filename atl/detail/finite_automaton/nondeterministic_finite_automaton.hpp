@@ -53,7 +53,7 @@ namespace atl {
             typedef typename std::conditional<std::is_same<SymbolProperty, no_type>::value,
                                   std::map<Symbol, StateSet>,
                                   std::map<Symbol, 
-                                  unordered_map<SymbolProperty, StateSet> > > ::type
+                                  std::map<SymbolProperty, StateSet> > > ::type
                     Symbol2StateSetMap;
 
             typedef unordered_map<State, Symbol2StateSetMap> TransitionMap;

@@ -155,6 +155,21 @@ namespace atl {
                 return out;
             }
 
+            bool
+            operator==(const deterministic_finite_automaton& x) {
+                DFA dfa_lhs, dfa_rhs;
+                minimize(*this, dfa_lhs);
+                minimize(x, dfa_rhs);
+                return equal_fa(dfa_lhs, dfa_rhs);
+            }
+
+            bool
+            operator==(const NFA& x) {
+                DFA dfa_lhs, dfa_rhs;
+                minimize(*this, dfa_lhs);
+                minimize(x, dfa_rhs);
+                return equal_fa(dfa_lhs, dfa_rhs);
+            }
         private:
         };
 }

@@ -530,6 +530,41 @@ namespace atl {
             concat_impl::apply(a_lhs, a_rhs, a_out, merge1, merge2, merge3);
         }
     }
+
+    struct equal_impl {
+        template <typename DFA>
+        static bool
+        apply(const DFA& a_lhs,
+              const DFA& a_rhs) {
+            if (state_set(a_lhs) != state_set(a_rhs)) return false;
+            const auto& transition_map_lhs = transition_map(a_lhs);
+            const auto& transition_map_rhs = transition_map(a_rhs);
+            for (auto state : state_set(a_lhs)) {
+                ID count1 = transition_map_lhs.count(state),
+                   count2 = transition_map_rhs.count(state);
+                if (count1 != count2) return false;
+                if (count1 == 0) continue;
+                const auto& map_lhs = transition_map_lhs.at(state);
+                const auto& map_rhs = transition_map_rhs.at(state);
+                auto iter_lhs = map_lhs.begin(), end_lhs = map_lhs.end(),
+                     iter_rhs = map_rhs.begin(), end_rhs = map_rhs.end();
+                while (iter_lhs != end_lhs) {
+                    if (iter_lhs -> first != iter_rhs -> first) return false;
+                    if (iter_lhs -> second != iter_rhs -> second) return false;
+                    iter_lhs++;
+                    iter_rhs++;
+                }
+            }
+            return true;
+        }
+    };
+
+    template <typename DFA>
+    inline bool
+    equal_fa(const DFA& a_lhs,
+             const DFA& a_rhs) {
+        return equal_impl::apply(a_lhs, a_rhs);
+    }
 }
 
 #endif /* atl_finite_automaton_operate_hpp */

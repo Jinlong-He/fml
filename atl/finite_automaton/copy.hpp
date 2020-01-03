@@ -29,13 +29,25 @@ namespace atl {
 
             State state_copy = -1;
             auto& states_copy = states.size() > 0 ? states : state_set(a_in);
-            for (auto state : states_copy) {
-                if constexpr (std::is_same<StateProperty, boost::no_property>::value) {
-                    state_copy = add_state(a_out);
-                } else {
-                    state_copy = add_state(a_out, atl::get_property(a_in, state));
+            if (states.size() == 0) {
+                typename FA1::StateIter it, end;
+                for (tie(it, end) = atl::states(a_in); it != end; it++) {
+                    if constexpr (std::is_same<StateProperty, boost::no_property>::value) {
+                        state_copy = add_state(a_out);
+                    } else {
+                        state_copy = add_state(a_out, atl::get_property(a_in, *it));
+                    }
+                    state2_map[*it] = state_copy;
                 }
-                state2_map[state] = state_copy;
+            } else {
+                for (auto state : states) {
+                    if constexpr (std::is_same<StateProperty, boost::no_property>::value) {
+                        state_copy = add_state(a_out);
+                    } else {
+                        state_copy = add_state(a_out, atl::get_property(a_in, state));
+                    }
+                    state2_map[state] = state_copy;
+                }
             }
             set_initial_state(a_out, state2_map.at(initial_state(a_in)));
             for (auto state : final_state_set(a_in)) {
