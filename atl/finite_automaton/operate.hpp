@@ -1,6 +1,6 @@
 //
 //  operate.hpp
-//  ATL 
+//  atl 
 //
 //  Created by Jinlong He on 2019/12/12.
 //  Copyright © 2019年 Ruting-Team. All rights reserved.
@@ -9,8 +9,6 @@
 #ifndef atl_finite_automaton_operate_hpp 
 #define atl_finite_automaton_operate_hpp 
 
-#include "../detail/finite_automaton/deterministic_finite_automaton.hpp"
-#include "../detail/finite_automaton/nondeterministic_finite_automaton.hpp"
 #include "closure.hpp"
 #include "merge.hpp"
 #include "copy.hpp"

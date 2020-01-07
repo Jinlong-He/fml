@@ -1,6 +1,6 @@
 //
 //  automaton_utility.hpp
-//  ATL 
+//  atl 
 //
 //  Created by Jinlong He on 2019/10/27.
 //  Copyright © 2019年 Ruting-Team. All rights reserved.

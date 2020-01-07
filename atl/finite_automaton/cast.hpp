@@ -1,6 +1,6 @@
 //
 //  cast.hpp
-//  ATL 
+//  atl 
 //
 //  Created by Jinlong He on 2019/11/12.
 //  Copyright © 2019年 Ruting-Team. All rights reserved.
@@ -10,14 +10,10 @@
 #define atl_finite_automaton_cast_hpp 
 
 #include <queue>
-#include "../detail/finite_automaton/deterministic_finite_automaton.hpp"
-#include "../detail/finite_automaton/nondeterministic_finite_automaton.hpp"
 #include "closure.hpp"
 #include "merge.hpp"
 #include "copy.hpp"
 using std::queue;
-using std::cout;
-using std::endl;
 
 namespace atl {
     struct determinize_impl {

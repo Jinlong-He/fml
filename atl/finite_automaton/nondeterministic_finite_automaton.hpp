@@ -1,6 +1,6 @@
 //
 //  nondeterministic_finite_automaton.hpp
-//  ATL 
+//  atl 
 //
 //  Created by Jinlong He on 2019/10/27.
 //  Copyright © 2019年 Ruting-Team. All rights reserved.
@@ -10,6 +10,7 @@
 #define atl_nondeterministic_finite_automaton_hpp
 
 #include "deterministic_finite_automaton.hpp"
+#include "../detail/finite_automaton/nondeterministic_finite_automaton.hpp"
 #include "operate.hpp"
 #include "cast.hpp"
 
@@ -44,6 +45,7 @@ namespace atl {
             typedef typename Base::StateSetMap StateSetMap;
             typedef typename Base::Transition Transition;
             typedef typename Base::State State;
+            typedef typename Base::SymbolSet SymbolSet;
 
         public:
             nondeterministic_finite_automaton()

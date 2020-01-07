@@ -1,6 +1,6 @@
 //
 //  deterministic_finite_automaton.hpp
-//  ATL 
+//  atl 
 //
 //  Created by Jinlong He on 2019/10/27.
 //  Copyright © 2019年 Ruting-Team. All rights reserved.
@@ -9,6 +9,7 @@
 #ifndef atl_deterministic_finite_automaton_hpp 
 #define atl_deterministic_finite_automaton_hpp
 
+#include "../detail/finite_automaton/deterministic_finite_automaton.hpp"
 #include "operate.hpp"
 #include "cast.hpp"
 
@@ -54,6 +55,7 @@ namespace atl {
             typedef typename Base::State State;
             typedef typename Base::StatePair StatePair;
             typedef typename Base::StateSet StateSet;
+            typedef typename Base::SymbolSet SymbolSet;
 
             typedef typename Base::Symbol2StateMap Symbol2StateMap;
             typedef typename Base::Symbol2StatePairMap Symbol2StatePairMap;

@@ -1,6 +1,6 @@
 //
 //  copy.hpp
-//  ATL 
+//  atl 
 //
 //  Created by Jinlong He on 2019/11/12.
 //  Copyright © 2019年 Ruting-Team. All rights reserved.
@@ -9,14 +9,10 @@
 #ifndef atl_finite_automaton_copy_hpp 
 #define atl_finite_automaton_copy_hpp 
 
-#include "../detail/automaton.hpp"
 #include "../detail/finite_automaton/finite_automaton.hpp"
-using std::cout;
-using std::endl;
 
 namespace atl {
     struct copy_fa_impl {
-
         template <typename FA1,
                   typename FA2>
         static void 
