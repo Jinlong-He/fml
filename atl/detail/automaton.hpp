@@ -10,6 +10,7 @@
 #define atl_detail_automaton_hpp
 
 #include <boost/scoped_ptr.hpp>
+#include <boost/unordered_set.hpp>
 #include "boost/graph/adjacency_list.hpp"
 
 using boost::adjacency_list;
@@ -28,6 +29,27 @@ namespace atl {
     typedef std::size_t ID;
 
     namespace detail {
+        template <typename Symbol, typename SymbolProperty>
+        struct TransitionProperty {
+            Symbol symbol;
+            SymbolProperty symbol_property;
+
+            TransitionProperty() {}
+
+            TransitionProperty(const Symbol& c, const SymbolProperty& p)
+                : symbol(c),
+                  symbol_property(p) {}
+
+            TransitionProperty(long c) 
+                : symbol(c),
+                  symbol_property() {}
+
+            friend std::ostream& operator<< (std::ostream& os, const TransitionProperty& x) {
+                os << x.symbol << " {" << x.symbol_property << "}";
+                return os;
+            }
+        };
+
         template <class TransitionProperty, 
                   class StateProperty, 
                   class AutomatonProperty>
@@ -183,131 +205,137 @@ namespace atl {
         };
     }
 
-    template <typename Automaton>
-    inline typename Automaton::automaton_property_type const&
-    get_property(const Automaton& a) {
+    #define AUTOMATON_PARAMS typename TP, typename SP, typename AP
+    #define AUTOMATON detail::automaton_gen<TP, SP, AP>
+
+    template <AUTOMATON_PARAMS>
+    inline const AP&
+    get_property(const AUTOMATON& a) {
         return a.get_property();
     }
 
-    template <typename Automaton>
-    inline typename Automaton::state_property_type const&
-    get_property(const Automaton& a,
-                 typename Automaton::State s) {
+    template <AUTOMATON_PARAMS>
+    inline const SP&
+    get_property(const AUTOMATON& a,
+                 typename AUTOMATON::State s) {
         return a.get_property(s);
     }
 
-    template <typename Automaton>
-    inline typename Automaton::transition_property_type const&
-    get_property(const Automaton& a,
-                 typename Automaton::Transition t) {
+    template <AUTOMATON_PARAMS>
+    inline const TP&
+    get_property(const AUTOMATON& a,
+                 typename AUTOMATON::Transition t) {
         return a.get_property(t);
     }
 
-    template <typename Automaton>
+    template <AUTOMATON_PARAMS>
     inline void
-    set_property(Automaton& a,
-                 typename Automaton::automaton_property_type const& p) {
+    set_property(AUTOMATON& a,
+                 const AP& p) {
         return a.set_property(p);
     }
 
-    template <typename Automaton>
+    template <AUTOMATON_PARAMS>
     inline void
-    set_property(Automaton& a,
-                 typename Automaton::State s,
-                 typename Automaton::state_property_type const& p) {
+    set_property(AUTOMATON& a,
+                 typename AUTOMATON::State s,
+                 const SP& p) {
         return a.set_property(s, p);
     }
 
-    template <typename Automaton>
+    template <AUTOMATON_PARAMS>
     inline void
-    set_property(Automaton& a,
-                 typename Automaton::Transition t,
-                 typename Automaton::transition_property_type const& p) {
+    set_property(AUTOMATON& a,
+                 typename AUTOMATON::Transition t,
+                 const TP& p) {
         return a.set_property(t, p);
     }
 
-    template <typename Automaton>
-    inline pair<typename Automaton::StateIter, typename Automaton::StateIter>
-    states(const Automaton& a) {
+    template <AUTOMATON_PARAMS>
+    inline pair<typename AUTOMATON::StateIter, 
+                typename AUTOMATON::StateIter>
+    states(const AUTOMATON& a) {
         return a.states();
     }
 
-    template <typename Automaton>
-    inline typename Automaton::State
-    source(const Automaton& a,
-           typename Automaton::Transition t) {
+    template <AUTOMATON_PARAMS>
+    inline typename AUTOMATON::State
+    source(const AUTOMATON& a,
+           typename AUTOMATON::Transition t) {
         return a.source(t);
     }
 
-    template <typename Automaton>
-    inline typename Automaton::State
-    target(const Automaton& a,
-           typename Automaton::Transition t) {
+    template <AUTOMATON_PARAMS>
+    inline typename AUTOMATON::State
+    target(const AUTOMATON& a,
+           typename AUTOMATON::Transition t) {
         return a.target(t);
     }
 
-    template <typename Automaton>
-    inline pair<typename Automaton::TransitionIter, typename Automaton::TransitionIter>
-    transitions(const Automaton& a) {
+    template <AUTOMATON_PARAMS>
+    inline pair<typename AUTOMATON::TransitionIter, 
+                typename AUTOMATON::TransitionIter>
+    transitions(const AUTOMATON& a) {
         return a.transitions();
     }
 
-    template <typename Automaton>
-    inline pair<typename Automaton::InTransitionIter, typename Automaton::InTransitionIter>
-    in_transitions(const Automaton& a,
-                   typename Automaton::State s) {
+    template <AUTOMATON_PARAMS>
+    inline pair<typename AUTOMATON::InTransitionIter, 
+                typename AUTOMATON::InTransitionIter>
+    in_transitions(const AUTOMATON& a,
+                   typename AUTOMATON::State s) {
         return a.in_transitions(s);
     }
 
-    template <typename Automaton>
-    inline pair<typename Automaton::OutTransitionIter, typename Automaton::OutTransitionIter>
-    out_transitions(const Automaton& a,
-                    typename Automaton::State s) {
+    template <AUTOMATON_PARAMS>
+    inline pair<typename AUTOMATON::OutTransitionIter, 
+                typename AUTOMATON::OutTransitionIter>
+    out_transitions(const AUTOMATON& a,
+                    typename AUTOMATON::State s) {
         return a.out_transitions(s);
     }
 
-    template <typename Automaton>
-    inline typename Automaton::State
-    add_state(Automaton& a,
-              typename Automaton::state_property_type const& p) {
-        set_modified_flag(a);
-        return a.add_state(p);
-    }
-
-    template <typename Automaton>
-    inline typename Automaton::State
-    add_state(Automaton& a) {
-        set_modified_flag(a);
-        return a.add_state();
-    }
-
-    template <typename Automaton>
-    inline pair<typename Automaton::Transition, bool>
-    add_transition(Automaton& a,
-                   typename Automaton::State s,
-                   typename Automaton::State t,
-                   typename Automaton::transition_property_type const& p) {
-        set_modified_flag(a);
-        return a.add_transition(s, t, p);
-    }
-
-    template <typename Automaton>
-    inline void
-    clear(Automaton& a) {
-        a.clear();
-    }
-
-    template <typename Automaton>
+    template <AUTOMATON_PARAMS>
     inline void 
-    set_modified_flag(Automaton& a, 
+    set_modified_flag(AUTOMATON& a, 
                       bool b = true) {
         a.set_flag(0, b);
     }
 
-    template <typename Automaton>
+    template <AUTOMATON_PARAMS>
     inline bool
-    is_modified(const Automaton& a) {
+    is_modified(const AUTOMATON& a) {
         return a.flag(0);
+    }
+    template <AUTOMATON_PARAMS>
+    inline typename AUTOMATON::State
+    add_state(AUTOMATON& a,
+              const SP& p) {
+        set_modified_flag(a);
+        return a.add_state(p);
+    }
+
+    template <AUTOMATON_PARAMS>
+    inline typename AUTOMATON::State
+    add_state(AUTOMATON& a) {
+        set_modified_flag(a);
+        return a.add_state();
+    }
+
+    template <AUTOMATON_PARAMS>
+    inline pair<typename AUTOMATON::Transition, bool>
+    add_transition(AUTOMATON& a,
+                   typename AUTOMATON::State s,
+                   typename AUTOMATON::State t,
+                   const TP& p) {
+        set_modified_flag(a);
+        return a.add_transition(s, t, p);
+    }
+
+    template <AUTOMATON_PARAMS>
+    inline void
+    clear(AUTOMATON& a) {
+        a.clear();
     }
 }
 

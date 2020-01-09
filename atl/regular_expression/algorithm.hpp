@@ -72,6 +72,7 @@ namespace atl {
                 delete a_rhs;
             }
         }
+
         template <typename Symbol>
         static void
         concat_automaton(NFARegularSymbol<Symbol>& c_lhs,

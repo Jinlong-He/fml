@@ -13,11 +13,13 @@
 #include "closure.hpp"
 #include "merge.hpp"
 #include "copy.hpp"
+#include "../detail/finite_automaton/deterministic_finite_automaton.hpp"
+#include "../detail/finite_automaton/nondeterministic_finite_automaton.hpp"
 using std::queue;
 
 namespace atl {
     struct determinize_impl {
-        template <typename NFA, 
+        template <NFA_PARAMS, 
                   typename StateMerge,
                   typename SymbolPropertyMerge>
         static void
@@ -59,7 +61,7 @@ namespace atl {
             }
         }
 
-        template <typename NFA, 
+        template <NFA_PARAMS, 
                   typename StateMerge,
                   typename SymbolPropertyMerge>
         static void
@@ -139,7 +141,7 @@ namespace atl {
             }
         }
 
-        template <typename NFA>
+        template <NFA_PARAMS>
         static void 
         get_determinize_map(const NFA& nfa,
                             typename NFA::StateSet const& states,
@@ -173,16 +175,15 @@ namespace atl {
             }
         }
 
-        template <typename NFA, 
-                  typename DFA,
+        template <NFA_PARAMS, 
                   typename StateMerge>
         static void 
         add_determinize_transition(const NFA& nfa,
-                                   DFA& dfa,
+                                   typename NFA::dfa_type& dfa,
                                    typename NFA::State source,
                                    typename NFA::StateSet const& state_set,
                                    typename NFA::StateSetMap& set_map,
-                                   typename DFA::transition_property_type const& t,
+                                   typename NFA::transition_property_type const& t,
                                    StateMerge state_merge) {
             typedef typename NFA::State State;
             typedef typename NFA::state_property_type StateProperty;
@@ -205,13 +206,12 @@ namespace atl {
             add_transition(dfa, source, target, t);
         }
 
-        template <typename NFA, 
-                  typename DFA,
+        template <NFA_PARAMS, 
                   typename Merge>
         static void 
         do_determinize(const NFA& nfa,
-                       DFA& dfa,
-                       typename DFA::State source,
+                       typename NFA::dfa_type& dfa,
+                       typename NFA::State source,
                        typename NFA::StateSet const& state_set,
                        typename NFA::StateSetMap& set_map,
                        Merge merge) {
@@ -239,11 +239,11 @@ namespace atl {
             }
         }
 
-        template <typename NFA, 
+        template <NFA_PARAMS, 
                   typename SymbolPropertyMerge,
                   typename StateMerge>
         static void apply(const NFA& a_in,
-                          typename NFA::DFA& a_out,
+                          typename NFA::dfa_type& a_out,
                           SymbolPropertyMerge symbol_property_merge,
                           StateMerge state_merge) {
             typedef typename NFA::state_property_type StateProperty;
@@ -291,12 +291,12 @@ namespace atl {
         }
     };
 
-    template <typename NFA,
+    template <NFA_PARAMS,
               typename Merge1,
               typename Merge2>
     inline void
     determinize(const NFA& a_in, 
-                typename NFA::DFA& a_out,
+                typename NFA::dfa_type& a_out,
                 Merge1 merge1,
                 Merge2 merge2) {
         typedef typename NFA::symbol_property_type SymbolProperty;
@@ -307,11 +307,11 @@ namespace atl {
         }
     }
 
-    template <typename NFA,
+    template <NFA_PARAMS,
               typename Merge>
     inline void
     determinize(const NFA& a_in, 
-                typename NFA::DFA& a_out,
+                typename NFA::dfa_type& a_out,
                 Merge merge) {
         typedef typename NFA::symbol_property_type SymbolProperty;
         if (is_undeterministic(a_in)) {
@@ -326,10 +326,10 @@ namespace atl {
         }
     }
 
-    template <typename NFA>
+    template <NFA_PARAMS>
     inline void
     determinize(const NFA& a_in, 
-                typename NFA::DFA& a_out) {
+                typename NFA::dfa_type& a_out) {
         if (is_undeterministic(a_in)) {
             determinize_impl::apply(a_in, a_out, 
                              intersect_merge<typename NFA::state_property_type>(),
@@ -340,10 +340,10 @@ namespace atl {
     }
 
     struct minimize_impl {
-        template <typename DFA>
+        template <DFA_PARAMS>
         static void 
         remove_dead_states(const DFA& a_in,
-                          DFA& a_out) {
+                           DFA& a_out) {
             typedef typename DFA::state_property_type StateProperty;
             typedef typename DFA::automaton_property_type AutomatonProperty;
             typename DFA::StateSet reachable_closure;
@@ -351,7 +351,7 @@ namespace atl {
             copy_fa(a_in, a_out, reachable_closure);
         }
 
-        template <typename DFA>
+        template <DFA_PARAMS>
         static bool 
         is_equal(const DFA& dfa,
                  typename DFA::State s1,
@@ -413,7 +413,7 @@ namespace atl {
             //return true;
         }
 
-        template <typename DFA>
+        template <DFA_PARAMS>
         static void 
         get_equivalences(const DFA& a_in, 
                          DFA& a_out,
@@ -462,7 +462,7 @@ namespace atl {
             }
         }
 
-        template <typename DFA>
+        template <DFA_PARAMS>
         static void 
         add_minimize_transition(const DFA& a_in, 
                                 DFA& a_out,
@@ -489,7 +489,7 @@ namespace atl {
             add_transition(a_out, source, target, t);
         }
 
-        template <typename DFA>
+        template <DFA_PARAMS>
         static void 
         do_minimize(const DFA& a_in,
                     DFA& a_out,
@@ -523,7 +523,7 @@ namespace atl {
             }
         }
 
-        template <typename DFA>
+        template <DFA_PARAMS>
         static void 
         apply(const DFA& a_in,
               DFA& a_out) {
@@ -577,61 +577,64 @@ namespace atl {
         }
     };
 
-    template <typename FA,
+    template <FA_PARAMS,
               typename Merge1,
               typename Merge2>
     inline void
     minimize(const FA& a_in,
-             typename FA::DFA& a_out,
+             typename FA::dfa_type& a_out,
              Merge1 merge1,
              Merge2 merge2) {
-        if constexpr (std::is_same<FA, typename FA::DFA>::value) {
+        if constexpr (std::is_same<FA, typename FA::dfa_type>::value) {
             if (!is_minimal(a_in)) {
                 minimize_impl::apply(a_in, a_out);
             } else {
                 copy_fa(a_in, a_out);
             }
         } else {
-            typename FA::DFA dfa;
+            typename FA::dfa_type dfa;
             determinize(a_in, dfa, merge1, merge2);
             minimize_impl::apply(dfa, a_out);
         }
     }
 
-    template <typename FA,
+    template <FA_PARAMS,
               typename Merge>
     inline void
     minimize(const FA& a_in,
-             typename FA::DFA& a_out,
+             typename FA::dfa_type& a_out,
              Merge merge) {
-        if constexpr (std::is_same<FA, typename FA::DFA>::value) {
+        if constexpr (std::is_same<FA, typename FA::dfa_type>::value) {
             if (!is_minimal(a_in)) {
                 minimize_impl::apply(a_in, a_out);
             } else {
                 copy_fa(a_in, a_out);
             }
         } else {
-            typename FA::DFA dfa;
+            typename FA::dfa_type dfa;
             determinize(a_in, dfa, merge);
             minimize_impl::apply(dfa, a_out);
         }
     }
 
-    template <typename FA>
+    template <DFA_PARAMS>
     inline void
-    minimize(const FA& a_in,
-             typename FA::DFA& a_out) {
-        if constexpr (std::is_same<FA, typename FA::DFA>::value) {
-            if (!is_minimal(a_in)) {
-                minimize_impl::apply(a_in, a_out);
-            } else {
-                copy_fa(a_in, a_out);
-            }
+    minimize(const DFA& a_in,
+             DFA& a_out) {
+        if (!is_minimal(a_in)) {
+            minimize_impl::apply(a_in, a_out);
         } else {
-            typename FA::DFA dfa;
-            determinize(a_in, dfa);
-            minimize_impl::apply(dfa, a_out);
+            copy_fa(a_in, a_out);
         }
+    }
+
+    template <NFA_PARAMS>
+    inline void
+    minimize(const NFA& a_in,
+             typename NFA::dfa_type& a_out) {
+        typename NFA::dfa_type dfa;
+        determinize(a_in, dfa);
+        minimize_impl::apply(dfa, a_out);
     }
 }
 

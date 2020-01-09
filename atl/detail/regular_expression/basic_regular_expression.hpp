@@ -51,11 +51,12 @@ namespace atl {
         public:
             basic_regular_expression_gen() {}
 
-            basic_regular_expression_gen(const std::basic_string<Symbol> re) {
+            basic_regular_expression_gen(const std::basic_string<Symbol>& re) {
+                init_operator_map();
                 init(re);
             }
 
-            basic_regular_expression_gen(const std::basic_string<Symbol> re, 
+            basic_regular_expression_gen(const std::basic_string<Symbol>& re, 
                                          const unordered_map<Symbol, char>& operator_map) 
                 : operator_map_(operator_map) {
                 init(re);
@@ -70,6 +71,16 @@ namespace atl {
             }
 
         private:
+            void init_operator_map() {
+                operator_map_[Symbol('*')] = '*';
+                operator_map_[Symbol('+')] = '+';
+                operator_map_[Symbol('?')] = '?';
+                operator_map_[Symbol('|')] = '|';
+                operator_map_[Symbol('.')] = '.';
+                operator_map_[Symbol('(')] = '(';
+                operator_map_[Symbol(')')] = ')';
+            }
+
             void init(const std::basic_string<Symbol>& re) {
                 bool flag = false;
                 for (size_t i = 0; i < re.size(); i++) {

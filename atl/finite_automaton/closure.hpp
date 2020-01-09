@@ -10,20 +10,21 @@
 #define atl_finite_automaton_closure_hpp 
 
 #include "../detail/automaton.hpp"
+#include "../detail/finite_automaton/nondeterministic_finite_automaton.hpp"
 #include "../../util/util.hpp"
 
 namespace atl {
     enum Direction {forward, backward};
     struct reachable_closure_impl {
-        template <typename Automaton>
-        static void apply(const Automaton& fa,
-                          typename Automaton::StateSet const& states_in,
-                          typename Automaton::StateSet& states_out,
+        template <FA_PARAMS>
+        static void apply(const FA& fa,
+                          typename FA::StateSet const& states_in,
+                          typename FA::StateSet& states_out,
                           Direction direction = forward) {
-            typedef typename Automaton::State State;
-            typedef typename Automaton::StateSet StateSet;
-            typedef typename Automaton::InTransitionIter InTransitionIter;
-            typedef typename Automaton::OutTransitionIter OutTransitionIter;
+            typedef typename FA::State State;
+            typedef typename FA::StateSet StateSet;
+            typedef typename FA::InTransitionIter InTransitionIter;
+            typedef typename FA::OutTransitionIter OutTransitionIter;
             states_out.insert(states_in.begin(), states_in.end());
             StateSet work(states_in), new_work;
             while (work.size() > 0) {
@@ -57,20 +58,20 @@ namespace atl {
         }
     };
 
-    template <typename Automaton>
+    template <FA_PARAMS>
     inline void
-    reachable_closure(const Automaton& fa,
-                     typename Automaton::StateSet const& states_in,
-                     typename Automaton::StateSet& states_out,
+    reachable_closure(const FA& a,
+                     typename FA::StateSet const& states_in,
+                     typename FA::StateSet& states_out,
                      Direction direction = forward) {
-        reachable_closure_impl::apply(fa, states_in, states_out, direction);
+        reachable_closure_impl::apply(a, states_in, states_out, direction);
     }
 
-    template <typename FiniteAutomaton>
+    template <FA_PARAMS>
     inline void
-    reachable_closure(const FiniteAutomaton& fa,
-                      typename FiniteAutomaton::StateSet& reachable_closure) {
-            typename FiniteAutomaton::StateSet forward_states({initial_state(fa)}),
+    reachable_closure(const FA& fa,
+                      typename FA::StateSet& reachable_closure) {
+            typename FA::StateSet forward_states({initial_state(fa)}),
                                                backward_states(final_state_set(fa));
             atl::reachable_closure(fa, forward_states, forward_states, forward);
             atl::reachable_closure(fa, backward_states, backward_states, backward);
@@ -78,7 +79,7 @@ namespace atl {
     }
 
     struct epsilon_closure_impl {
-        template <typename NFA>
+        template <NFA_PARAMS>
         static void apply(const NFA& nfa,
                           typename NFA::StateSet const& states_in,
                           typename NFA::StateSet& states_out) {
@@ -103,7 +104,7 @@ namespace atl {
         }
     };
 
-    template <typename NFA>
+    template <NFA_PARAMS>
     inline void
     epsilon_closure(const NFA& fa,
                     typename NFA::StateSet const& states_in,
@@ -111,7 +112,7 @@ namespace atl {
         epsilon_closure_impl::apply(fa, states_in, states_out);
     }
 
-    template <typename NFA>
+    template <NFA_PARAMS>
     inline void
     epsilon_closure(const NFA& fa,
                     typename NFA::StateSet& closure) {

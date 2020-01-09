@@ -31,11 +31,15 @@ namespace atl {
                                                                   SymbolProperty,
                                                                   StateProperty,
                                                                   AutomatonProperty> Base;
-            typedef nondeterministic_finite_automaton NFA;
+            typedef detail::finite_automaton_gen<Symbol, epsilon_,
+                                                 SymbolProperty,
+                                                 StateProperty,
+                                                 AutomatonProperty> fa_type;
+            typedef nondeterministic_finite_automaton nfa_type;
             typedef deterministic_finite_automaton<Symbol, epsilon_,
                                                    SymbolProperty,
                                                    StateProperty,
-                                                   AutomatonProperty> DFA;
+                                                   AutomatonProperty> dfa_type;
 
             typedef typename Base::transition_property_type transition_property_type;
             typedef typename Base::automaton_property_type automaton_property_type;
@@ -62,45 +66,45 @@ namespace atl {
                 return *this;
             }
 
-            DFA
-            operator&(const DFA& x) {
-                DFA out, dfa_lhs, dfa_rhs;
+            dfa_type
+            operator&(const dfa_type& x) {
+                dfa_type out, dfa_lhs, dfa_rhs;
                 minimize(*this, dfa_lhs);
                 minimize(x, dfa_rhs);
                 intersect_fa(dfa_lhs, dfa_rhs, out);
                 return out;
             }
 
-            DFA
+            dfa_type
             operator&(const nondeterministic_finite_automaton& x) {
-                DFA out, dfa_lhs, dfa_rhs;
+                dfa_type out, dfa_lhs, dfa_rhs;
                 minimize(*this, dfa_lhs);
                 minimize(x, dfa_rhs);
                 intersect_fa(dfa_lhs, dfa_rhs, out);
                 return out;
             }
 
-            DFA
-            operator|(const DFA& x) {
-                DFA out, dfa_lhs, dfa_rhs;
+            dfa_type
+            operator|(const dfa_type& x) {
+                dfa_type out, dfa_lhs, dfa_rhs;
                 minimize(*this, dfa_lhs);
                 minimize(x, dfa_rhs);
                 union_fa(dfa_lhs, dfa_rhs, out);
                 return out;
             }
 
-            DFA
+            dfa_type
             operator|(const nondeterministic_finite_automaton& x) {
-                DFA out, dfa_lhs, dfa_rhs;
+                dfa_type out, dfa_lhs, dfa_rhs;
                 minimize(*this, dfa_lhs);
                 minimize(x, dfa_rhs);
                 union_fa(dfa_lhs, dfa_rhs, out);
                 return out;
             }
 
-            DFA
-            operator-(const DFA& x) {
-                DFA out, dfa_lhs, dfa_rhs, dfa;
+            dfa_type
+            operator-(const dfa_type& x) {
+                dfa_type out, dfa_lhs, dfa_rhs, dfa;
                 minimize(*this, dfa_lhs);
                 minimize(x, dfa_rhs);
                 complement_fa(dfa_rhs, dfa);
@@ -108,9 +112,9 @@ namespace atl {
                 return out;
             }
 
-            DFA
+            dfa_type
             operator-(const nondeterministic_finite_automaton& x) {
-                DFA out, dfa_lhs, dfa_rhs, dfa;
+                dfa_type out, dfa_lhs, dfa_rhs, dfa;
                 minimize(*this, dfa_lhs);
                 minimize(x, dfa_rhs);
                 complement_fa(dfa_rhs, dfa);
@@ -118,35 +122,35 @@ namespace atl {
                 return out;
             }
 
-            DFA
-            operator+(const DFA& x) {
-                DFA out, dfa_lhs, dfa_rhs;
+            dfa_type
+            operator+(const dfa_type& x) {
+                dfa_type out, dfa_lhs, dfa_rhs;
                 minimize(*this, dfa_lhs);
                 minimize(x, dfa_rhs);
                 concat_fa(dfa_lhs, dfa_rhs, out);
                 return out;
             }
 
-            DFA
+            dfa_type
             operator+(const nondeterministic_finite_automaton& x) {
-                DFA out, dfa_lhs, dfa_rhs;
+                dfa_type out, dfa_lhs, dfa_rhs;
                 minimize(*this, dfa_lhs);
                 minimize(x, dfa_rhs);
                 concat_fa(dfa_lhs, dfa_rhs, out);
                 return out;
             }
 
-            DFA
+            dfa_type
             operator!() {
-                DFA dfa, out;
+                dfa_type dfa, out;
                 minimize(*this, dfa);
                 complement_fa(dfa, out);
                 return out;
             }
 
             bool
-            operator==(const DFA& x) {
-                DFA dfa_lhs, dfa_rhs;
+            operator==(const dfa_type& x) {
+                dfa_type dfa_lhs, dfa_rhs;
                 minimize(*this, dfa_lhs);
                 minimize(x, dfa_rhs);
                 return equal_fa(dfa_lhs, dfa_rhs);
@@ -154,7 +158,7 @@ namespace atl {
 
             bool
             operator==(const nondeterministic_finite_automaton& x) {
-                DFA dfa_lhs, dfa_rhs;
+                dfa_type dfa_lhs, dfa_rhs;
                 minimize(*this, dfa_lhs);
                 minimize(x, dfa_rhs);
                 return equal_fa(dfa_lhs, dfa_rhs);

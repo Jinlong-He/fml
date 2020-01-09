@@ -157,6 +157,9 @@ namespace atl {
         };
     }
 
+    #define NFA_PARAMS typename SYMBOL, long EPSILON, typename SYP, typename STP, typename AP
+    #define NFA detail::nondeterministic_finite_automaton_gen<SYMBOL, EPSILON, SYP, STP, AP>
+
     //template <typename NFA>
     //inline pair<typename NFA::Transition, bool>
     //add_epsilon_transition(NFA& a,
@@ -167,7 +170,7 @@ namespace atl {
     //    return a.add_transition(s, t, a.epsilon());
     //}
 
-    template <typename NFA>
+    template <NFA_PARAMS>
     inline void
     get_targets_in_map(const NFA& nfa, 
                        typename NFA::State s, 
@@ -176,7 +179,7 @@ namespace atl {
         nfa.get_targets_in_map(s, c, set);
     }
 
-    template <typename NFA>
+    template <NFA_PARAMS>
     inline void
     get_targets_in_map(const NFA& nfa, 
                        typename NFA::StateSet const& set, 
@@ -186,6 +189,13 @@ namespace atl {
             nfa.get_targets_in_map(s, c, targets);
         }
     }
+
+    template <NFA_PARAMS>
+    inline typename NFA::TransitionMap const&
+    transition_map(const NFA& nfa) {
+        return nfa.transition_map();
+    }
+
 }
 
 #endif /* atl_detail_nondeterministic_finite_automaton_hpp */

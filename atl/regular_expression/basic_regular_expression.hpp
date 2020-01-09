@@ -23,7 +23,7 @@ namespace atl {
             basic_regular_expression(const std::basic_string<Symbol>& re)
                 : Base(re) {}
 
-            basic_regular_expression(const std::basic_string<Symbol> re, 
+            basic_regular_expression(const std::basic_string<Symbol>& re, 
                                      const unordered_map<Symbol, char>& operator_map) 
                 : Base(re, operator_map) {}
     };

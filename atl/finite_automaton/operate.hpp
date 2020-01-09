@@ -12,12 +12,14 @@
 #include "closure.hpp"
 #include "merge.hpp"
 #include "copy.hpp"
+#include "../detail/finite_automaton/deterministic_finite_automaton.hpp"
+#include "../detail/finite_automaton/nondeterministic_finite_automaton.hpp"
 using std::cout;
 using std::endl;
 
 namespace atl {
     struct intersect_impl {
-        template <typename DFA,
+        template <DFA_PARAMS,
                   typename Merge>
         static void 
         get_intersect_map(const DFA& a_lhs,
@@ -62,7 +64,7 @@ namespace atl {
             }
         }
 
-        template <typename DFA,
+        template <DFA_PARAMS,
                   typename Merge>
         static void 
         get_intersect_map(const DFA& a_lhs,
@@ -87,7 +89,7 @@ namespace atl {
             }
         }
 
-        template <typename DFA,
+        template <DFA_PARAMS,
                   typename StateMerge,
                   typename SymbolPropertyMerge>
         static void
@@ -125,7 +127,7 @@ namespace atl {
             add_transition(a_out, source, target, t);
         }
 
-        template <typename DFA,
+        template <DFA_PARAMS,
                   typename StateMerge,
                   typename SymbolPropertyMerge>
         static void 
@@ -167,7 +169,7 @@ namespace atl {
             }
         }
 
-        template <typename DFA,
+        template <DFA_PARAMS,
                   typename SymbolPropertyMerge,
                   typename StateMerge,
                   typename FAMerge>
@@ -211,7 +213,7 @@ namespace atl {
         }
     };
 
-    template <typename DFA>
+    template <DFA_PARAMS>
     inline void
     intersect_fa(const DFA& a_lhs,
                  const DFA& a_rhs,
@@ -222,7 +224,7 @@ namespace atl {
                               intersect_merge<typename DFA::automaton_property_type>());
     }
 
-    template <typename DFA,
+    template <DFA_PARAMS,
               typename Merge>
     inline void
     intersect_fa(const DFA& a_lhs,
@@ -239,7 +241,7 @@ namespace atl {
         }
     }
 
-    template <typename DFA,
+    template <DFA_PARAMS,
               typename Merge1,
               typename Merge2>
     inline void
@@ -256,7 +258,7 @@ namespace atl {
         }
     }
 
-    template <typename DFA,
+    template <DFA_PARAMS,
               typename Merge1,
               typename Merge2,
               typename Merge3>
@@ -275,7 +277,7 @@ namespace atl {
     }
 
     struct union_impl {
-        template <typename DFA,
+        template <DFA_PARAMS,
                   typename SymbolPropertyMerge,
                   typename StateMerge,
                   typename FAMerge>
@@ -294,7 +296,7 @@ namespace atl {
                 atl::set_property(a_out, fa_merge(atl::get_property(a_lhs), 
                                                   atl::get_property(a_rhs)));
             }
-            typename DFA::NFA nfa;
+            typename DFA::nfa_type nfa;
             typename DFA::SymbolSet alphabet_;
             util::set_union(alphabet(a_lhs), alphabet(a_rhs), alphabet_);
             set_alphabet(nfa, alphabet_);
@@ -313,18 +315,18 @@ namespace atl {
         }
     };
 
-    template <typename DFA>
+    template <DFA_PARAMS>
     inline void
     union_fa(const DFA& a_lhs,
-                 const DFA& a_rhs,
-                 DFA& a_out) {
+             const DFA& a_rhs,
+             DFA& a_out) {
         union_impl::apply(a_lhs, a_rhs, a_out, 
                           union_merge<typename DFA::symbol_property_type>(),
                           union_merge<typename DFA::state_property_type>(),
                           union_merge<typename DFA::automaton_property_type>());
     }
 
-    template <typename DFA,
+    template <DFA_PARAMS,
               typename Merge>
     inline void
     union_fa(const DFA& a_lhs,
@@ -341,7 +343,7 @@ namespace atl {
         }
     }
 
-    template <typename DFA,
+    template <DFA_PARAMS,
               typename Merge1,
               typename Merge2>
     inline void
@@ -358,7 +360,7 @@ namespace atl {
         }
     }
 
-    template <typename DFA,
+    template <DFA_PARAMS,
               typename Merge1,
               typename Merge2,
               typename Merge3>
@@ -377,7 +379,7 @@ namespace atl {
     }
 
     struct complement_impl {
-        template <typename DFA>
+        template <DFA_PARAMS>
         static void
         apply(const DFA& a_in,
               DFA& a_out) {
@@ -417,7 +419,7 @@ namespace atl {
         }
     };
 
-    template <typename DFA>
+    template <DFA_PARAMS>
     inline void
     complement_fa(const DFA& a_in,
                   DFA& a_out) {
@@ -425,7 +427,7 @@ namespace atl {
     }
 
     struct concat_impl {
-        template <typename DFA,
+        template <DFA_PARAMS,
                   typename SymbolPropertyMerge,
                   typename StateMerge,
                   typename FAMerge>
@@ -444,7 +446,7 @@ namespace atl {
                 atl::set_property(a_out, fa_merge(atl::get_property(a_lhs), 
                                                   atl::get_property(a_rhs)));
             }
-            typename DFA::NFA nfa;
+            typename DFA::nfa_type nfa;
             typename DFA::SymbolSet alphabet_;
             util::set_union(alphabet(a_lhs), alphabet(a_rhs), alphabet_);
             set_alphabet(nfa, alphabet_);
@@ -466,7 +468,7 @@ namespace atl {
         }
     };
 
-    template <typename DFA>
+    template <DFA_PARAMS>
     inline void
     concat_fa(const DFA& a_lhs,
                  const DFA& a_rhs,
@@ -477,7 +479,7 @@ namespace atl {
                           union_merge<typename DFA::automaton_property_type>());
     }
 
-    template <typename DFA,
+    template <DFA_PARAMS,
               typename Merge>
     inline void
     concat_fa(const DFA& a_lhs,
@@ -494,7 +496,7 @@ namespace atl {
         }
     }
 
-    template <typename DFA,
+    template <DFA_PARAMS,
               typename Merge1,
               typename Merge2>
     inline void
@@ -511,7 +513,7 @@ namespace atl {
         }
     }
 
-    template <typename DFA,
+    template <DFA_PARAMS,
               typename Merge1,
               typename Merge2,
               typename Merge3>
@@ -530,7 +532,7 @@ namespace atl {
     }
 
     struct equal_impl {
-        template <typename DFA>
+        template <DFA_PARAMS>
         static bool
         apply(const DFA& a_lhs,
               const DFA& a_rhs) {
@@ -557,7 +559,7 @@ namespace atl {
         }
     };
 
-    template <typename DFA>
+    template <DFA_PARAMS>
     inline bool
     equal_fa(const DFA& a_lhs,
              const DFA& a_rhs) {
