@@ -40,15 +40,16 @@ namespace atl {
         class finite_automaton_gen 
             : public automaton_gen<
                      typename std::conditional<std::is_same<SymbolProperty, no_type>::value,
-                                   Symbol, TransitionProperty<Symbol, SymbolProperty> >::type,
+                                   Symbol, Property<Symbol, SymbolProperty> >::type,
                      typename std::conditional<std::is_same<StateProperty, no_type>::value,
                                    boost::no_property, StateProperty>::type,
                      typename std::conditional<std::is_same<AutomatonProperty, no_type>::value,
                                    boost::no_property, AutomatonProperty>::type> {
         public:
-            typedef TransitionProperty<Symbol, SymbolProperty> transition_property;
+            typedef Property<Symbol, SymbolProperty> transition_property;
             typedef Symbol symbol_type;
             typedef SymbolProperty symbol_property_type;
+
             typedef typename std::conditional<std::is_same<SymbolProperty, no_type>::value,
                                   Symbol, transition_property>::type 
                 transition_property_type;
@@ -63,16 +64,16 @@ namespace atl {
                                   automaton_property_type> Base;
 
             typedef deterministic_finite_automaton<Symbol, 
-                                                       epsilon_,
-                                                       SymbolProperty,
-                                                       StateProperty,
-                                                       AutomatonProperty> dfa_type;
+                                                   epsilon_,
+                                                   SymbolProperty,
+                                                   StateProperty,
+                                                   AutomatonProperty> dfa_type;
 
             typedef nondeterministic_finite_automaton<Symbol, 
-                                                          epsilon_,
-                                                          SymbolProperty,
-                                                          StateProperty,
-                                                          AutomatonProperty> nfa_type;
+                                                      epsilon_,
+                                                      SymbolProperty,
+                                                      StateProperty,
+                                                      AutomatonProperty> nfa_type;
 
             typedef typename Base::Transition Transition;
             typedef typename Base::State State;
@@ -211,11 +212,9 @@ namespace atl {
                            const Symbol& c,
                            const SymbolProperty& p) {
                 if constexpr (std::is_same<SymbolProperty, no_type>::value) {
-                    if (c == epsilon()) this -> set_flag(4, 1);
-                    return Base::add_transition(s, t, c);
+                    return this -> add_transition(s, t, c);
                 } else {
-                    if (c == epsilon().symbol) this -> set_flag(4, 1);
-                    return Base::add_transition(s, t, transition_property(c, p));
+                    return this -> add_transition(s, t, transition_property(c, p));
                 }
             }
 

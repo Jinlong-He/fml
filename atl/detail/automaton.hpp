@@ -29,23 +29,23 @@ namespace atl {
     typedef std::size_t ID;
 
     namespace detail {
-        template <typename Symbol, typename SymbolProperty>
-        struct TransitionProperty {
-            Symbol symbol;
-            SymbolProperty symbol_property;
+        template <typename DefaultProperty, typename ExtendedProperty>
+        struct Property {
+            DefaultProperty default_property;
+            ExtendedProperty extended_property;
 
-            TransitionProperty() {}
+            Property() {}
 
-            TransitionProperty(const Symbol& c, const SymbolProperty& p)
-                : symbol(c),
-                  symbol_property(p) {}
+            Property(const DefaultProperty& dp, const ExtendedProperty& ep)
+                : default_property(dp),
+                  extended_property(ep) {}
 
-            TransitionProperty(long c) 
-                : symbol(c),
-                  symbol_property() {}
+            Property(long l) 
+                : default_property(l),
+                  extended_property() {}
 
-            friend std::ostream& operator<< (std::ostream& os, const TransitionProperty& x) {
-                os << x.symbol << " {" << x.symbol_property << "}";
+            friend std::ostream& operator<< (std::ostream& os, const Property& x) {
+                os << x.default_property << " {" << x.extended_property << "}";
                 return os;
             }
         };

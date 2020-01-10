@@ -79,6 +79,7 @@ namespace atl {
                 operator_map_[Symbol('.')] = '.';
                 operator_map_[Symbol('(')] = '(';
                 operator_map_[Symbol(')')] = ')';
+                operator_map_[Symbol('\\')] = '\\';
             }
 
             void init(const std::basic_string<Symbol>& re) {
@@ -96,7 +97,7 @@ namespace atl {
                             flag = false;
                         }
                         if (operator_map_[re[i]] == '\\') {
-                            original_expression_.push_back(RegularSymbol<Symbol>(re[i++]));
+                            original_expression_.push_back(RegularSymbol<Symbol>(re[++i]));
                         } else {
                             original_expression_.push_back(RegularSymbol<Symbol>(Symbol(re[i]),
                                                            operator_map_[Symbol(re[i])]));

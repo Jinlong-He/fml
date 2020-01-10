@@ -48,7 +48,7 @@ namespace atl {
                                   unordered_map<Symbol, StatePair>,
                                   unordered_map<Symbol, 
                                   unordered_map<SymbolProperty, StatePair> > >::type 
-                                      Symbol2StatePairMap;
+                Symbol2StatePairMap;
 
             typedef typename std::conditional<std::is_same<SymbolProperty, no_type>::value,
                                   std::map<Symbol, State>,

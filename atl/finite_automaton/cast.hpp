@@ -375,7 +375,8 @@ namespace atl {
             while (iter1 != end1) {
                 if (iter1 -> first != iter2 -> first) return false;
                 if constexpr (std::is_same<SymbolProperty, no_type>::value) {
-                    if (iter1 -> second != iter2 -> second) return false;
+                    if (state2_map.at(iter1 -> second) != 
+                        state2_map.at(iter2 -> second)) return false;
                 } else {
                     auto& map1_ = iter1 -> second;
                     auto& map2_ = iter2 -> second;
@@ -384,7 +385,8 @@ namespace atl {
                          iter2_ = map2_.begin(), end2_ = map2_.end();
                     while (iter1_ != end1_) {
                         if (iter1_ -> first != iter2_ -> first) return false;
-                        if (iter1_ -> second != iter2_ -> second) return false;
+                        if (state2_map.at(iter1_ -> second) != 
+                            state2_map.at(iter2_ -> second)) return false;
                         iter1_++;
                         iter2_++;
                     }

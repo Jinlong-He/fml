@@ -2,35 +2,61 @@
 //  item.hpp
 //  ll 
 //
-//  Created by Jinlong He on 2019/11/5.
+//  Created by Jinlong He on 2019/12/6.
 //  Copyright © 2019年 Ruting-Team. All rights reserved.
 //
 
 #ifndef ll_item_hpp 
 #define ll_item_hpp
 
-#include "int.hpp"
-#include "enum.hpp"
-#include "bool.hpp"
-
+#include <iostream>
+#include <list>
+using std::string;
 namespace ll {
-    class item : public detail::item_gen {
+    class item {
     public:
         item()
-            : item_gen() {}
+            : identifier_(""),
+              type_("") {}
 
-        item(const string& id)
-            : item_gen(id) {}
+        item(const string& identifier)
+            : identifier_(identifier),
+              type_("") {}
+
+        item(const string& identifier, const string& type)
+            : identifier_(identifier),
+              type_(type) {}
 
         item(const item& i)
-            : item_gen(i) {}
+            : identifier_(i.identifier_),
+              type_(i.type_) {}
 
-        item_gen& operator=(const item& v) {
-            if (this != &v) {
-                item_gen::operator=(v);
+        item& operator=(const item& i) {
+            if (this != &i) {
+                identifier_ = i.identifier_;
+                type_ = i.type_;
             }
             return *this;
         }
+
+        const string& to_string() const {
+            return identifier_;
+        }
+
+        const string& type() const {
+            return type_;
+        }
+
+        void set_identifier(const string& identifier) {
+            identifier_ = identifier;
+        }
+
+        void set_type(const string& type) {
+            type_ = type;
+        }
+    private:
+        string identifier_;
+        string type_;
     };
 }
 

@@ -50,15 +50,13 @@ namespace atl {
                 add_transition(*a_lhs, i_state, f_state, c_rhs.regular_symbol.symbol);
             } else if (a_lhs == nullptr && a_rhs != nullptr) {
                 a_lhs = a_rhs;
-                for (auto state : final_state_set(*a_lhs)) {
-                    add_transition(*a_lhs, initial_state(*a_lhs), state, 
-                                   c_lhs.regular_symbol.symbol);
-                }
+                auto f_state = add_final_state(*a_lhs);
+                add_transition(*a_lhs, initial_state(*a_lhs), f_state, 
+                               c_lhs.regular_symbol.symbol);
             } else if (a_lhs != nullptr && a_rhs == nullptr) {
-                for (auto state : final_state_set(*a_lhs)) {
-                    add_transition(*a_lhs, initial_state(*a_lhs), state, 
-                                   c_rhs.regular_symbol.symbol);
-                }
+                auto f_state = add_final_state(*a_lhs);
+                add_transition(*a_lhs, initial_state(*a_lhs), f_state, 
+                               c_rhs.regular_symbol.symbol);
             } else {
                 typedef typename nondeterministic_finite_automaton<Symbol>::StateSet StateSet;
                 auto state_lhs = initial_state(*a_lhs);
@@ -105,9 +103,10 @@ namespace atl {
                 auto i_state = initial_state(*a_lhs);
                 auto final_state_set_ = final_state_set(*a_lhs);
                 typename nondeterministic_finite_automaton<Symbol>::State2Map state2_map;
+                clear_finale_state_set(*a_lhs);
                 copy_fa_impl::copy_states(*a_rhs, *a_lhs, state2_map, StateSet());
                 copy_fa_impl::copy_transitions(*a_rhs, *a_lhs, state2_map);
-                for (auto state : final_state_set(*a_lhs)) {
+                for (auto state : final_state_set_) {
                     add_transition(*a_lhs, state, initial_state(*a_lhs), epsilon(*a_lhs));
                 }
                 set_initial_state(*a_lhs, i_state);
@@ -164,6 +163,13 @@ namespace atl {
         static void
         apply(const basic_regular_expression<Symbol>& re,
               deterministic_finite_automaton<Symbol>& dfa) {
+            if (re.postfix_expression().size() == 1) {
+                const auto& c = re.postfix_expression().front();
+                typename deterministic_finite_automaton<Symbol>::SymbolSet alphabet({c.symbol});
+                set_alphabet(dfa, alphabet);
+                add_transition(dfa, add_initial_state(dfa), add_final_state(dfa), c.symbol);
+                return;
+            }
             std::stack<NFARegularSymbol<Symbol> > symbol_stack;
             typename deterministic_finite_automaton<Symbol>::SymbolSet alphabet;
             for (const auto& c : re.postfix_expression()) {
