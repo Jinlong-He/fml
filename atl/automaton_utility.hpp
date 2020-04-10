@@ -12,6 +12,8 @@
 #include <iostream>
 #include "detail/automaton.hpp"
 #include "detail/no_type.hpp"
+#include "finite_automaton/nondeterministic_finite_automaton.hpp"
+#include "push_down_system/push_down_system.hpp"
 using std::cout;
 using std::endl;
 namespace atl {
@@ -45,32 +47,64 @@ namespace atl {
         }
     }
 
-    template <typename Automaton>
+    template <FA_PARAMS>
     inline void
-    print_fa(const Automaton& a, const string& name = "") {
+    print_fa(const FA& fa, const string& name = "") {
         cout << "FA: " << name << endl;
-        cout << "States: " << state_set(a).size() << endl;
+        cout << "States: " << state_set(fa).size() << endl;
         cout << "Alphabet: ";
         ID i = 0;
-        for (auto& c : alphabet(a)) {
-            if (++i == alphabet(a).size()) {
-                cout << c << endl;
+        for (auto& c : alphabet(fa)) {
+            if (++i == alphabet(fa).size()) {
+                cout << c;
             } else {
                 cout << c << " ";
             }
         }
-        cout << "Initial: " << initial_state(a) << endl;
+        cout << endl;
+        cout << "Initial: " << initial_state(fa) << endl;
         cout << "Final: ";
         i = 0;
-        for (auto s : final_state_set(a)) {
-            if (++i == final_state_set(a).size()) {
-                cout << s << endl;
+        for (auto s : final_state_set(fa)) {
+            if (++i == final_state_set(fa).size()) {
+                cout << s;
             } else {
                 cout << s << " ";
             }
         }
+        cout << endl;
         cout << "--BODY--" <<endl;;
-        print_automaton(a);
+        print_automaton(fa);
+        cout << "--END--" << endl;
+    }
+
+    template <PDS_PARAMS>
+    inline void
+    print_pds(const PDS& pds, const string& name = "") {
+        cout << "PDS: " << name << endl;
+        cout << "States: " << state_set(pds).size() << endl;
+        cout << "Alphabet: ";
+        ID i = 0;
+        for (auto& c : alphabet(pds)) {
+            if (++i == alphabet(pds).size()) {
+                cout << c;
+            } else {
+                cout << c << " ";
+            }
+        }
+        cout << endl;
+        cout << "Control: ";
+        i = 0;
+        for (auto s : control_state_set(pds)) {
+            if (++i == control_state_set(pds).size()) {
+                cout << s;
+            } else {
+                cout << s << " ";
+            }
+        }
+        cout << endl;
+        cout << "--BODY--" <<endl;;
+        print_automaton(pds);
         cout << "--END--" << endl;
     }
 }

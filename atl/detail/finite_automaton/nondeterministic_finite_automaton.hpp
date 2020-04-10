@@ -157,8 +157,8 @@ namespace atl {
         };
     }
 
-    #define NFA_PARAMS typename SYMBOL, long EPSILON, typename SYP, typename STP, typename AP
-    #define NFA detail::nondeterministic_finite_automaton_gen<SYMBOL, EPSILON, SYP, STP, AP>
+    #define NFA_PARAMS typename NFA_SYMBOL, long NFA_EPSILON, typename NFA_SYMBOL_PROP, typename NFA_STATE_PROP, typename NFA_AUT_PROP
+    #define NFA detail::nondeterministic_finite_automaton_gen<NFA_SYMBOL, NFA_EPSILON, NFA_SYMBOL_PROP, NFA_STATE_PROP,NFA_AUT_PROP>
 
     //template <typename NFA>
     //inline pair<typename NFA::Transition, bool>

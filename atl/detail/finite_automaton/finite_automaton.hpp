@@ -226,8 +226,8 @@ namespace atl {
         };
     };
 
-    #define FA_PARAMS typename SYMBOL, long EPSILON, typename SYP, typename STP, typename AP
-    #define FA detail::finite_automaton_gen<SYMBOL, EPSILON, SYP, STP, AP>
+    #define FA_PARAMS typename FA_SYMBOL, long FA_EPSILON, typename FA_SYMBOL_PROP, typename FA_STATE_PROP, typename FA_AUT_PROP
+    #define FA detail::finite_automaton_gen<FA_SYMBOL, FA_EPSILON, FA_SYMBOL_PROP, FA_STATE_PROP,FA_AUT_PROP>
 
     template <FA_PARAMS>
     inline typename FA::SymbolSet const&

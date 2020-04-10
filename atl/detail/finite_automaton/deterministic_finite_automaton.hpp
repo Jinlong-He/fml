@@ -116,8 +116,8 @@ namespace atl {
             TransitionMap transition_map_;
         };
     }
-    #define DFA_PARAMS typename SYMBOL, long EPSILON, typename SYP, typename STP, typename AP
-    #define DFA detail::deterministic_finite_automaton_gen<SYMBOL, EPSILON, SYP, STP, AP>
+    #define DFA_PARAMS typename DFA_SYMBOL, long DFA_EPSILON, typename DFA_SYMBOL_PROP, typename DFA_STATE_PROP, typename DFA_AUT_PROP
+    #define DFA detail::deterministic_finite_automaton_gen<DFA_SYMBOL, DFA_EPSILON, DFA_SYMBOL_PROP, DFA_STATE_PROP,DFA_AUT_PROP>
 
     template <DFA_PARAMS>
     inline typename DFA::TransitionMap const&

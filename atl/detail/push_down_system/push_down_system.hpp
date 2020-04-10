@@ -25,6 +25,22 @@ namespace atl {
         struct PDSLabel {
             Symbol symbol;
             std::vector<Symbol> symbols;
+            PDSLabel() {}
+            PDSLabel(const Symbol& c, const std::vector<Symbol>& cs)
+                : symbol(c),
+                  symbols(cs) {}
+            friend std::ostream& operator<< (std::ostream& os, const PDSLabel& x) {
+                os << x.symbol << " (";
+                for (ID i = 0; i < x.symbols.size(); i++) {
+                    if (i < x.symbols.size() - 1) {
+                        os << x.symbols[i] << " ";
+                    } else {
+                        os << x.symbols[i];
+                    }
+                }
+                os << ")";
+                return os;
+            }
         };
 
         template <class Symbol, 
@@ -61,11 +77,20 @@ namespace atl {
                                   state_property_type, 
                                   automaton_property_type> Base;
 
+
             typedef typename Base::Transition Transition;
             typedef typename Base::State State;
 
             typedef unordered_set<State> StateSet;
             typedef unordered_set<Symbol> SymbolSet;
+
+            typedef typename std::conditional<std::is_same<SymbolProperty, no_type>::value,
+                                  unordered_map<State, unordered_set<std::vector<Symbol> > >, 
+                                  unordered_map<State, unordered_map<std::vector<Symbol>, 
+                                                            unordered_set<SymbolProperty> > > >
+                State2StackMap;
+
+            typedef unordered_map<State, unordered_map<Symbol, State2StackMap> > TransitionMap;
 
             typedef unordered_map<State, State> State2Map;
 
@@ -171,6 +196,11 @@ namespace atl {
             remove_control_state(State state) {
                 control_state_set_.erase(state);
             }
+
+            const TransitionMap&
+            transition_map() const {
+                return transition_map_;
+            }
             
             pair<Transition, bool>
             add_transition(State s, State t,
@@ -179,8 +209,10 @@ namespace atl {
                            const SymbolProperty& p) {
                 auto pds_label = PDSLabel<Symbol>(c, cs);
                 if constexpr (std::is_same<SymbolProperty, no_type>::value) {
+                    transition_map_[s][c][t].insert(cs);
                     return Base::add_transition(s, t, pds_label);
                 } else {
+                    transition_map_[s][c][t][cs].insert(p);
                     return Base::add_transition(s, t, transition_property(pds_label, p));
                 }
             }
@@ -190,8 +222,10 @@ namespace atl {
                            const PDSLabel<Symbol>& l,
                            const SymbolProperty& p) {
                 if constexpr (std::is_same<SymbolProperty, no_type>::value) {
+                    transition_map_[s][l.symbol][t].insert(l.symbols);
                     return Base::add_transition(s, t, l);
                 } else {
+                    transition_map_[s][l.symbol][t][l.symbols].insert(p);
                     return Base::add_transition(s, t, transition_property(l, p));
                 }
             }
@@ -200,11 +234,12 @@ namespace atl {
             StateSet control_state_set_;
             StateSet state_set_;
             SymbolSet alphabet_;
+            TransitionMap transition_map_;
         };
     }
 
-    #define PDS_PARAMS typename SYMBOL, long EPSILON, typename SYP, typename STP, typename AP
-    #define PDS detail::push_down_system_gen<SYMBOL, EPSILON, SYP, STP, AP>
+    #define PDS_PARAMS typename PDS_SYMBOL, long PDS_EPSILON, typename PDS_SYMBOL_PROP, typename PDS_STATE_PROP, typename PDS_AUT_PROP
+    #define PDS detail::push_down_system_gen<PDS_SYMBOL, PDS_EPSILON, PDS_SYMBOL_PROP, PDS_STATE_PROP,PDS_AUT_PROP>
 
     template <PDS_PARAMS>
     inline typename PDS::SymbolSet const&
@@ -221,7 +256,7 @@ namespace atl {
 
     template <PDS_PARAMS>
     inline typename PDS::StateSet const&
-    state_set(PDS& pds) {
+    state_set(const PDS& pds) {
         return pds.state_set();
     }
 
@@ -241,40 +276,7 @@ namespace atl {
 
     template <PDS_PARAMS>
     inline typename PDS::StateSet const&
-    final_state_set(PDS& pds) {
-        return pds.final_state_set();
-    }
-
-    template <PDS_PARAMS>
-    inline void  
-    set_final_state_set(PDS& pds, 
-                        typename PDS::StateSet const& set) {
-        pds.set_final_state_set(set);
-    }
-
-    template <PDS_PARAMS>
-    inline void  
-    set_final_state(PDS& pds, 
-                    typename PDS::State state) {
-        pds.set_final_state(state);
-    }
-    
-    template <PDS_PARAMS>
-    inline void  
-    remove_final_state(PDS& pds, 
-                       typename PDS::State state) {
-        pds.remove_final_state(state);
-    }
-
-    template <PDS_PARAMS>
-    inline void  
-    clear_finale_state_set(PDS& pds) {
-        pds.clear_finale_state_set();
-    }
-
-    template <PDS_PARAMS>
-    inline typename PDS::StateSet const&
-    control_state_set(PDS& pds) {
+    control_state_set(const PDS& pds) {
         return pds.control_state_set();
     }
 
@@ -315,23 +317,6 @@ namespace atl {
     inline typename PDS::transition_property_type
     epsilon(const PDS& pds) {
         return pds.epsilon();
-    }
-
-    template <PDS_PARAMS>
-    inline typename PDS::State
-    add_final_state(PDS& pds,
-                    typename PDS::state_property_type const& p) {
-        typename PDS::State s = add_state(pds, p);
-        pds.set_final_state(s);
-        return s;
-    }
-
-    template <PDS_PARAMS>
-    inline typename PDS::State
-    add_final_state(PDS& pds) {
-        typename PDS::State s = add_state(pds);
-        pds.set_final_state(s);
-        return s;
     }
 
     template <PDS_PARAMS>

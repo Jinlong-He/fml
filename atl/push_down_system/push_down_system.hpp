@@ -2,7 +2,7 @@
 //  push_down_system.hpp
 //  ATL 
 //
-//  Created by Jinlong He on 2019/10/27.
+//  Created by Jinlong He on 2019/12/12.
 //  Copyright © 2019年 Ruting-Team. All rights reserved.
 //
 
@@ -10,13 +10,14 @@
 #define atl_push_down_system_hpp
 
 #include "../detail/push_down_system/push_down_system.hpp"
+#include "../detail/no_type.hpp"
 
 namespace atl {
-    template <class Symbol, 
-              long epsilon_,
-              class SymbolProperty,
-              class StateProperty, 
-              class AutomatonProperty>
+    template <class Symbol = char, 
+              long epsilon_ = -1,
+              class SymbolProperty = no_type,
+              class StateProperty = no_type, 
+              class AutomatonProperty = no_type>
     class push_down_system
         : public detail::push_down_system_gen<Symbol, epsilon_,
                                               SymbolProperty,
