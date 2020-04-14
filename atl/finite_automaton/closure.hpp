@@ -119,6 +119,18 @@ namespace atl {
         closure.insert(fa.initial_state());
         epsilon_closure(fa, closure, closure);
     }
+
+    template <NFA_PARAMS>
+    inline void
+    get_targets(const NFA& nfa, 
+                typename NFA::State s, 
+                typename NFA::symbol_type const& c, 
+                typename NFA::StateSet& targets) {
+        typename NFA::StateSet closure({s});
+        epsilon_closure(nfa, closure, closure);
+        get_targets_in_map(nfa, closure, c, targets);
+        epsilon_closure(nfa, targets, targets);
+    }
 }
 
 #endif /* closure_hpp */

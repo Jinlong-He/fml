@@ -53,7 +53,7 @@ namespace atl {
                      typename std::conditional<std::is_same<SymbolProperty, no_type>::value,
                                    PDSLabel<Symbol>, 
                                    Property<PDSLabel<Symbol>, 
-                                                      SymbolProperty> >::type,
+                                            SymbolProperty> >::type,
                      typename std::conditional<std::is_same<StateProperty, no_type>::value,
                                    boost::no_property, StateProperty>::type,
                      typename std::conditional<std::is_same<AutomatonProperty, no_type>::value,
@@ -85,13 +85,16 @@ namespace atl {
             typedef unordered_set<Symbol> SymbolSet;
 
             typedef typename std::conditional<std::is_same<SymbolProperty, no_type>::value,
-                                  unordered_map<State, unordered_set<std::vector<Symbol> > >, 
-                                  unordered_map<State, unordered_map<std::vector<Symbol>, 
-                                                            unordered_set<SymbolProperty> > > >
+                                  unordered_map<State, 
+                                            unordered_set<std::vector<Symbol>,
+                                                      boost::hash<std::vector<Symbol> > > >, 
+                                  unordered_map<State, 
+                                            unordered_map<std::vector<Symbol>, 
+                                                      unordered_set<SymbolProperty>,
+                                                      boost::hash<std::vector<Symbol> > > > >::type
                 State2StackMap;
 
             typedef unordered_map<State, unordered_map<Symbol, State2StackMap> > TransitionMap;
-
             typedef unordered_map<State, State> State2Map;
 
         public:
@@ -102,8 +105,7 @@ namespace atl {
             push_down_system_gen(const push_down_system_gen& x)
                 : Base(x),
                   alphabet_(x.alphabet_),
-                  state_set_(x.state_set_),
-                  control_state_set_(x.control_state_set_) {}
+                  state_set_(x.state_set_) {}
 
             push_down_system_gen& 
             operator=(const push_down_system_gen& x) {
@@ -111,7 +113,6 @@ namespace atl {
                     Base::operator=(x);
                     alphabet_ = x.alphabet_;
                     state_set_ = x.state_set_;
-                    control_state_set_ = x.control_state_set_;
                 }
                 return *this;
             }
@@ -119,7 +120,6 @@ namespace atl {
             virtual void clear() {
                 Base::clear();
                 state_set_.clear();
-                control_state_set_.clear();
                 alphabet_.clear();
             }
 
@@ -152,21 +152,6 @@ namespace atl {
                 state_set_ = state_set;
             }
 
-            const StateSet&
-            control_state_set() const {
-                return control_state_set_;
-            }
-
-            void
-            set_control_state_set(const StateSet& control_state_set) {
-                control_state_set_ = control_state_set;
-            }
-
-            void
-            clear_controle_state_set() {
-                control_state_set_.clear();
-            }
-
             const SymbolSet&
             alphabet() const {
                 return alphabet_;
@@ -185,16 +170,6 @@ namespace atl {
             void 
             set_state(State state) {
                 state_set_.insert(state);
-            }
-
-            void 
-            set_control_state(State state) {
-                control_state_set_.insert(state);
-            }
-
-            void 
-            remove_control_state(State state) {
-                control_state_set_.erase(state);
             }
 
             const TransitionMap&
@@ -231,7 +206,6 @@ namespace atl {
             }
 
         private:
-            StateSet control_state_set_;
             StateSet state_set_;
             SymbolSet alphabet_;
             TransitionMap transition_map_;
@@ -275,39 +249,6 @@ namespace atl {
     }
 
     template <PDS_PARAMS>
-    inline typename PDS::StateSet const&
-    control_state_set(const PDS& pds) {
-        return pds.control_state_set();
-    }
-
-    template <PDS_PARAMS>
-    inline void  
-    set_control_state_set(PDS& pds, 
-                          typename PDS::StateSet const& set) {
-        pds.set_control_state_set(set);
-    }
-
-    template <PDS_PARAMS>
-    inline void  
-    set_control_state(PDS& pds, 
-                      typename PDS::State state) {
-        pds.set_control_state(state);
-    }
-    
-    template <PDS_PARAMS>
-    inline void  
-    remove_control_state(PDS& pds, 
-                         typename PDS::State state) {
-        pds.remove_control_state(state);
-    }
-
-    template <PDS_PARAMS>
-    inline void  
-    clear_controle_state_set(PDS& pds) {
-        pds.clear_controle_state_set();
-    }
-
-    template <PDS_PARAMS>
     inline typename PDS::TransitionMap const&
     transition_map(const PDS& pds) {
         return pds.transition_map();
@@ -317,23 +258,6 @@ namespace atl {
     inline typename PDS::transition_property_type
     epsilon(const PDS& pds) {
         return pds.epsilon();
-    }
-
-    template <PDS_PARAMS>
-    inline typename PDS::State
-    add_control_state(PDS& pds,
-                      typename PDS::state_property_type const& p) {
-        typename PDS::State s = add_state(pds, p);
-        pds.set_control_state(s);
-        return s;
-    }
-
-    template <PDS_PARAMS>
-    inline typename PDS::State
-    add_control_state(PDS& pds) {
-        typename PDS::State s = add_state(pds);
-        pds.set_control_state(s);
-        return s;
     }
 
     template <PDS_PARAMS>
