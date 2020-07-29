@@ -80,6 +80,8 @@ namespace atl {
                 //todo
             }
 
+            virtual ~automaton_gen() {}
+
             automaton_gen& 
             operator=(const automaton_gen& x) {
                 if (&x != this) {

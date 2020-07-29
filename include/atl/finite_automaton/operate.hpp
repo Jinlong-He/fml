@@ -73,7 +73,6 @@ namespace atl {
                           typename DFA::State state_rhs,
                           typename DFA::Symbol2StatePairMap& map,
                           Merge merge) {
-            typedef typename DFA::StatePair StatePair;
             const auto& transition_map_lhs = a_lhs.transition_map();
             const auto& transition_map_rhs = a_rhs.transition_map();
             auto iter_lhs = transition_map_lhs.find(state_lhs);
@@ -140,7 +139,6 @@ namespace atl {
                      typename DFA::StatePairMap& pair_map,
                      StateMerge state_merge,
                      SymbolPropertyMerge symbol_property_merge) {
-            typedef typename DFA::State State;
             typedef typename DFA::symbol_property_type SymbolProperty;
             typedef typename DFA::transition_property_type TransitionProperty;
             if (is_final_state(a_lhs, state_lhs) && is_final_state(a_rhs, state_rhs)) 
@@ -384,10 +382,8 @@ namespace atl {
         apply(const DFA& a_in,
               DFA& a_out) {
             typedef typename DFA::State State;
-            typedef typename DFA::StateSet StateSet;
             typedef typename DFA::State2Map State2Map;
             typedef typename DFA::automaton_property_type AutomatonProperty;
-            typedef typename DFA::symbol_property_type SymbolProperty;
             if constexpr (!std::is_same<AutomatonProperty, boost::no_property>::value) {
                 atl::set_property(a_out, atl::get_property(a_in));
             }

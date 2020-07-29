@@ -23,7 +23,7 @@ namespace atl {
             typedef typename FA::State State;
 
             State state_copy = -1;
-            auto& states_copy = states.size() > 0 ? states : state_set(a_in);
+            //auto& states_copy = states.size() > 0 ? states : state_set(a_in);
             if (states.size() == 0) {
                 typename FA::StateIter it, end;
                 for (tie(it, end) = atl::states(a_in); it != end; it++) {

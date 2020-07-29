@@ -67,6 +67,8 @@ namespace atl {
             deterministic_finite_automaton(const deterministic_finite_automaton& x)
                 : Base(x) {}
 
+            ~deterministic_finite_automaton() {}
+
             deterministic_finite_automaton& 
             operator=(const deterministic_finite_automaton& x) {
                 if (&x != this) {

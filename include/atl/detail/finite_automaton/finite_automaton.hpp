@@ -86,15 +86,17 @@ namespace atl {
         public:
             finite_automaton_gen(const SymbolSet alphabet = SymbolSet())
                 : Base(),
-                  alphabet_(alphabet),
-                  initial_state_(-1) {}
+                  initial_state_(-1),
+                  alphabet_(alphabet) {}
 
             finite_automaton_gen(const finite_automaton_gen& x)
                 : Base(x),
-                  alphabet_(x.alphabet_),
                   initial_state_(x.initial_state_),
                   state_set_(x.state_set_),
-                  final_state_set_(x.final_state_set_) {}
+                  final_state_set_(x.final_state_set_),
+                  alphabet_(x.alphabet_) {}
+
+            ~finite_automaton_gen() {}
 
             finite_automaton_gen& 
             operator=(const finite_automaton_gen& x) {

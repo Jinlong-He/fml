@@ -65,6 +65,8 @@ namespace atl {
                 : Base(x),
                   transition_map_(x.transition_map_) {}
 
+            ~deterministic_finite_automaton_gen() {}
+
             deterministic_finite_automaton_gen& 
             operator=(const deterministic_finite_automaton_gen& x) {
                 if (&x != this) {

@@ -216,8 +216,6 @@ namespace atl {
                        typename NFA::StateSetMap& set_map,
                        Merge merge) {
             if (has_final_state(nfa, state_set)) set_final_state(dfa, source);
-            typedef typename NFA::State State;
-            typedef typename NFA::state_property_type StateProperty;
             typedef typename NFA::symbol_property_type SymbolProperty;
             typedef typename NFA::transition_property_type TransitionProperty;
 
@@ -299,7 +297,6 @@ namespace atl {
                 typename NFA::dfa_type& a_out,
                 Merge1 merge1,
                 Merge2 merge2) {
-        typedef typename NFA::symbol_property_type SymbolProperty;
         if (is_undeterministic(a_in)) {
             determinize_impl::apply(a_in, a_out, merge1, merge2);
         } else {
@@ -344,8 +341,6 @@ namespace atl {
         static void 
         remove_dead_states(const DFA& a_in,
                            DFA& a_out) {
-            typedef typename DFA::state_property_type StateProperty;
-            typedef typename DFA::automaton_property_type AutomatonProperty;
             typename DFA::StateSet reachable_closure;
             atl::reachable_closure(a_in, reachable_closure);
             copy_fa(a_in, a_out, reachable_closure);
@@ -370,8 +365,7 @@ namespace atl {
             auto &map1 = transition_map_.at(s1);
             auto &map2 = transition_map_.at(s2);
             if (map1.size() != map2.size()) return false;
-            auto iter1 = map1.begin(), end1 = map1.end(),
-                 iter2 = map2.begin(), end2 = map2.end();
+            auto iter1 = map1.begin(), end1 = map1.end(), iter2 = map2.begin();
             while (iter1 != end1) {
                 if (iter1 -> first != iter2 -> first) return false;
                 if constexpr (std::is_same<SymbolProperty, no_type>::value) {
@@ -499,7 +493,6 @@ namespace atl {
                     typename DFA::State source,
                     typename DFA::State2Map const& old_state2_map,
                     typename DFA::State2Map& new_state2_map) {
-            typedef typename DFA::State State;
             typedef typename DFA::symbol_property_type SymbolProperty;
             typedef typename DFA::transition_property_type TransitionProperty;
 
@@ -532,9 +525,7 @@ namespace atl {
             typedef typename DFA::State State;
             typedef typename DFA::StateSet StateSet;
             typedef typename DFA::State2Map State2Map;
-            typedef typename DFA::TransitionMap TransitionMap;
             typedef typename DFA::state_property_type StateProperty;
-            typedef typename DFA::symbol_property_type SymbolProperty;
             typedef typename DFA::automaton_property_type AutomatonProperty;
 
             StateSet unfinal_states, final_states;

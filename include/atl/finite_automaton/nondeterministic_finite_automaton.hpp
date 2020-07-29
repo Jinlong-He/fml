@@ -58,6 +58,8 @@ namespace atl {
             nondeterministic_finite_automaton(const nondeterministic_finite_automaton& x)
                 : Base(x) {}
 
+            ~nondeterministic_finite_automaton() {}
+
             nondeterministic_finite_automaton& 
             operator=(const nondeterministic_finite_automaton& x) {
                 if (&x != this) {
