@@ -123,15 +123,15 @@ namespace atl {
                         if (original_expression_[i].opt == '(') {
                             operator_stack.push(original_expression_[i]);
                         } else if (original_expression_[i].opt == ')') {
-                            while ((!operator_stack.empty()) & 
+                            while ((!operator_stack.empty()) &&
                                    (operator_stack.top().opt != '(')) {
                                 postfix_expression_.push_back(operator_stack.top());
                                 operator_stack.pop();
                             }
                             operator_stack.pop();
                         } else {
-                            while ((!operator_stack.empty()) &
-                                   ((operator_stack.top().opt != '(') & 
+                            while ((!operator_stack.empty()) &&
+                                   ((operator_stack.top().opt != '(') &&
                                    (original_expression_[i].priority <= 
                                    operator_stack.top().priority))) {
                                 postfix_expression_.push_back(operator_stack.top());
