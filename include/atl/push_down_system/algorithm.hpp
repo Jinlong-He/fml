@@ -17,9 +17,7 @@ using std::cout;
 using std::endl;
 
 namespace atl {
-
     struct pds_post_star_impl {
-
         template <PDS_PARAMS,
                   NFA_PARAMS>
         static void
@@ -56,21 +54,17 @@ namespace atl {
                                 for (const auto target : targets) {
                                     if (stack.size() == 0) {
                                         if (add_transition(nfa_out, source, target, 
-                                                           epsilon(nfa_out)).second)
-                                            count++;
+                                                           epsilon(nfa_out)).second) count++;
                                     } else if (stack.size() == 1) {
                                         if (add_transition(nfa_out, source, target, 
-                                                           stack[0]).second)
-                                            count++;
+                                                           stack[0]).second) count++;
                                     } else {
                                         State mid = mid_state_map.at(pair<State, Symbol>
                                                                       (source, stack[0]));
                                         if (add_transition(nfa_out, source, mid, 
-                                                           stack[0]).second)
-                                            count++;
+                                                           stack[0]).second) count++;
                                         if (add_transition(nfa_out, mid, target, 
-                                                           stack[1]).second)
-                                            count++;
+                                                           stack[1]).second) count++;
                                     }
                                 }
                             }

@@ -58,8 +58,6 @@ namespace atl {
             }
             return *this;
         }
-
-        private:
     };
 }
 

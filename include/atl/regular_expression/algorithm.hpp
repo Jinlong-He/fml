@@ -38,8 +38,7 @@ namespace atl {
         template <typename Symbol>
         static void
         union_automaton(NFARegularSymbol<Symbol>& c_lhs,
-                        NFARegularSymbol<Symbol>& c_rhs,
-                        char opt) {
+                        NFARegularSymbol<Symbol>& c_rhs) {
             auto& a_lhs = c_lhs.nfa;
             auto& a_rhs = c_rhs.nfa;
             if (a_lhs == nullptr && a_rhs == nullptr) {
@@ -74,8 +73,7 @@ namespace atl {
         template <typename Symbol>
         static void
         concat_automaton(NFARegularSymbol<Symbol>& c_lhs,
-                         NFARegularSymbol<Symbol>& c_rhs,
-                         char opt) {
+                         NFARegularSymbol<Symbol>& c_rhs) {
             auto& a_lhs = c_lhs.nfa;
             auto& a_rhs = c_rhs.nfa;
             if (a_lhs == nullptr && a_rhs == nullptr) {
@@ -182,11 +180,11 @@ namespace atl {
                     } else if (c.priority == 2) {
                         auto& rs = symbol_stack.top();
                         symbol_stack.pop();
-                        concat_automaton(symbol_stack.top(), rs, c.opt);
+                        concat_automaton(symbol_stack.top(), rs);
                     } else {
                         auto& rs = symbol_stack.top();
                         symbol_stack.pop();
-                        union_automaton(symbol_stack.top(), rs, c.opt);
+                        union_automaton(symbol_stack.top(), rs);
                     }
                 }
             }
