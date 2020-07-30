@@ -9,7 +9,7 @@
 #ifndef ll_variable_hpp 
 #define ll_variable_hpp
 
-#include <iostream>
+#include <string>
 using std::string;
 
 namespace ll {

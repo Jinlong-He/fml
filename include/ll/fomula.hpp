@@ -9,33 +9,36 @@
 #ifndef ll_fomula_hpp 
 #define ll_fomula_hpp
 
-#include <iostream>
-#include <list>
+#include <string>
 using std::string;
 namespace ll {
     class fomula {
     public:
         fomula()
-            : identifier_("") {}
+            : content_("") {}
 
-        fomula(const string& identifier)
-            : identifier_(identifier) {}
+        fomula(const string& content)
+            : content_(content) {}
 
-        fomula(const fomula& i)
-            : identifier_(i.identifier_) {}
+        fomula(const fomula& f)
+            : content_(f.content_) {}
 
-        fomula& operator=(const fomula& i) {
-            if (this != &i) {
-                identifier_ = i.identifier_;
+        fomula& operator=(const fomula& f) {
+            if (this != &f) {
+                content_ = f.content_;
             }
             return *this;
         }
 
         const string& to_string() const {
-            return identifier_;
+            return content_;
+        }
+
+        void set_content(const string& content) {
+            content_ = content;
         }
     private:
-        string identifier_;
+        string content_;
     };
 }
 

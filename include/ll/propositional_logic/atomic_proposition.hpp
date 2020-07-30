@@ -10,7 +10,8 @@
 #define ll_atomic_proposition_hpp
 
 #include "propositional_fomula.hpp"
-#include "../item/item.hpp"
+#include "../item/int/int_value.hpp"
+#include "../item/bool/bool_value.hpp"
 
 namespace ll {
     class atomic_proposition : public propositional_fomula {
@@ -22,31 +23,26 @@ namespace ll {
               rhs_(nullptr),
               predicate_("=") {}
 
-        atomic_proposition(const string& id)
-            : propositional_fomula(id),
-              lhs_(nullptr),
-              rhs_(nullptr),
-              predicate_("") {}
-
         atomic_proposition(const item& lhs, const item& rhs, 
-                               const string& predicate) 
-            : propositional_fomula("(" + lhs.to_string() + predicate + 
-                                             rhs.to_string() + ")"),
+                           const string& predicate) 
+            : propositional_fomula(),
               lhs_(new item(lhs)),
               rhs_(new item(rhs)),
-              predicate_(predicate) {}
+              predicate_(predicate) {
+                  set_content("(" + lhs.to_string() + predicate + rhs.to_string() + ")");
+              }
 
         atomic_proposition(const atomic_proposition& ap)
             : propositional_fomula(ap),
-              lhs_(new item(ap.lhs())),
-              rhs_(new item(ap.rhs())),
+              lhs_(ap.lhs_ ? new item(ap.lhs()) : nullptr),
+              rhs_(ap.rhs_ ? new item(ap.rhs()) : nullptr),
               predicate_(ap.predicate_) {}
 
         atomic_proposition& operator=(const atomic_proposition& ap) {
             if (this != &ap) {
                 propositional_fomula::operator=(ap);
-                lhs_ = ItemPtr(new item(ap.lhs()));
-                lhs_ = ItemPtr(new item(ap.rhs()));
+                lhs_ = (ap.lhs_ ? ItemPtr(new item(ap.lhs())) : nullptr);
+                rhs_ = (ap.rhs_ ? ItemPtr(new item(ap.rhs())) : nullptr);
                 predicate_ = ap.predicate_;
             }
             return *this;
@@ -73,25 +69,74 @@ namespace ll {
         return atomic_proposition(lhs, rhs, "=");
     }
 
+    inline atomic_proposition operator==(const item& lhs, int rhs) {
+        return atomic_proposition(lhs, int_value(rhs), "=");
+    }
+
+    inline atomic_proposition operator==(const item& lhs, bool rhs) {
+        return atomic_proposition(lhs, bool_value(rhs), "=");
+    }
+
     inline atomic_proposition operator!=(const item& lhs, const item& rhs) {
         return atomic_proposition(lhs, rhs, "!=");
+    }
+
+    inline atomic_proposition operator!=(const item& lhs, int rhs) {
+        return atomic_proposition(lhs, int_value(rhs), "!=");
+    }
+
+    inline atomic_proposition operator!=(const item& lhs, bool rhs) {
+        return atomic_proposition(lhs, bool_value(rhs), "!=");
     }
 
     inline atomic_proposition operator>(const item& lhs, const item& rhs) {
         return atomic_proposition(lhs, rhs, ">");
     }
 
+    inline atomic_proposition operator>(const item& lhs, int rhs) {
+        return atomic_proposition(lhs, int_value(rhs), ">");
+    }
+
+    inline atomic_proposition operator>(const item& lhs, bool rhs) {
+        return atomic_proposition(lhs, bool_value(rhs), ">");
+    }
+
     inline atomic_proposition operator>=(const item& lhs, const item& rhs) {
         return atomic_proposition(lhs, rhs, ">=");
+    }
+
+    inline atomic_proposition operator>=(const item& lhs, int rhs) {
+        return atomic_proposition(lhs, int_value(rhs), ">=");
+    }
+
+    inline atomic_proposition operator>=(const item& lhs, bool rhs) {
+        return atomic_proposition(lhs, bool_value(rhs), ">=");
     }
 
     inline atomic_proposition operator<(const item& lhs, const item& rhs) {
         return atomic_proposition(lhs, rhs, "<");
     }
 
+    inline atomic_proposition operator<(const item& lhs, int rhs) {
+        return atomic_proposition(lhs, int_value(rhs), "<");
+    }
+
+    inline atomic_proposition operator<(const item& lhs, bool rhs) {
+        return atomic_proposition(lhs, bool_value(rhs), "<");
+    }
+
     inline atomic_proposition operator<=(const item& lhs, const item& rhs) {
         return atomic_proposition(lhs, rhs, "<=");
     }
+
+    inline atomic_proposition operator<=(const item& lhs, int rhs) {
+        return atomic_proposition(lhs, int_value(rhs), "<=");
+    }
+
+    inline atomic_proposition operator<=(const item& lhs, bool rhs) {
+        return atomic_proposition(lhs, bool_value(rhs), "<=");
+    }
+
 }
 
 #endif /* ll_atomic_proposition_hpp */

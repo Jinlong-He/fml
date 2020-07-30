@@ -9,8 +9,7 @@
 #ifndef ll_item_hpp 
 #define ll_item_hpp
 
-#include <iostream>
-#include <list>
+#include <string>
 using std::string;
 namespace ll {
     class item {

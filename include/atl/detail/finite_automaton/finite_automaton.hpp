@@ -202,6 +202,7 @@ namespace atl {
                 final_state_set_.erase(state);
             }
             
+            using Base::add_transition;
             virtual pair<Transition, bool>
             add_transition(State s, State t,
                            const transition_property_type& c) {

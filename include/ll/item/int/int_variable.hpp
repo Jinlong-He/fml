@@ -9,10 +9,10 @@
 #ifndef ll_int_variable_hpp 
 #define ll_int_variable_hpp
 
+#include <list>
 #include "../variable.hpp"
 #include "int_item.hpp"
 #include "int_value.hpp"
-
 namespace ll {
     class int_variable 
         : public variable,

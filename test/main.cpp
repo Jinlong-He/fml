@@ -1,9 +1,7 @@
-#include <atl/regular_expression/algorithm.hpp>
-#include <atl/automaton_utility.hpp>
-using namespace atl;
+#include "test.hpp"
+
 int main(int argc, char* argv[]) {
-    basic_regular_expression<> regEx(argv[1]);
-    deterministic_finite_automaton<> dfa;
-    make_fa(regEx, dfa);
-    print_fa(dfa);
+    test_ctl();
+    //test_propositional_logic();
+    //test_basic_regular_expression(argv[1]);
 }
