@@ -12,7 +12,6 @@
 #include "item/bool/bool_variable.hpp"
 #include "item/int/int_expr.hpp"
 #include "item/enum/enum_variable.hpp"
-#include "atomic_proposition.hpp"
 #include "computation_tree_logic/computation_tree_logic_fomula.hpp"
 
 #endif /* computation_tree_logic_hpp */

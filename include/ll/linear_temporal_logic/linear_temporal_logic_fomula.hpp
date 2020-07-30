@@ -9,59 +9,69 @@
 #ifndef linear_temporal_logic_fomular_hpp 
 #define linear_temporal_logic_fomular_hpp
 
-#include "../fomula.hpp"
+#include "../propositional_logic/propositional_fomula.hpp"
 
 namespace ll {
-    class linear_temporal_logic_fomula : public virtual fomula {
+    class linear_temporal_logic_fomula : public propositional_fomula {
         typedef std::unique_ptr<linear_temporal_logic_fomula> LTLFomulaPtr;
     public:
         linear_temporal_logic_fomula()
-            : lhs_(nullptr),
-              rhs_(nullptr),
-              temporal_operator_(""),
-              logical_operator_("") {}
-
-        linear_temporal_logic_fomula(const string& content)
-            : fomula(content),
+            : propositional_fomula(),
               lhs_(nullptr),
               rhs_(nullptr),
-              temporal_operator_(""),
-              logical_operator_("") {}
+              temporal_operator_("") {}
 
-        linear_temporal_logic_fomula(const linear_temporal_logic_fomula& p,
-                                     const string& op,
-                                     bool is_logical = true)
-            : fomula("(" + op + p.to_string() + ")"),
-              lhs_(new linear_temporal_logic_fomula(p)),
+        linear_temporal_logic_fomula(const string& content)
+            : propositional_fomula(content),
+              lhs_(nullptr),
               rhs_(nullptr),
-              temporal_operator_(is_logical ? "" : op),
-              logical_operator_(is_logical ? op : "") {}
+              temporal_operator_("") {}
 
-        linear_temporal_logic_fomula(const linear_temporal_logic_fomula& lhs,
-                                     const linear_temporal_logic_fomula& rhs,
+        linear_temporal_logic_fomula(const atomic_proposition& ap)
+            : propositional_fomula(ap),
+              lhs_(nullptr),
+              rhs_(nullptr),
+              temporal_operator_("") {}
+
+        linear_temporal_logic_fomula(const propositional_fomula& p)
+            : propositional_fomula(p),
+              lhs_(nullptr),
+              rhs_(nullptr),
+              temporal_operator_("") {}
+
+        linear_temporal_logic_fomula(const atomic_proposition& p,
                                      const string& op,
                                      bool is_logical = true)
-            : fomula (is_logical ? "(" + lhs.to_string() + op + rhs.to_string() + ")" :
-                                   "[" + lhs.to_string() + op + rhs.to_string() + "]"),
-              lhs_(new linear_temporal_logic_fomula(lhs)),
-              rhs_(new linear_temporal_logic_fomula(rhs)),
-              temporal_operator_(is_logical ? "" : op),
-              logical_operator_(is_logical ? op : "") {}
+            : propositional_fomula(is_logical ? propositional_fomula::Builder(p, op) : 
+                                                propositional_fomula::Builder(
+                                                    op + "[" + p.to_string() + "]")),
+              lhs_(is_logical ? nullptr : new linear_temporal_logic_fomula(p)),
+              rhs_(nullptr),
+              temporal_operator_(op) {}
+
+        linear_temporal_logic_fomula(const atomic_proposition& lhs,
+                                     const atomic_proposition& rhs,
+                                     const string& op,
+                                     bool is_logical = true)
+            : propositional_fomula(is_logical ? propositional_fomula::Builder(lhs, rhs, op) :
+                                                propositional_fomula::Builder(
+                                                    "[" + lhs.to_string() + op + rhs.to_string() + "]")),
+              lhs_(is_logical ? nullptr : new linear_temporal_logic_fomula(lhs)),
+              rhs_(is_logical ? nullptr : new linear_temporal_logic_fomula(rhs)),
+              temporal_operator_(op) {}
 
         linear_temporal_logic_fomula(const linear_temporal_logic_fomula& p) 
-            : fomula(p),
+            : propositional_fomula(p),
               lhs_((p.rhs_ ? new linear_temporal_logic_fomula(p.lhs()): nullptr)),
               rhs_((p.rhs_ ? new linear_temporal_logic_fomula(p.rhs()): nullptr)),
-              temporal_operator_(p.temporal_operator_),
-              logical_operator_(p.logical_operator_) {}
+              temporal_operator_(p.temporal_operator_) {}
 
         linear_temporal_logic_fomula& operator=(const linear_temporal_logic_fomula& p) {
             if (this != &p) {
-                fomula::operator=(p);
+                propositional_fomula::operator=(p);
                 lhs_ = ((p.rhs_ ? LTLFomulaPtr(new linear_temporal_logic_fomula(p.lhs())): nullptr));
                 rhs_ = ((p.rhs_ ? LTLFomulaPtr(new linear_temporal_logic_fomula(p.rhs())): nullptr));
                 temporal_operator_ = p.temporal_operator_;
-                logical_operator_ = p.logical_operator_;
             }
             return *this;
         }
@@ -78,27 +88,22 @@ namespace ll {
             return temporal_operator_;
         }
 
-        const string& logical_operator() const {
-            return logical_operator_;
-        }
-
     private:
         LTLFomulaPtr lhs_;
         LTLFomulaPtr rhs_;
         string temporal_operator_;
-        string logical_operator_;
     };
 
     inline linear_temporal_logic_fomula make_G(const linear_temporal_logic_fomula& p) {
-        return linear_temporal_logic_fomula(p, "G");
+        return linear_temporal_logic_fomula(p, "G", 0);
     }
 
     inline linear_temporal_logic_fomula make_F(const linear_temporal_logic_fomula& p) {
-        return linear_temporal_logic_fomula(p, "F");
+        return linear_temporal_logic_fomula(p, "F", 0);
     }
 
     inline linear_temporal_logic_fomula make_X(const linear_temporal_logic_fomula& p) {
-        return linear_temporal_logic_fomula(p, "X");
+        return linear_temporal_logic_fomula(p, "X", 0);
     }
 
     inline linear_temporal_logic_fomula make_U(const linear_temporal_logic_fomula& lhs,

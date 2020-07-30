@@ -12,7 +12,6 @@
 #include "item/bool/bool_variable.hpp"
 #include "item/int/int_expr.hpp"
 #include "item/enum/enum_variable.hpp"
-#include "atomic_proposition.hpp"
 #include "linear_temporal_logic/linear_temporal_logic_fomula.hpp"
 
 #endif /* linear_temporal_logic_hpp */

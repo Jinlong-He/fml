@@ -12,7 +12,6 @@
 #include "item/bool/bool_variable.hpp"
 #include "item/int/int_expr.hpp"
 #include "item/enum/enum_variable.hpp"
-#include "atomic_proposition.hpp"
 #include "propositional_logic/propositional_fomula.hpp"
 
 #endif /* propositional_logic_hpp */
