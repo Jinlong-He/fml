@@ -12,37 +12,45 @@
 #include "../fomula.hpp"
 
 namespace ll {
-    class computation_tree_logic_fomula : public fomula {
+    class computation_tree_logic_fomula : public virtual fomula {
         typedef std::unique_ptr<computation_tree_logic_fomula> CTLFomulaPtr;
     public:
         computation_tree_logic_fomula()
-            : fomula(),
+            : lhs_(nullptr),
               rhs_(nullptr),
               quantifier_(""),
               temporal_operator_(""),
-              relation_operator_("") {}
+              logical_operator_("") {}
+
+        computation_tree_logic_fomula(const string& content)
+            : fomula(content),
+              lhs_(nullptr),
+              rhs_(nullptr),
+              quantifier_(""),
+              temporal_operator_(""),
+              logical_operator_("") {}
 
         computation_tree_logic_fomula(const computation_tree_logic_fomula& p,
-                                      const string& relation_operator)
+                                      const string& logical_operator)
             : fomula(),
               lhs_(new computation_tree_logic_fomula(p)),
               rhs_(nullptr),
               quantifier_(""),
               temporal_operator_(""),
-              relation_operator_(relation_operator) {
-                  set_content("(" + relation_operator + p.to_string() + ")");
+              logical_operator_(logical_operator) {
+                  set_content("(" + logical_operator + p.to_string() + ")");
               }
 
         computation_tree_logic_fomula(const computation_tree_logic_fomula& lhs,
                                       const computation_tree_logic_fomula& rhs,
-                                      const string& relation_operator)
+                                      const string& logical_operator)
             : fomula(),
               lhs_(new computation_tree_logic_fomula(lhs)),
               rhs_(new computation_tree_logic_fomula(rhs)),
               quantifier_(""),
               temporal_operator_(""),
-              relation_operator_(relation_operator) {
-                  set_content("(" + lhs.to_string() + relation_operator + rhs.to_string() + ")");
+              logical_operator_(logical_operator) {
+                  set_content("(" + lhs.to_string() + logical_operator + rhs.to_string() + ")");
               }
 
         computation_tree_logic_fomula(const computation_tree_logic_fomula& p,
@@ -53,7 +61,7 @@ namespace ll {
               rhs_(nullptr),
               quantifier_(quantifier),
               temporal_operator_(temporal_operator),
-              relation_operator_("") {
+              logical_operator_("") {
                   set_content(quantifier + temporal_operator + p.to_string());
               }
 
@@ -66,7 +74,7 @@ namespace ll {
               rhs_(new computation_tree_logic_fomula(rhs)),
               quantifier_(quantifier),
               temporal_operator_(temporal_operator),
-              relation_operator_("") {
+              logical_operator_("") {
                   set_content(quantifier + "[" + lhs.to_string() + temporal_operator + 
                                                  rhs.to_string() + "]");
               }
@@ -76,7 +84,8 @@ namespace ll {
               lhs_((p.rhs_ ? new computation_tree_logic_fomula(p.lhs()): nullptr)),
               rhs_((p.rhs_ ? new computation_tree_logic_fomula(p.rhs()): nullptr)),
               quantifier_(p.quantifier_),
-              temporal_operator_(p.temporal_operator_) {}
+              temporal_operator_(p.temporal_operator_),
+              logical_operator_(p.logical_operator_) {}
 
         computation_tree_logic_fomula& operator=(const computation_tree_logic_fomula& p) {
             if (this != &p) {
@@ -85,6 +94,7 @@ namespace ll {
                 rhs_ = ((p.rhs_ ? CTLFomulaPtr(new computation_tree_logic_fomula(p.rhs())): nullptr));
                 quantifier_ = p.quantifier_;
                 temporal_operator_ = p.temporal_operator_;
+                logical_operator_ = p.logical_operator_;
             }
             return *this;
         }
@@ -105,8 +115,8 @@ namespace ll {
             return temporal_operator_;
         }
 
-        const string& relation_operator() const {
-            return relation_operator_;
+        const string& logical_operator() const {
+            return logical_operator_;
         }
 
     private:
@@ -114,7 +124,7 @@ namespace ll {
         CTLFomulaPtr rhs_;
         string quantifier_;
         string temporal_operator_;
-        string relation_operator_;
+        string logical_operator_;
     };
 
     inline computation_tree_logic_fomula make_AX(const computation_tree_logic_fomula& p) {
@@ -152,22 +162,22 @@ namespace ll {
     }
 
     inline computation_tree_logic_fomula operator&(const computation_tree_logic_fomula& lhs, 
-                                          const computation_tree_logic_fomula& rhs) {
+                                                   const computation_tree_logic_fomula& rhs) {
         return computation_tree_logic_fomula(lhs, rhs, "&");
     }
 
     inline computation_tree_logic_fomula make_and(const computation_tree_logic_fomula& lhs,
-                                         const computation_tree_logic_fomula& rhs) {
+                                                  const computation_tree_logic_fomula& rhs) {
         return computation_tree_logic_fomula(lhs, rhs, "&");
     }
 
     inline computation_tree_logic_fomula operator|(const computation_tree_logic_fomula& lhs, 
-                                          const computation_tree_logic_fomula& rhs) {
+                                                   const computation_tree_logic_fomula& rhs) {
         return computation_tree_logic_fomula(lhs, rhs, "|");
     }
 
     inline computation_tree_logic_fomula make_or(const computation_tree_logic_fomula& lhs,
-                                        const computation_tree_logic_fomula& rhs) {
+                                                 const computation_tree_logic_fomula& rhs) {
         return computation_tree_logic_fomula(lhs, rhs, "|");
     }
 
@@ -179,9 +189,14 @@ namespace ll {
         return computation_tree_logic_fomula(f, "!");
     }
 
-    inline computation_tree_logic_fomula make_implies(const computation_tree_logic_fomula& lhs,
-                                             const computation_tree_logic_fomula& rhs) {
+    inline computation_tree_logic_fomula make_implication(const computation_tree_logic_fomula& lhs,
+                                                          const computation_tree_logic_fomula& rhs) {
         return computation_tree_logic_fomula(lhs, rhs, "->");
+    }
+
+    inline computation_tree_logic_fomula make_equivalence(const computation_tree_logic_fomula& lhs,
+                                                          const computation_tree_logic_fomula& rhs) {
+        return computation_tree_logic_fomula(lhs, rhs, "<->");
     }
 }
 

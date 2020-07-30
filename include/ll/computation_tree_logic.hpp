@@ -9,10 +9,10 @@
 #ifndef ll_computation_tree_logic_hpp 
 #define ll_computation_tree_logic_hpp
 
-#include "computation_tree_logic/computation_tree_logic_fomula.hpp"
-#include "propositional_logic/atomic_proposition.hpp"
 #include "item/bool/bool_variable.hpp"
 #include "item/int/int_expr.hpp"
 #include "item/enum/enum_variable.hpp"
+#include "atomic_proposition.hpp"
+#include "computation_tree_logic/computation_tree_logic_fomula.hpp"
 
 #endif /* computation_tree_logic_hpp */

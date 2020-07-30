@@ -10,49 +10,64 @@
 #define propositional_fomular_hpp
 
 #include "../computation_tree_logic/computation_tree_logic_fomula.hpp"
+#include "../linear_temporal_logic/linear_temporal_logic_fomula.hpp"
 
 namespace ll {
-    class propositional_fomula : public computation_tree_logic_fomula {
+    class propositional_fomula : public computation_tree_logic_fomula,
+                                 public linear_temporal_logic_fomula {
         typedef std::unique_ptr<propositional_fomula> PropositionalFomularPtr;
     public:
         propositional_fomula()
-            : computation_tree_logic_fomula(),
+            : fomula(),
+              computation_tree_logic_fomula(),
+              linear_temporal_logic_fomula(),
               rhs_(nullptr),
-              relation_operator_("") {}
+              logical_operator_("") {}
+
+        propositional_fomula(const string& content)
+            : fomula(content),
+              computation_tree_logic_fomula(content),
+              linear_temporal_logic_fomula(content),
+              rhs_(nullptr),
+              logical_operator_("") {}
 
         propositional_fomula(const propositional_fomula& p,
-                             const string& relation_operator)
-            : computation_tree_logic_fomula(),
+                             const string& logical_operator)
+            : fomula("(" + logical_operator + p.to_string() + ")"),
+              computation_tree_logic_fomula(),
+              linear_temporal_logic_fomula(),
               lhs_(new propositional_fomula(p)),
               rhs_(nullptr),
-              relation_operator_(relation_operator) {
-                  set_content("(" + relation_operator + p.to_string() + ")");
-              }
+              logical_operator_(logical_operator) {}
 
         propositional_fomula(const propositional_fomula& lhs,
                              const propositional_fomula& rhs,
-                             const string& relation_operator)
-            : computation_tree_logic_fomula(),
+                             const string& logical_operator)
+            : fomula("(" + lhs.to_string() + logical_operator + rhs.to_string() + ")"),
+              computation_tree_logic_fomula(),
+              linear_temporal_logic_fomula(),
               lhs_(new propositional_fomula(lhs)),
               rhs_(new propositional_fomula(rhs)),
-              relation_operator_(relation_operator) {
-                  set_content("(" + lhs.to_string() + relation_operator + rhs.to_string() + ")");
-              }
+              logical_operator_(logical_operator) {}
 
         propositional_fomula(const propositional_fomula& p) 
-            : computation_tree_logic_fomula(p),
+            : fomula(p),
+              computation_tree_logic_fomula(p),
+              linear_temporal_logic_fomula(p),
               lhs_(p.rhs_ ? new propositional_fomula(p.lhs()) : nullptr),
               rhs_(p.rhs_ ? new propositional_fomula(p.rhs()) : nullptr),
-              relation_operator_(p.relation_operator_) {}
+              logical_operator_(p.logical_operator_) {}
 
         propositional_fomula& operator=(const propositional_fomula& p) {
             if (this != &p) {
+                fomula::operator=(p);
                 computation_tree_logic_fomula::operator=(p);
+                linear_temporal_logic_fomula::operator=(p);
                 lhs_ = (p.rhs_ ? PropositionalFomularPtr(new propositional_fomula(p.lhs())) : 
                                  nullptr);
                 rhs_ = (p.rhs_ ? PropositionalFomularPtr(new propositional_fomula(p.rhs())) : 
                                  nullptr);
-                relation_operator_ = p.relation_operator_;
+                logical_operator_ = p.logical_operator_;
             }
             return *this;
         }
@@ -65,14 +80,14 @@ namespace ll {
             return *rhs_;
         }
 
-        const string& relation_operator() const {
-            return relation_operator_;
+        const string& logical_operator() const {
+            return logical_operator_;
         }
 
     private:
         PropositionalFomularPtr lhs_;
         PropositionalFomularPtr rhs_;
-        string relation_operator_;
+        string logical_operator_;
     };
 
     inline propositional_fomula operator&(const propositional_fomula& lhs, 
@@ -103,9 +118,14 @@ namespace ll {
         return propositional_fomula(f, "!");
     }
 
-    inline propositional_fomula make_implies(const propositional_fomula& lhs,
+    inline propositional_fomula make_implication(const propositional_fomula& lhs,
                                              const propositional_fomula& rhs) {
         return propositional_fomula(lhs, rhs, "->");
+    }
+
+    inline propositional_fomula make_equivalence(const propositional_fomula& lhs,
+                                             const propositional_fomula& rhs) {
+        return propositional_fomula(lhs, rhs, "<->");
     }
 }
 

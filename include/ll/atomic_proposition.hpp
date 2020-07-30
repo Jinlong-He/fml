@@ -9,9 +9,9 @@
 #ifndef ll_atomic_proposition_hpp 
 #define ll_atomic_proposition_hpp
 
-#include "propositional_fomula.hpp"
-#include "../item/int/int_value.hpp"
-#include "../item/bool/bool_value.hpp"
+#include "item/int/int_value.hpp"
+#include "item/bool/bool_value.hpp"
+#include "propositional_logic/propositional_fomula.hpp"
 
 namespace ll {
     class atomic_proposition : public propositional_fomula {
@@ -25,12 +25,11 @@ namespace ll {
 
         atomic_proposition(const item& lhs, const item& rhs, 
                            const string& predicate) 
-            : propositional_fomula(),
+            : fomula(lhs.to_string() + predicate + rhs.to_string()),
+              propositional_fomula(),
               lhs_(new item(lhs)),
               rhs_(new item(rhs)),
-              predicate_(predicate) {
-                  set_content("(" + lhs.to_string() + predicate + rhs.to_string() + ")");
-              }
+              predicate_(predicate) {}
 
         atomic_proposition(const atomic_proposition& ap)
             : propositional_fomula(ap),
@@ -137,6 +136,43 @@ namespace ll {
         return atomic_proposition(lhs, bool_value(rhs), "<=");
     }
 
+    inline propositional_fomula operator&(const atomic_proposition& lhs, 
+                                          const atomic_proposition& rhs) {
+        return propositional_fomula(lhs, rhs, "&");
+    }
+
+    inline propositional_fomula make_and(const atomic_proposition& lhs,
+                                         const atomic_proposition& rhs) {
+        return propositional_fomula(lhs, rhs, "&");
+    }
+
+    inline propositional_fomula operator|(const atomic_proposition& lhs, 
+                                          const atomic_proposition& rhs) {
+        return propositional_fomula(lhs, rhs, "|");
+    }
+
+    inline propositional_fomula make_or(const atomic_proposition& lhs,
+                                        const atomic_proposition& rhs) {
+        return propositional_fomula(lhs, rhs, "|");
+    }
+
+    inline propositional_fomula operator!(const atomic_proposition& f) {
+        return propositional_fomula(f, "!");
+    }
+
+    inline propositional_fomula make_not(const atomic_proposition& f) {
+        return propositional_fomula(f, "!");
+    }
+
+    inline propositional_fomula make_implication(const atomic_proposition& lhs,
+                                                 const atomic_proposition& rhs) {
+        return propositional_fomula(lhs, rhs, "->");
+    }
+
+    inline propositional_fomula make_equivalence(const atomic_proposition& lhs,
+                                                 const atomic_proposition& rhs) {
+        return propositional_fomula(lhs, rhs, "<->");
+    }
 }
 
 #endif /* ll_atomic_proposition_hpp */
