@@ -389,24 +389,6 @@ namespace atl {
                 iter2++;
             }
             return true;
-            //for (auto& map_pair : map1) {
-            //    if (map2.count(map_pair.first) == 0) return false;
-
-            //    if constexpr (std::is_same<SymbolProperty, no_type>::value) {
-            //        if (state2_map.at(map_pair.second) != 
-            //            state2_map.at(map2.at(map_pair.first))) return false;
-            //    } else {
-            //        auto& map1_ = map_pair.second;
-            //        auto& map2_ = map2.at(map_pair.first);
-            //        if (map1_.size() != map2_.size()) return false;
-            //        for (auto& map_pair1 : map1_) {
-            //            if (map2_.count(map_pair1.first) == 0) return false;
-            //            if (state2_map.at(map_pair1.second) != 
-            //                state2_map.at(map2_.at(map_pair1.first))) return false;
-            //        }
-            //    }
-            //}
-            //return true;
         }
 
         template <DFA_PARAMS>

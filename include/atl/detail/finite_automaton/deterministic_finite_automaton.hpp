@@ -41,6 +41,7 @@ namespace atl {
             typedef typename Base::automaton_property_type automaton_property_type;
             typedef typename Base::Transition Transition;
             typedef typename Base::State State;
+            typedef unordered_set<State> StateSet;
             typedef pair<State, State> StatePair;
             typedef unordered_map<StatePair, State> StatePairMap;
 
@@ -52,8 +53,8 @@ namespace atl {
 
             typedef typename std::conditional<std::is_same<SymbolProperty, no_type>::value,
                                   std::map<Symbol, State>,
-                                  std::map<Symbol, 
-                                  std::map<SymbolProperty, State> > >::type Symbol2StateMap;
+                                  std::map<Symbol, std::map<SymbolProperty, State> > >::type
+                Symbol2StateMap;
 
             typedef unordered_map<State, Symbol2StateMap> TransitionMap;
 
@@ -114,6 +115,40 @@ namespace atl {
                 return std::make_pair(Transition(), false);
             }
 
+            void
+            get_targets_in_map(State s, const Symbol& c, StateSet& set) const {
+                auto transition_map_iter = transition_map_.find(s);
+                if (transition_map_iter != transition_map_.end()) {
+                    const auto& map = transition_map_iter -> second;
+                    auto map_iter = map.find(c);
+                    if (map_iter != map.end()) {
+                        if constexpr (std::is_same<SymbolProperty, no_type>::value) {
+                            set.insert(*map_iter);
+                        } else {
+                            for (auto& map_pair : map_iter -> second) {
+                                set.insert(map_pair.second);
+                            }
+                        }
+                    }
+                }
+            }
+
+            void
+            get_targets_in_map(State s, const Symbol& c, SymbolProperty p, StateSet& set) const {
+                if constexpr (std::is_same<SymbolProperty, no_type>::value) {
+                    auto transition_map_iter = transition_map_.find(s);
+                    if (transition_map_iter != transition_map_.end()) {
+                        const auto& map = transition_map_iter -> second;
+                        auto map_iter = map.find(c);
+                        if (map_iter != map.end()) {
+                            auto iter = map_iter -> second.fing(p);
+                            if (iter != map_iter -> second.end()) {
+                                set.insert(iter -> second.begin(), iter -> second.end());
+                            }
+                        }
+                    }
+                }
+            }
         private:
             TransitionMap transition_map_;
         };
@@ -126,7 +161,6 @@ namespace atl {
     transition_map(const DFA& dfa) {
         return dfa.transition_map();
     }
-
 }
 
 #endif /* atl_detail_deterministic_finite_automaton_hpp */
