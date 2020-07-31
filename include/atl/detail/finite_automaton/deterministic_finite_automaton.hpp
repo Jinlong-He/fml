@@ -123,7 +123,7 @@ namespace atl {
                     auto map_iter = map.find(c);
                     if (map_iter != map.end()) {
                         if constexpr (std::is_same<SymbolProperty, no_type>::value) {
-                            set.insert(*map_iter);
+                            set.insert(map_iter -> second);
                         } else {
                             for (auto& map_pair : map_iter -> second) {
                                 set.insert(map_pair.second);
@@ -141,9 +141,9 @@ namespace atl {
                         const auto& map = transition_map_iter -> second;
                         auto map_iter = map.find(c);
                         if (map_iter != map.end()) {
-                            auto iter = map_iter -> second.fing(p);
+                            auto iter = map_iter -> second.find(p);
                             if (iter != map_iter -> second.end()) {
-                                set.insert(iter -> second.begin(), iter -> second.end());
+                                set.insert(iter -> second);
                             }
                         }
                     }
@@ -160,6 +160,25 @@ namespace atl {
     inline typename DFA::TransitionMap const&
     transition_map(const DFA& dfa) {
         return dfa.transition_map();
+    }
+
+    template <DFA_PARAMS>
+    inline void
+    get_targets_in_map(const DFA& dfa, 
+                       typename DFA::State s, 
+                       typename DFA::symbol_type const& c, 
+                       typename DFA::StateSet& set) {
+        dfa.get_targets_in_map(s, c, set);
+    }
+
+    template <DFA_PARAMS>
+    inline void
+    get_targets_in_map(const DFA& dfa, 
+                       typename DFA::State s, 
+                       typename DFA::symbol_type const& c, 
+                       typename DFA::symbol_property_type const& p, 
+                       typename DFA::StateSet& set) {
+        dfa.get_targets_in_map(s, c, p, set);
     }
 }
 
