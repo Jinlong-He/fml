@@ -9,7 +9,6 @@
 #ifndef atl_nondeterministic_finite_automaton_hpp 
 #define atl_nondeterministic_finite_automaton_hpp
 
-#include "deterministic_finite_automaton.hpp"
 #include "../detail/finite_automaton/nondeterministic_finite_automaton.hpp"
 #include "operate.hpp"
 #include "cast.hpp"
@@ -35,11 +34,11 @@ namespace atl {
                                                  SymbolProperty,
                                                  StateProperty,
                                                  AutomatonProperty> fa_type;
-            typedef nondeterministic_finite_automaton nfa_type;
-            typedef deterministic_finite_automaton<Symbol, epsilon_,
-                                                   SymbolProperty,
-                                                   StateProperty,
-                                                   AutomatonProperty> dfa_type;
+            typedef Base nfa_type;
+            typedef detail::deterministic_finite_automaton_gen<Symbol, epsilon_,
+                                                               SymbolProperty,
+                                                               StateProperty,
+                                                               AutomatonProperty> dfa_type;
 
             typedef typename Base::transition_property_type transition_property_type;
             typedef typename Base::automaton_property_type automaton_property_type;
@@ -54,6 +53,12 @@ namespace atl {
         public:
             nondeterministic_finite_automaton()
                 : Base() {}
+
+            nondeterministic_finite_automaton(const SymbolSet& alphabet)
+                : Base(alphabet) {}
+
+            nondeterministic_finite_automaton(const std::initializer_list<Symbol>& alphabet)
+                : Base(alphabet) {}
 
             nondeterministic_finite_automaton(const nondeterministic_finite_automaton& x)
                 : Base(x) {}

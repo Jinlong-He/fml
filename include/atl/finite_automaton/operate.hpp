@@ -12,8 +12,10 @@
 #include "closure.hpp"
 #include "merge.hpp"
 #include "copy.hpp"
+#include "cast.hpp"
 #include "../detail/finite_automaton/deterministic_finite_automaton.hpp"
 #include "../detail/finite_automaton/nondeterministic_finite_automaton.hpp"
+
 using std::cout;
 using std::endl;
 
@@ -143,8 +145,6 @@ namespace atl {
             typedef typename DFA::transition_property_type TransitionProperty;
             if (is_final_state(a_lhs, state_lhs) && is_final_state(a_rhs, state_rhs)) 
                 set_final_state(a_out, state_out);
-            const auto& map_lhs = a_lhs.transition_map();
-            const auto& map_rhs = a_rhs.transition_map();
             typename DFA::Symbol2StatePairMap map;
             get_intersect_map(a_lhs, a_rhs, state_lhs, state_rhs, map, symbol_property_merge);
             for (auto& map_pair : map) {
@@ -307,8 +307,8 @@ namespace atl {
             copy_fa_impl::copy_transitions(a_rhs, nfa, state2_map_rhs);
             state_rhs = initial_state(nfa);
             state = add_initial_state(nfa);
-            add_transition(nfa, state, state_lhs, epsilon(nfa));
-            add_transition(nfa, state, state_rhs, epsilon(nfa));
+            add_transition(nfa, state, state_lhs, epsilon_transition(nfa));
+            add_transition(nfa, state, state_rhs, epsilon_transition(nfa));
             minimize(nfa, a_out);
         }
     };
@@ -457,7 +457,7 @@ namespace atl {
             copy_fa_impl::copy_transitions(a_rhs, nfa, state2_map_rhs);
             state_rhs = initial_state(nfa);
             for (auto state : final_state_set_) {
-                add_transition(nfa, state, state_rhs, epsilon(nfa));
+                add_transition(nfa, state, state_rhs, epsilon_transition(nfa));
             }
             set_initial_state(nfa, state_lhs);
             minimize(nfa, a_out);

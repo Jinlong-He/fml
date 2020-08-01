@@ -41,6 +41,7 @@ namespace atl {
             typedef typename Base::automaton_property_type automaton_property_type;
             typedef typename Base::Transition Transition;
             typedef typename Base::State State;
+            typedef typename Base::SymbolSet SymbolSet;
             typedef unordered_set<State> StateSet;
             typedef pair<State, State> StatePair;
             typedef unordered_map<StatePair, State> StatePairMap;
@@ -61,6 +62,12 @@ namespace atl {
         public:
             deterministic_finite_automaton_gen()
                 : Base() {}
+
+            deterministic_finite_automaton_gen(const SymbolSet& alphabet)
+                : Base(alphabet) {}
+
+            deterministic_finite_automaton_gen(const std::initializer_list<Symbol>& alphabet)
+                : Base(alphabet) {}
 
             deterministic_finite_automaton_gen(const deterministic_finite_automaton_gen& x)
                 : Base(x),
@@ -93,13 +100,15 @@ namespace atl {
                 if constexpr (std::is_same<SymbolProperty, no_type>::value) {
                     if (transition_map_[s].count(c) == 0) {
                         transition_map_[s][c] = t;
+                        return Base::add_transition(s, t, c);
                     }
                 } else {
-                    if (transition_map_[s][c.symbol].count(c.symbol_property) == 0) {
-                        transition_map_[s][c.symbol][c.symbol_property] = t;
+                    if (transition_map_[s][c.default_property].count(c.extended_property) == 0) {
+                        transition_map_[s][c.default_property][c.extended_property] = t;
+                        return Base::add_transition(s, t, c);
                     } 
                 }
-                return Base::add_transition(s, t, c);
+                return std::make_pair(Transition(), false);
             }
 
             virtual pair<Transition, bool>
@@ -134,7 +143,7 @@ namespace atl {
             }
 
             void
-            get_targets_in_map(State s, const Symbol& c, SymbolProperty p, StateSet& set) const {
+            get_targets_in_map(State s, const Symbol& c, const SymbolProperty& p, StateSet& set) const {
                 if constexpr (std::is_same<SymbolProperty, no_type>::value) {
                     auto transition_map_iter = transition_map_.find(s);
                     if (transition_map_iter != transition_map_.end()) {

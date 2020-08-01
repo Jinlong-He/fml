@@ -10,15 +10,15 @@
 #define atl_finite_automaton_merge_hpp 
 
 namespace atl {
-    template <class StateProp>
+    template <class Prop>
     struct intersect_merge {
-        StateProp operator() (const StateProp& lhs, const StateProp& rhs) const {
+        Prop operator() (const Prop& lhs, const Prop& rhs) const {
             return (lhs & rhs);
         }
 
         template<class InputIterator>
-        StateProp operator() (InputIterator first, InputIterator last) const {
-            StateProp res = *first;
+        Prop operator() (InputIterator first, InputIterator last) const {
+            Prop res = *first;
             while (++first != last) {
                 res = res & (*first);
             }
@@ -26,15 +26,15 @@ namespace atl {
         }
     };
 
-    template <class StateProp>
+    template <class Prop>
     struct union_merge {
-        StateProp operator() (const StateProp& lhs, const StateProp& rhs) const {
+        Prop operator() (const Prop& lhs, const Prop& rhs) const {
             return (lhs | rhs);
         }
 
         template<class InputIterator>
-        StateProp operator() (InputIterator first, InputIterator last) const {
-            StateProp res = *first;
+        Prop operator() (InputIterator first, InputIterator last) const {
+            Prop res = *first;
             while (++first != last) {
                 res = res | (*first);
             }

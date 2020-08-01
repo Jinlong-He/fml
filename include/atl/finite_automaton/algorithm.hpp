@@ -24,15 +24,15 @@ namespace atl {
         apply(const DFA& dfa,
               const std::basic_string<typename DFA::symbol_type>& word) {
             typedef typename DFA::StateSet StateSet;
-            StateSet work({initial_state(dfa)}), newWork;
+            StateSet work({initial_state(dfa)}), new_work;
             for (const auto& symbol : word) {
                 for (auto state : work) {
-                    get_targets_in_map(dfa, state, symbol, newWork);
+                    get_targets_in_map(dfa, state, symbol, new_work);
                 }
                 work.clear();
-                if (newWork.size() > 0) {
-                    work.insert(newWork.begin(), newWork.end());
-                    newWork.clear();
+                if (new_work.size() > 0) {
+                    work.insert(new_work.begin(), new_work.end());
+                    new_work.clear();
                 } else {
                     return false;
                 }
@@ -40,6 +40,7 @@ namespace atl {
             return true;
         }
     };
+
     template <DFA_PARAMS>
     inline bool
     accept(const DFA& dfa,

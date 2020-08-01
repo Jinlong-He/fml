@@ -23,30 +23,20 @@ namespace atl {
             typedef typename FA::State State;
 
             State state_copy = -1;
-            //auto& states_copy = states.size() > 0 ? states : state_set(a_in);
-            if (states.size() == 0) {
-                typename FA::StateIter it, end;
-                for (tie(it, end) = atl::states(a_in); it != end; it++) {
-                    if constexpr (std::is_same<StateProperty, boost::no_property>::value) {
-                        state_copy = add_state(a_out);
-                    } else {
-                        state_copy = add_state(a_out, atl::get_property(a_in, *it));
-                    }
-                    state2_map[*it] = state_copy;
+            auto& states_copy = states.size() > 0 ? states : state_set(a_in);
+            for (auto state : states_copy) {
+                if constexpr (std::is_same<StateProperty, boost::no_property>::value) {
+                    state_copy = add_state(a_out);
+                } else {
+                    state_copy = add_state(a_out, atl::get_property(a_in, state));
                 }
-            } else {
-                for (auto state : states) {
-                    if constexpr (std::is_same<StateProperty, boost::no_property>::value) {
-                        state_copy = add_state(a_out);
-                    } else {
-                        state_copy = add_state(a_out, atl::get_property(a_in, state));
-                    }
-                    state2_map[state] = state_copy;
-                }
+                state2_map[state] = state_copy;
             }
             set_initial_state(a_out, state2_map.at(initial_state(a_in)));
             for (auto state : final_state_set(a_in)) {
-                set_final_state(a_out, state2_map.at(state));
+                if (state2_map.count(state) > 0) {
+                    set_final_state(a_out, state2_map.at(state));
+                }
             }
         }
 
@@ -54,9 +44,10 @@ namespace atl {
         static void 
         copy_transitions(const FA& a_in,
                          FA& a_out,
-                         typename FA::State2Map& state2_map) {
+                         typename FA::State2Map const& state2_map) {
             typename FA::OutTransitionIter t_it, t_end;
-            for (auto state : state_set(a_in)) {
+            for (const auto map_pair : state2_map) {
+                auto state = map_pair.first;
                 for (tie(t_it, t_end) = out_transitions(a_in, state); t_it != t_end; t_it++) {
                     auto source = state2_map.at(state);
                     auto target = state2_map.at(atl::target(a_in, *t_it));

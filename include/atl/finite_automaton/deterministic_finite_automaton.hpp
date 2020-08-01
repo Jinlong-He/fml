@@ -14,12 +14,6 @@
 #include "cast.hpp"
 
 namespace atl {
-    template <class Symbol, 
-              long epsilon_,
-              class SymbolProperty,
-              class StateProperty, 
-              class AutomatonProperty> class nondeterministic_finite_automaton;
-
     template <class Symbol = char, 
               long epsilon_ = 0,
               class SymbolProperty = no_type,
@@ -41,11 +35,11 @@ namespace atl {
                                                  SymbolProperty,
                                                  StateProperty,
                                                  AutomatonProperty> fa_type;
-            typedef deterministic_finite_automaton dfa_type;
-            typedef nondeterministic_finite_automaton<Symbol, epsilon_,
-                                                      SymbolProperty,
-                                                      StateProperty,
-                                                      AutomatonProperty> nfa_type;
+            typedef Base dfa_type;
+            typedef detail::nondeterministic_finite_automaton_gen<Symbol, epsilon_,
+                                                                  SymbolProperty,
+                                                                  StateProperty,
+                                                                  AutomatonProperty> nfa_type;
 
             typedef typename Base::transition_property_type transition_property_type;
             typedef typename Base::automaton_property_type automaton_property_type;
@@ -63,6 +57,12 @@ namespace atl {
         public:
             deterministic_finite_automaton()
                 : Base() {}
+
+            deterministic_finite_automaton(const SymbolSet& alphabet)
+                : Base(alphabet) {}
+
+            deterministic_finite_automaton(const std::initializer_list<Symbol>& alphabet)
+                : Base(alphabet) {}
 
             deterministic_finite_automaton(const deterministic_finite_automaton& x)
                 : Base(x) {}

@@ -47,6 +47,7 @@ namespace atl {
             typedef typename Base::automaton_property_type automaton_property_type;
             typedef typename Base::Transition Transition;
             typedef typename Base::State State;
+            typedef typename Base::SymbolSet SymbolSet;
             typedef unordered_set<State> StateSet;
             typedef unordered_map<StateSet, State> StateSetMap;
 
@@ -61,6 +62,12 @@ namespace atl {
         public:
             nondeterministic_finite_automaton_gen()
                 : Base() {}
+
+            nondeterministic_finite_automaton_gen(const SymbolSet& alphabet)
+                : Base(alphabet) {}
+
+            nondeterministic_finite_automaton_gen(const std::initializer_list<Symbol>& alphabet)
+                : Base(alphabet) {}
 
             nondeterministic_finite_automaton_gen(const nondeterministic_finite_automaton_gen& x)
                 : Base(x),
@@ -87,8 +94,9 @@ namespace atl {
                 return transition_map_;
             }
 
+            using Base::add_transition;
             virtual pair<Transition, bool>
-            add_transition(State s, State t, const Symbol& c) {
+            add_transition(State s, State t, const transition_property_type& c) {
                 if constexpr (std::is_same<SymbolProperty, no_type>::value) {
                     auto& targets = transition_map_[s][c];
                     if (targets.insert(t).second) {
@@ -96,10 +104,10 @@ namespace atl {
                         return Base::add_transition(s, t, c);
                     }
                 } else {
-                    auto& targets = transition_map_[s][c][symbol_property_type()];
+                    auto& targets = transition_map_[s][c.default_property][c.extended_property];
                     if (targets.insert(t).second) {
                         if (targets.size() > 1) set_undeterministic_flag(*this);
-                        return Base::add_transition(s, t, c, symbol_property_type());
+                        return Base::add_transition(s, t, c);
                     }
                 }
                 return std::make_pair(Transition(), false);
@@ -138,14 +146,14 @@ namespace atl {
             }
 
             void
-            get_targets_in_map(State s, const Symbol& c, SymbolProperty p, StateSet& set) const {
-                if constexpr (std::is_same<SymbolProperty, no_type>::value) {
+            get_targets_in_map(State s, const Symbol& c, const SymbolProperty& p, StateSet& set) const {
+                if constexpr (!std::is_same<SymbolProperty, no_type>::value) {
                     auto transition_map_iter = transition_map_.find(s);
                     if (transition_map_iter != transition_map_.end()) {
                         const auto& map = transition_map_iter -> second;
                         auto map_iter = map.find(c);
                         if (map_iter != map.end()) {
-                            auto iter = map_iter -> second.fing(p);
+                            auto iter = map_iter -> second.find(p);
                             if (iter != map_iter -> second.end()) {
                                 set.insert(iter -> second.begin(), iter -> second.end());
                             }
@@ -190,6 +198,16 @@ namespace atl {
         for (auto s : set) {
             nfa.get_targets_in_map(s, c, targets);
         }
+    }
+
+    template <NFA_PARAMS>
+    inline void
+    get_targets_in_map(const NFA& nfa,
+                       typename NFA::State s, 
+                       typename NFA::symbol_type const& c, 
+                       typename NFA::symbol_property_type const& p,
+                       typename NFA::StateSet& set) {
+        nfa.get_targets_in_map(s, c, p ,set);
     }
 
     template <NFA_PARAMS>

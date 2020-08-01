@@ -11,6 +11,7 @@
 #include <iostream>
 #include "basic_regular_expression.hpp"
 #include "../finite_automaton/nondeterministic_finite_automaton.hpp"
+#include "../finite_automaton/deterministic_finite_automaton.hpp"
 using std::cout;
 using std::endl;
 

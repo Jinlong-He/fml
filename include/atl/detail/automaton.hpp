@@ -44,6 +44,11 @@ namespace atl {
                 : default_property(l),
                   extended_property() {}
 
+            bool operator== (const Property& p) const {
+                return default_property == p.default_property && 
+                       extended_property == p.extended_property;
+            }
+
             friend std::ostream& operator<< (std::ostream& os, const Property& x) {
                 os << x.default_property << " {" << x.extended_property << "}";
                 return os;

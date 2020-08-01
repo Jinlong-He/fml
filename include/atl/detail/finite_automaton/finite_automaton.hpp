@@ -19,19 +19,20 @@ using boost::unordered_map;
 using boost::unordered_set;
 
 namespace atl {
-    template <class Symbol, 
-              long epsilon_,
-              class SymbolProperty,
-              class StateProperty, 
-              class AutomatonProperty> class nondeterministic_finite_automaton;
+        namespace detail {
+        template <class Symbol, 
+                  long epsilon_,
+                  class SymbolProperty,
+                  class StateProperty, 
+                  class AutomatonProperty> class nondeterministic_finite_automaton_gen;
 
-    template <class Symbol, 
-              long epsilon_,
-              class SymbolProperty,
-              class StateProperty, 
-              class AutomatonProperty> class deterministic_finite_automaton;
+        template <class Symbol, 
+                  long epsilon_,
+                  class SymbolProperty,
+                  class StateProperty, 
+                  class AutomatonProperty> class deterministic_finite_automaton_gen;
 
-    namespace detail {
+
         template <class Symbol, 
                   long epsilon_,
                   class SymbolProperty,
@@ -63,17 +64,17 @@ namespace atl {
                                   state_property_type, 
                                   automaton_property_type> Base;
 
-            typedef deterministic_finite_automaton<Symbol, 
-                                                   epsilon_,
-                                                   SymbolProperty,
-                                                   StateProperty,
-                                                   AutomatonProperty> dfa_type;
+            typedef deterministic_finite_automaton_gen<Symbol, 
+                                                       epsilon_,
+                                                       SymbolProperty,
+                                                       StateProperty,
+                                                       AutomatonProperty> dfa_type;
 
-            typedef nondeterministic_finite_automaton<Symbol, 
-                                                      epsilon_,
-                                                      SymbolProperty,
-                                                      StateProperty,
-                                                      AutomatonProperty> nfa_type;
+            typedef nondeterministic_finite_automaton_gen<Symbol, 
+                                                          epsilon_,
+                                                          SymbolProperty,
+                                                          StateProperty,
+                                                          AutomatonProperty> nfa_type;
 
             typedef typename Base::Transition Transition;
             typedef typename Base::State State;
@@ -89,11 +90,16 @@ namespace atl {
                   initial_state_(-1),
                   alphabet_(alphabet) {}
 
+            finite_automaton_gen(const std::initializer_list<Symbol> alphabet)
+                : Base(),
+                  initial_state_(-1),
+                  alphabet_(alphabet) {}
+
             finite_automaton_gen(const finite_automaton_gen& x)
                 : Base(x),
                   initial_state_(x.initial_state_),
-                  state_set_(x.state_set_),
                   final_state_set_(x.final_state_set_),
+                  state_set_(x.state_set_),
                   alphabet_(x.alphabet_) {}
 
             ~finite_automaton_gen() {}
@@ -102,10 +108,10 @@ namespace atl {
             operator=(const finite_automaton_gen& x) {
                 if (&x != this) {
                     Base::operator=(x);
-                    alphabet_ = x.alphabet_;
                     initial_state_ = x.initial_state_;
-                    state_set_ = x.state_set_;
                     final_state_set_ = x.final_state_set_;
+                    state_set_ = x.state_set_;
+                    alphabet_ = x.alphabet_;
                 }
                 return *this;
             }
@@ -113,8 +119,8 @@ namespace atl {
             virtual void clear() {
                 Base::clear();
                 initial_state_ = -1;
-                state_set_.clear();
                 final_state_set_.clear();
+                state_set_.clear();
                 alphabet_.clear();
             }
 
@@ -132,9 +138,14 @@ namespace atl {
                 return state;
             }
 
-            transition_property_type 
+            Symbol
             epsilon() const {
-                return transition_property_type(epsilon_);
+                return epsilon_;
+            }
+
+            transition_property
+            epsilon_transition() const {
+                return transition_property(epsilon_);
             }
 
             State
@@ -206,7 +217,11 @@ namespace atl {
             virtual pair<Transition, bool>
             add_transition(State s, State t,
                            const transition_property_type& c) {
-                if (c == epsilon()) this -> set_flag(4, 1);
+                if constexpr (std::is_same<SymbolProperty, no_type>::value) {
+                    if (c == epsilon()) this -> set_flag(4, 1);
+                } else {
+                    if (c.default_property == epsilon()) this -> set_flag(4, 1);
+                }
                 return Base::add_transition(s, t, c);
             }
 
@@ -215,9 +230,11 @@ namespace atl {
                            const Symbol& c,
                            const SymbolProperty& p) {
                 if constexpr (std::is_same<SymbolProperty, no_type>::value) {
-                    return this -> add_transition(s, t, c);
+                    if (c == epsilon()) this -> set_flag(4, 1);
+                    return Base::add_transition(s, t, c);
                 } else {
-                    return this -> add_transition(s, t, transition_property(c, p));
+                    if (c == epsilon()) this -> set_flag(4, 1);
+                    return Base::add_transition(s, t, transition_property(c, p));
                 }
             }
 
@@ -312,9 +329,15 @@ namespace atl {
     }
 
     template <FA_PARAMS>
-    inline typename FA::transition_property_type
+    inline typename FA::symbol_type
     epsilon(const FA& fa) {
         return fa.epsilon();
+    }
+
+    template <FA_PARAMS>
+    inline typename FA::transition_property
+    epsilon_transition(const FA& fa) {
+        return fa.epsilon_transition();
     }
 
     template <FA_PARAMS>
