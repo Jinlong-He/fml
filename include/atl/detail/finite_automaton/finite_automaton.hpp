@@ -14,238 +14,239 @@
 #include "../../../util/util.hpp"
 #include "../automaton.hpp"
 #include "../no_type.hpp"
+#include "../letter2letter_transducer/letter2letter_transducer.hpp"
 
 using boost::unordered_map;
 using boost::unordered_set;
 
-namespace atl {
-        namespace detail {
-        template <class Symbol, 
-                  long epsilon_,
-                  class SymbolProperty,
-                  class StateProperty, 
-                  class AutomatonProperty> class nondeterministic_finite_automaton_gen;
+namespace atl::detail {
+    template <class Symbol, 
+              long epsilon_,
+              class SymbolProperty,
+              class StateProperty, 
+              class AutomatonProperty> class nondeterministic_finite_automaton_gen;
 
-        template <class Symbol, 
-                  long epsilon_,
-                  class SymbolProperty,
-                  class StateProperty, 
-                  class AutomatonProperty> class deterministic_finite_automaton_gen;
+    template <class Symbol, 
+              long epsilon_,
+              class SymbolProperty,
+              class StateProperty, 
+              class AutomatonProperty> class deterministic_finite_automaton_gen;
 
 
-        template <class Symbol, 
-                  long epsilon_,
-                  class SymbolProperty,
-                  class StateProperty, 
-                  class AutomatonProperty>
-        class finite_automaton_gen 
-            : public automaton_gen<
-                     typename std::conditional<std::is_same<SymbolProperty, no_type>::value,
-                                   Symbol, Property<Symbol, SymbolProperty> >::type,
-                     typename std::conditional<std::is_same<StateProperty, no_type>::value,
-                                   boost::no_property, StateProperty>::type,
-                     typename std::conditional<std::is_same<AutomatonProperty, no_type>::value,
-                                   boost::no_property, AutomatonProperty>::type> {
-        public:
-            typedef Property<Symbol, SymbolProperty> transition_property;
-            typedef Symbol symbol_type;
-            typedef SymbolProperty symbol_property_type;
+    template <class Symbol, 
+              long epsilon_,
+              class SymbolProperty,
+              class StateProperty, 
+              class AutomatonProperty>
+    class finite_automaton_gen 
+        : public automaton_gen<
+                 typename std::conditional<std::is_same<SymbolProperty, no_type>::value,
+                               Symbol, Property<Symbol, SymbolProperty> >::type,
+                 typename std::conditional<std::is_same<StateProperty, no_type>::value,
+                               boost::no_property, StateProperty>::type,
+                 typename std::conditional<std::is_same<AutomatonProperty, no_type>::value,
+                               boost::no_property, AutomatonProperty>::type> {
+    public:
+        typedef Property<Symbol, SymbolProperty> transition_property;
+        typedef Symbol symbol_type;
+        typedef SymbolProperty symbol_property_type;
 
-            typedef typename std::conditional<std::is_same<SymbolProperty, no_type>::value,
-                                  Symbol, transition_property>::type 
-                transition_property_type;
-            typedef typename std::conditional<std::is_same<StateProperty, no_type>::value,
-                                   boost::no_property, StateProperty>::type
-                state_property_type;
-            typedef typename std::conditional<std::is_same<AutomatonProperty, no_type>::value,
-                                   boost::no_property, AutomatonProperty>::type
-                automaton_property_type;
-            typedef automaton_gen<transition_property_type, 
-                                  state_property_type, 
-                                  automaton_property_type> Base;
+        typedef typename std::conditional<std::is_same<SymbolProperty, no_type>::value,
+                              Symbol, transition_property>::type 
+            transition_property_type;
+        typedef typename std::conditional<std::is_same<StateProperty, no_type>::value,
+                               boost::no_property, StateProperty>::type
+            state_property_type;
+        typedef typename std::conditional<std::is_same<AutomatonProperty, no_type>::value,
+                               boost::no_property, AutomatonProperty>::type
+            automaton_property_type;
+        typedef automaton_gen<transition_property_type, 
+                              state_property_type, 
+                              automaton_property_type> Base;
 
-            typedef deterministic_finite_automaton_gen<Symbol, 
-                                                       epsilon_,
-                                                       SymbolProperty,
-                                                       StateProperty,
-                                                       AutomatonProperty> dfa_type;
+        typedef deterministic_finite_automaton_gen<Symbol, 
+                                                   epsilon_,
+                                                   SymbolProperty,
+                                                   StateProperty,
+                                                   AutomatonProperty> dfa_type;
 
-            typedef nondeterministic_finite_automaton_gen<Symbol, 
-                                                          epsilon_,
-                                                          SymbolProperty,
-                                                          StateProperty,
-                                                          AutomatonProperty> nfa_type;
+        typedef nondeterministic_finite_automaton_gen<Symbol, 
+                                                      epsilon_,
+                                                      SymbolProperty,
+                                                      StateProperty,
+                                                      AutomatonProperty> nfa_type;
 
-            typedef typename Base::Transition Transition;
-            typedef typename Base::State State;
+        typedef typename Base::Transition Transition;
+        typedef typename Base::State State;
 
-            typedef unordered_set<State> StateSet;
-            typedef unordered_set<Symbol> SymbolSet;
+        typedef unordered_set<State> StateSet;
+        typedef unordered_set<Symbol> SymbolSet;
 
-            typedef unordered_map<State, State> State2Map;
+        typedef unordered_map<State, State> State2Map;
 
-        public:
-            finite_automaton_gen(const SymbolSet alphabet = SymbolSet())
-                : Base(),
-                  initial_state_(-1),
-                  alphabet_(alphabet) {}
+    public:
+        finite_automaton_gen(const SymbolSet alphabet = SymbolSet())
+            : Base(),
+              initial_state_(-1),
+              alphabet_(alphabet) {}
 
-            finite_automaton_gen(const std::initializer_list<Symbol> alphabet)
-                : Base(),
-                  initial_state_(-1),
-                  alphabet_(alphabet) {}
+        finite_automaton_gen(const std::initializer_list<Symbol> alphabet)
+            : Base(),
+              initial_state_(-1),
+              alphabet_(alphabet) {}
 
-            finite_automaton_gen(const finite_automaton_gen& x)
-                : Base(x),
-                  initial_state_(x.initial_state_),
-                  final_state_set_(x.final_state_set_),
-                  state_set_(x.state_set_),
-                  alphabet_(x.alphabet_) {}
+        finite_automaton_gen(const finite_automaton_gen& x)
+            : Base(x),
+              initial_state_(x.initial_state_),
+              final_state_set_(x.final_state_set_),
+              state_set_(x.state_set_),
+              alphabet_(x.alphabet_) {}
 
-            ~finite_automaton_gen() {}
+        ~finite_automaton_gen() {}
 
-            finite_automaton_gen& 
-            operator=(const finite_automaton_gen& x) {
-                if (&x != this) {
-                    Base::operator=(x);
-                    initial_state_ = x.initial_state_;
-                    final_state_set_ = x.final_state_set_;
-                    state_set_ = x.state_set_;
-                    alphabet_ = x.alphabet_;
-                }
-                return *this;
+        finite_automaton_gen& 
+        operator=(const finite_automaton_gen& x) {
+            if (&x != this) {
+                Base::operator=(x);
+                initial_state_ = x.initial_state_;
+                final_state_set_ = x.final_state_set_;
+                state_set_ = x.state_set_;
+                alphabet_ = x.alphabet_;
             }
+            return *this;
+        }
 
-            virtual void clear() {
-                Base::clear();
-                initial_state_ = -1;
-                final_state_set_.clear();
-                state_set_.clear();
-                alphabet_.clear();
-            }
+        virtual void clear() {
+            Base::clear();
+            initial_state_ = -1;
+            final_state_set_.clear();
+            state_set_.clear();
+            alphabet_.clear();
+        }
 
-            virtual State 
-            add_state(const state_property_type& p) {
-                State state = Base::add_state(p);
-                state_set_.insert(state);
-                return state;
-            }
+        virtual State 
+        add_state(const state_property_type& p) {
+            State state = Base::add_state(p);
+            state_set_.insert(state);
+            return state;
+        }
 
-            virtual State 
-            add_state() {
-                State state = Base::add_state();
-                state_set_.insert(state);
-                return state;
-            }
+        virtual State 
+        add_state() {
+            State state = Base::add_state();
+            state_set_.insert(state);
+            return state;
+        }
 
-            Symbol
-            epsilon() const {
-                return epsilon_;
-            }
+        Symbol
+        epsilon() const {
+            return epsilon_;
+        }
 
-            transition_property
-            epsilon_transition() const {
-                return transition_property(epsilon_);
-            }
+        transition_property
+        epsilon_transition() const {
+            return transition_property(epsilon_);
+        }
 
-            State
-            initial_state() const {
-                return initial_state_;
-            }
+        State
+        initial_state() const {
+            return initial_state_;
+        }
 
-            void 
-            set_initial_state(State state) {
-                initial_state_ = state;
-            }
+        void 
+        set_initial_state(State state) {
+            initial_state_ = state;
+        }
 
-            const StateSet&
-            state_set() const {
-                return state_set_;
-            }
+        const StateSet&
+        state_set() const {
+            return state_set_;
+        }
 
-            void
-            set_state_set(const StateSet& state_set) {
-                state_set_ = state_set;
-            }
+        void
+        set_state_set(const StateSet& state_set) {
+            state_set_ = state_set;
+        }
 
-            const StateSet&
-            final_state_set() const {
-                return final_state_set_;
-            }
+        const StateSet&
+        final_state_set() const {
+            return final_state_set_;
+        }
 
-            void
-            set_final_state_set(const StateSet& final_state_set) {
-                final_state_set_ = final_state_set;
-            }
+        void
+        set_final_state_set(const StateSet& final_state_set) {
+            final_state_set_ = final_state_set;
+        }
 
-            void
-            clear_finale_state_set() {
-                final_state_set_.clear();
-            }
+        void
+        clear_finale_state_set() {
+            final_state_set_.clear();
+        }
 
-            const SymbolSet&
-            alphabet() const {
-                return alphabet_;
-            }
+        const SymbolSet&
+        alphabet() const {
+            return alphabet_;
+        }
 
-            void
-            set_alphabet(const SymbolSet& alphabet) {
-                alphabet_ = alphabet;
-            }
+        void
+        set_alphabet(const SymbolSet& alphabet) {
+            alphabet_ = alphabet;
+        }
 
-            void 
-            set_alphabet(const Symbol& c) {
-                alphabet_.insert(c);
-            }
+        void 
+        set_alphabet(const Symbol& c) {
+            alphabet_.insert(c);
+        }
 
-            void 
-            set_state(State state) {
-                state_set_.insert(state);
-            }
+        void 
+        set_state(State state) {
+            state_set_.insert(state);
+        }
 
-            void 
-            set_final_state(State state) {
-                final_state_set_.insert(state);
-            }
+        void 
+        set_final_state(State state) {
+            final_state_set_.insert(state);
+        }
 
-            void 
-            remove_final_state(State state) {
-                final_state_set_.erase(state);
+        void 
+        remove_final_state(State state) {
+            final_state_set_.erase(state);
+        }
+        
+        using Base::add_transition;
+        virtual pair<Transition, bool>
+        add_transition(State s, State t,
+                       const transition_property_type& c) {
+            if constexpr (std::is_same<SymbolProperty, no_type>::value) {
+                if (c == epsilon()) this -> set_flag(4, 1);
+            } else {
+                if (c.default_property == epsilon()) this -> set_flag(4, 1);
             }
-            
-            using Base::add_transition;
-            virtual pair<Transition, bool>
-            add_transition(State s, State t,
-                           const transition_property_type& c) {
-                if constexpr (std::is_same<SymbolProperty, no_type>::value) {
-                    if (c == epsilon()) this -> set_flag(4, 1);
-                } else {
-                    if (c.default_property == epsilon()) this -> set_flag(4, 1);
-                }
+            return Base::add_transition(s, t, c);
+        }
+
+        virtual pair<Transition, bool>
+        add_transition(State s, State t,
+                       const Symbol& c,
+                       const SymbolProperty& p) {
+            if constexpr (std::is_same<SymbolProperty, no_type>::value) {
+                if (c == epsilon()) this -> set_flag(4, 1);
                 return Base::add_transition(s, t, c);
+            } else {
+                if (c == epsilon()) this -> set_flag(4, 1);
+                return Base::add_transition(s, t, transition_property(c, p));
             }
+        }
 
-            virtual pair<Transition, bool>
-            add_transition(State s, State t,
-                           const Symbol& c,
-                           const SymbolProperty& p) {
-                if constexpr (std::is_same<SymbolProperty, no_type>::value) {
-                    if (c == epsilon()) this -> set_flag(4, 1);
-                    return Base::add_transition(s, t, c);
-                } else {
-                    if (c == epsilon()) this -> set_flag(4, 1);
-                    return Base::add_transition(s, t, transition_property(c, p));
-                }
-            }
-
-        private:
-            State initial_state_;
-            StateSet final_state_set_;
-            StateSet state_set_;
-            SymbolSet alphabet_;
-        };
+    private:
+        State initial_state_;
+        StateSet final_state_set_;
+        StateSet state_set_;
+        SymbolSet alphabet_;
     };
+};
 
+namespace atl {
     #define FA_PARAMS typename FA_SYMBOL, long FA_EPSILON, typename FA_SYMBOL_PROP, typename FA_STATE_PROP, typename FA_AUT_PROP
     #define FA detail::finite_automaton_gen<FA_SYMBOL, FA_EPSILON, FA_SYMBOL_PROP, FA_STATE_PROP,FA_AUT_PROP>
 
@@ -379,8 +380,8 @@ namespace atl {
     add_transition(FA& fa,
                    typename FA::State s,
                    typename FA::State t,
-                   typename FA::symbol_type c,
-                   typename FA::symbol_property_type p) {
+                   typename FA::symbol_type const& c,
+                   typename FA::symbol_property_type const& p) {
         return fa.add_transition(s, t, c, p);
     }
     
@@ -471,6 +472,6 @@ namespace atl {
             return false;
         }
     }
-}
+};
 
 #endif /* atl_detail_finite_automaton_hpp */

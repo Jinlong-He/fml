@@ -4,6 +4,7 @@
 #include <atl/automaton_utility.hpp>
 #include "test.hpp"
 using namespace atl;
+
 void test_state_prop() {
     nondeterministic_finite_automaton<char, 0, char, int> nfa({'a','b','c','d'});
     auto s0 = add_initial_state(nfa, 0);
@@ -17,6 +18,6 @@ void test_state_prop() {
     print_fa(nfa);
     cout << endl;
     deterministic_finite_automaton<char, 0, char, int> dfa;
-    determinize(nfa, dfa);
+    determinize(nfa, dfa, intersect_merge<char>(), union_merge<int>());
     print_fa(dfa);
 }

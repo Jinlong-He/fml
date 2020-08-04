@@ -10,8 +10,8 @@
 #define atl_nondeterministic_finite_automaton_hpp
 
 #include "../detail/finite_automaton/nondeterministic_finite_automaton.hpp"
-#include "operate.hpp"
-#include "cast.hpp"
+#include "../detail/finite_automaton/operate.hpp"
+#include "../detail/finite_automaton/cast.hpp"
 
 namespace atl {
     template <class Symbol = char, 
@@ -40,15 +40,16 @@ namespace atl {
                                                                StateProperty,
                                                                AutomatonProperty> dfa_type;
 
-            typedef typename Base::transition_property_type transition_property_type;
-            typedef typename Base::automaton_property_type automaton_property_type;
             typedef typename Base::state_property_type state_property_type;
-            typedef typename Base::Symbol2StateSetMap Symbol2StateSetMap;
-            typedef typename Base::TransitionMap TransitionMap;
-            typedef typename Base::StateSetMap StateSetMap;
-            typedef typename Base::Transition Transition;
+            typedef typename Base::automaton_property_type automaton_property_type;
+            typedef typename Base::transition_property_type transition_property_type;
+
             typedef typename Base::State State;
             typedef typename Base::SymbolSet SymbolSet;
+            typedef typename Base::Transition Transition;
+            typedef typename Base::StateSetMap StateSetMap;
+            typedef typename Base::TransitionMap TransitionMap;
+            typedef typename Base::Symbol2StateSetMap Symbol2StateSetMap;
 
         public:
             nondeterministic_finite_automaton()

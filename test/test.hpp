@@ -17,3 +17,5 @@ void test_ctl();
 void test_ltl();
 void test_tempalte();
 void test_state_prop();
+void test_poststar();
+void test_transducer();

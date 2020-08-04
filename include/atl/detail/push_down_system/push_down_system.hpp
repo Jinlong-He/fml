@@ -23,8 +23,7 @@ namespace atl {
     namespace detail {
         template <class Symbol>
         struct PDSLabel {
-            Symbol symbol;
-            std::vector<Symbol> symbols;
+        public:
             PDSLabel() {}
             PDSLabel(const Symbol& c, const std::vector<Symbol>& cs)
                 : symbol(c),
@@ -41,6 +40,9 @@ namespace atl {
                 os << ")";
                 return os;
             }
+        private:
+            Symbol symbol;
+            std::vector<Symbol> symbols;
         };
 
         template <class Symbol, 
@@ -59,8 +61,8 @@ namespace atl {
                      typename std::conditional<std::is_same<AutomatonProperty, no_type>::value,
                                    boost::no_property, AutomatonProperty>::type> {
         public:
-            typedef Property<PDSLabel<Symbol>, SymbolProperty> transition_property;
-            typedef PDSLabel<Symbol> pds_label_type;
+            typedef PDSLabel<Symbol> label_type;
+            typedef Property<label_type, SymbolProperty> transition_property;
             typedef Symbol symbol_type;
             typedef SymbolProperty symbol_property_type;
             typedef typename std::conditional<std::is_same<SymbolProperty, no_type>::value,
@@ -99,6 +101,10 @@ namespace atl {
 
         public:
             push_down_system_gen(const SymbolSet alphabet = SymbolSet())
+                : Base(),
+                  alphabet_(alphabet) {}
+
+            push_down_system_gen(const std::initializer_list<Symbol>& alphabet)
                 : Base(),
                   alphabet_(alphabet) {}
 
@@ -192,6 +198,7 @@ namespace atl {
                 }
             }
 
+            using Base::add_transition;
             pair<Transition, bool>
             add_transition(State s, State t,
                            const PDSLabel<Symbol>& l,
@@ -276,7 +283,7 @@ namespace atl {
     add_transition(PDS& pds,
                    typename PDS::State s,
                    typename PDS::State t,
-                   typename PDS::pds_label_type l,
+                   typename PDS::label_type l,
                    typename PDS::symbol_property_type p) {
         return pds.add_transition(s, t, l, p);
     }

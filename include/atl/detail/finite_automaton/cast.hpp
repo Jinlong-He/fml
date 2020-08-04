@@ -6,21 +6,20 @@
 //  Copyright © 2019年 Ruting-Team. All rights reserved.
 //
 
-#ifndef atl_finite_automaton_cast_hpp 
-#define atl_finite_automaton_cast_hpp 
+#ifndef atl_detail_finite_automaton_cast_hpp 
+#define atl_detail_finite_automaton_cast_hpp 
 
 #include <queue>
 #include "closure.hpp"
 #include "merge.hpp"
 #include "copy.hpp"
-#include "../detail/finite_automaton/deterministic_finite_automaton.hpp"
-#include "../detail/finite_automaton/nondeterministic_finite_automaton.hpp"
-
-#include "../automaton_utility.hpp"
+#include "deterministic_finite_automaton.hpp"
+#include "nondeterministic_finite_automaton.hpp"
+#include "../../automaton_utility.hpp"
 
 using std::queue;
 
-namespace atl {
+namespace atl::detail {
     struct determinize_impl {
         template <NFA_PARAMS, 
                   typename SymbolPropertyMerge>
@@ -349,7 +348,7 @@ namespace atl {
         remove_dead_states(const DFA& a_in,
                            DFA& a_out) {
             typename DFA::StateSet reachable_closure;
-            atl::reachable_closure(a_in, reachable_closure);
+            atl::detail::reachable_closure(a_in, reachable_closure);
             copy_fa(a_in, a_out, reachable_closure);
         }
 
@@ -620,4 +619,4 @@ namespace atl {
     }
 }
 
-#endif /* atl_finite_automaton_cast_hpp */
+#endif /* atl_detail_finite_automaton_cast_hpp */

@@ -6,14 +6,14 @@
 //  Copyright © 2019年 Ruting-Team. All rights reserved.
 //
 
-#ifndef atl_finite_automaton_closure_hpp 
-#define atl_finite_automaton_closure_hpp 
+#ifndef atl_detail_finite_automaton_closure_hpp 
+#define atl_detail_finite_automaton_closure_hpp 
 
-#include "../detail/automaton.hpp"
-#include "../detail/finite_automaton/nondeterministic_finite_automaton.hpp"
-#include "../../util/util.hpp"
+#include "../automaton.hpp"
+#include "nondeterministic_finite_automaton.hpp"
+#include "../../../util/util.hpp"
 
-namespace atl {
+namespace atl::detail {
     enum Direction {forward, backward};
     struct reachable_closure_impl {
         template <FA_PARAMS>
@@ -73,8 +73,8 @@ namespace atl {
                       typename FA::StateSet& reachable_closure) {
             typename FA::StateSet forward_states({initial_state(fa)}),
                                                backward_states(final_state_set(fa));
-            atl::reachable_closure(fa, forward_states, forward_states, forward);
-            atl::reachable_closure(fa, backward_states, backward_states, backward);
+            atl::detail::reachable_closure(fa, forward_states, forward_states, forward);
+            atl::detail::reachable_closure(fa, backward_states, backward_states, backward);
             util::set_intersection(forward_states, backward_states, reachable_closure);
     }
 
@@ -133,4 +133,4 @@ namespace atl {
     }
 }
 
-#endif /* closure_hpp */
+#endif /* atl_detail_finite_automaton_closure_hpp */

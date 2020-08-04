@@ -6,12 +6,12 @@
 //  Copyright © 2019年 Ruting-Team. All rights reserved.
 //
 
-#ifndef atl_finite_automaton_copy_hpp 
-#define atl_finite_automaton_copy_hpp 
+#ifndef atl_detail_finite_automaton_copy_hpp 
+#define atl_detail_finite_automaton_copy_hpp 
 
-#include "../detail/finite_automaton/finite_automaton.hpp"
+#include "finite_automaton.hpp"
 
-namespace atl {
+namespace atl::detail {
     struct copy_fa_impl {
         template <FA_PARAMS>
         static void 
@@ -93,4 +93,4 @@ namespace atl {
     }
 }
 
-#endif /* atl_finite_automaton_copy_hpp */
+#endif /* atl_detail_finite_automaton_copy_hpp */

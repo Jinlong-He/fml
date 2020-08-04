@@ -6,18 +6,18 @@
 //  Copyright © 2019年 Ruting-Team. All rights reserved.
 //
 
-#ifndef atl_finite_automaton_algorithm_hpp 
-#define atl_finite_automaton_algorithm_hpp 
+#ifndef atl_detail_finite_automaton_algorithm_hpp 
+#define atl_detail_finite_automaton_algorithm_hpp 
 
 #include <queue>
 #include "closure.hpp"
 #include "merge.hpp"
 #include "copy.hpp"
-#include "../detail/finite_automaton/deterministic_finite_automaton.hpp"
-#include "../detail/finite_automaton/nondeterministic_finite_automaton.hpp"
+#include "deterministic_finite_automaton.hpp"
+#include "nondeterministic_finite_automaton.hpp"
 using std::queue;
 
-namespace atl {
+namespace atl::detail {
     struct accept_impl {
         template <DFA_PARAMS>
         static bool 
@@ -49,4 +49,4 @@ namespace atl {
     }
 }
 
-#endif /* atl_finite_automaton_algorithm_hpp */
+#endif /* atl_detail_finite_automaton_algorithm_hpp */

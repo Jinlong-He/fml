@@ -6,10 +6,10 @@
 //  Copyright © 2019年 Ruting-Team. All rights reserved.
 //
 
-#ifndef atl_finite_automaton_merge_hpp 
-#define atl_finite_automaton_merge_hpp 
+#ifndef atl_detail_finite_automaton_merge_hpp 
+#define atl_detail_finite_automaton_merge_hpp 
 
-namespace atl {
+namespace atl::detail {
     template <class Prop>
     struct intersect_merge {
         Prop operator() (const Prop& lhs, const Prop& rhs) const {
@@ -43,4 +43,4 @@ namespace atl {
     };
 }
 
-#endif /* atl_finite_automaton_merge_hpp */
+#endif /* atl_detail_finite_automaton_merge_hpp */

@@ -6,20 +6,17 @@
 //  Copyright © 2019年 Ruting-Team. All rights reserved.
 //
 
-#ifndef atl_finite_automaton_operate_hpp 
-#define atl_finite_automaton_operate_hpp 
+#ifndef atl_detail_finite_automaton_operate_hpp 
+#define atl_detail_finite_automaton_operate_hpp 
 
 #include "closure.hpp"
 #include "merge.hpp"
 #include "copy.hpp"
 #include "cast.hpp"
-#include "../detail/finite_automaton/deterministic_finite_automaton.hpp"
-#include "../detail/finite_automaton/nondeterministic_finite_automaton.hpp"
+#include "deterministic_finite_automaton.hpp"
+#include "nondeterministic_finite_automaton.hpp"
 
-using std::cout;
-using std::endl;
-
-namespace atl {
+namespace atl::detail {
     struct intersect_impl {
         template <DFA_PARAMS,
                   typename Merge>
@@ -563,5 +560,5 @@ namespace atl {
     }
 }
 
-#endif /* atl_finite_automaton_operate_hpp */
+#endif /* atl_detail_finite_automaton_operate_hpp */
 

@@ -6,19 +6,16 @@
 //  Copyright © 2019年 Ruting-Team. All rights reserved.
 //
 
-#ifndef atl_regular_expression_algorithm_hpp 
-#define atl_regular_expression_algorithm_hpp
-#include <iostream>
+#ifndef atl_detail_regular_expression_algorithm_hpp 
+#define atl_detail_regular_expression_algorithm_hpp
 #include "basic_regular_expression.hpp"
-#include "../finite_automaton/nondeterministic_finite_automaton.hpp"
-#include "../finite_automaton/deterministic_finite_automaton.hpp"
-using std::cout;
-using std::endl;
+#include "../../finite_automaton/nondeterministic_finite_automaton.hpp"
+#include "../../finite_automaton/deterministic_finite_automaton.hpp"
 
-namespace atl {
+namespace atl::detail {
     template <typename Symbol>
     struct NFARegularSymbol {
-        detail::RegularSymbol<Symbol> regular_symbol;
+        RegularSymbol<Symbol> regular_symbol;
         nondeterministic_finite_automaton<Symbol>* nfa;
 
         NFARegularSymbol() 
@@ -160,7 +157,7 @@ namespace atl {
 
         template <typename Symbol>
         static void
-        apply(const basic_regular_expression<Symbol>& re,
+        apply(const basic_regular_expression_gen<Symbol>& re,
               deterministic_finite_automaton<Symbol>& dfa) {
             if (re.postfix_expression().size() == 1) {
                 const auto& c = re.postfix_expression().front();
@@ -197,10 +194,10 @@ namespace atl {
 
     template <typename Symbol>
     inline void
-    make_fa(const basic_regular_expression<Symbol>& re,
+    make_fa(const detail::basic_regular_expression_gen<Symbol>& re,
             deterministic_finite_automaton<Symbol>& dfa) {
         make_fa_impl::apply(re, dfa);
     }
 }
 
-#endif /* atl_regular_expression_algorithm_hpp */
+#endif /* atl_detail_regular_expression_algorithm_hpp */

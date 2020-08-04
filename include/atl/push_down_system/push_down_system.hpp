@@ -31,7 +31,7 @@ namespace atl {
         typedef Symbol symbol_type;
         typedef SymbolProperty symbol_property_type;
         typedef typename Base::transition_property transition_property;
-        typedef typename Base::pds_label_type pds_label_type;
+        typedef typename Base::label_type label_type;
         typedef typename Base::transition_property_type transition_property_type;
         typedef typename Base::state_property_type state_property_type;
         typedef typename Base::automaton_property_type automaton_property_type;
@@ -46,6 +46,9 @@ namespace atl {
 
     public:
         push_down_system(const SymbolSet alphabet = SymbolSet())
+            : Base(alphabet) {}
+
+        push_down_system(const std::initializer_list<Symbol>& alphabet)
             : Base(alphabet) {}
 
         push_down_system(const push_down_system& x)
