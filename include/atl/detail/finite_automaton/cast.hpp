@@ -156,10 +156,9 @@ namespace atl::detail {
                             typename NFA::Symbol2StateSetMap& map) {
             typedef typename NFA::symbol_property_type SymbolProperty;
             typename NFA::StateSet new_states;
-            for (const auto& state : states) {
+            for (auto state : states) {
                 if (transition_map(nfa).count(state) == 0) continue;
-                for (auto& map_pair : transition_map(nfa).at(state)) {
-                    const auto& symbol = map_pair.first;
+                for (const auto& [symbol, prop_map] : transition_map(nfa).at(state)) {
                     if constexpr (std::is_same<SymbolProperty, no_type>::value) {
                         if (symbol == epsilon(nfa)) continue;
                         new_states.clear();
@@ -169,8 +168,8 @@ namespace atl::detail {
                             map[symbol].insert(new_states.begin(), new_states.end());
                         }
                     } else {
-                        for (auto& map_pair1 : map_pair.second) {
-                            const auto& symbol_property = map_pair1.first;
+                        for (auto& map_pair : prop_map) {
+                            const auto& symbol_property = map_pair.first;
                             new_states.clear();
                             get_targets_in_map(nfa, state, symbol, symbol_property, new_states);
                             if (new_states.size() > 0) {
@@ -201,7 +200,7 @@ namespace atl::detail {
                     target = add_state(dfa);
                 } else {
                     std::vector<StateProperty> props;
-                    for (const auto& s : state_set)
+                    for (auto s : state_set)
                         props.push_back(atl::get_property(nfa, s));
                     target = add_state(dfa, state_merge(props.begin(), props.end()));
                 }
@@ -228,17 +227,15 @@ namespace atl::detail {
 
             typename NFA::Symbol2StateSetMap map;
             get_determinize_map(nfa, state_set, map);
-            for (auto& map_pair : map) {
-                const auto& symbol = map_pair.first;
-                if constexpr (std::is_same<SymbolProperty, no_type>::value) {
-                    add_determinize_transition(nfa, dfa, source, map_pair.second, set_map, symbol, 
-                                               state_merge);
-                } else {
-                    for (auto& map_pair1 : map_pair.second) {
-                        const auto& symbol_property = map_pair1.first;
-                        add_determinize_transition(nfa, dfa, source, map_pair1.second, set_map, 
-                                                   TransitionProperty(symbol, symbol_property), 
-                                                   state_merge);
+            if constexpr (std::is_same<SymbolProperty, no_type>::value) {
+                for (auto& [symbol, target] : map) {
+                    add_determinize_transition(nfa, dfa, source, target, set_map, symbol, state_merge);
+                }
+            } else {
+                for (auto& [symbol, prop_map] : map) {
+                    for (auto& [symbol_property, target] : prop_map) {
+                        add_determinize_transition(nfa, dfa, source, target, set_map, 
+                                                   TransitionProperty(symbol, symbol_property), state_merge);
                     }
                 }
             }
@@ -418,7 +415,7 @@ namespace atl::detail {
                         new_eqs.insert(state);
                         set.erase(state);
                         StateSet delStateSet;
-                        for (const auto& new_state : set) {
+                        for (auto new_state : set) {
                             if (is_equal(a_in, state, new_state, state2_map)) {
                                 new_eqs.insert(new_state);
                                 delStateSet.insert(new_state);
@@ -488,16 +485,14 @@ namespace atl::detail {
             const auto& transition_map_ = transition_map(a_in);
             if (transition_map_.count(state) == 0) return;
             const auto& map = transition_map_.at(state);
-            for (const auto& map_pair : map) {
-                const auto& symbol = map_pair.first;
-                if constexpr (std::is_same<SymbolProperty, no_type>::value) {
-                    auto target = map_pair.second;
+            if constexpr (std::is_same<SymbolProperty, no_type>::value) {
+                for (const auto& [symbol, target] : map) {
                     add_minimize_transition(a_in, a_out, source, target,
                                             old_state2_map, new_state2_map, symbol);
-                } else {
-                    for (const auto& map_pair1 : map_pair.second) {
-                        const auto& symbol_property = map_pair1.first;
-                        auto target = map_pair1.second;
+                }
+            } else {
+                for (const auto& [symbol, prop_map] : map) {
+                    for (const auto& [symbol_property, target] : prop_map) {
                         add_minimize_transition(a_in, a_out, source, target,
                                                 old_state2_map, new_state2_map,
                                                 TransitionProperty(symbol, symbol_property));

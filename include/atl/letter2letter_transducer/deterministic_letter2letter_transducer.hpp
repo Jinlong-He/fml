@@ -12,6 +12,7 @@
 #include "../detail/letter2letter_transducer/deterministic_letter2letter_transducer.hpp"
 #include "../detail/letter2letter_transducer/nondeterministic_letter2letter_transducer.hpp"
 #include "../detail/finite_automaton/operate.hpp"
+#include "../detail/letter2letter_transducer/operate.hpp"
 
 namespace atl {
     template <class Symbol = char, 

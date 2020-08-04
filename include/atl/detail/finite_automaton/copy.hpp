@@ -46,7 +46,7 @@ namespace atl::detail {
                          FA& a_out,
                          typename FA::State2Map const& state2_map) {
             typename FA::OutTransitionIter t_it, t_end;
-            for (const auto map_pair : state2_map) {
+            for (const auto& map_pair : state2_map) {
                 auto state = map_pair.first;
                 for (tie(t_it, t_end) = out_transitions(a_in, state); t_it != t_end; t_it++) {
                     auto source = state2_map.at(state);

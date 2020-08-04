@@ -30,31 +30,23 @@ namespace atl::detail {
                           bool reverse = false) {
             typedef typename DFA::StatePair StatePair;
             typedef typename DFA::symbol_property_type SymbolProperty;
-            for (const auto& map_pair_lhs : map_lhs) {
-                auto iter_rhs = map_rhs.find(map_pair_lhs.first);
+            for (const auto& [symbol, map_lhs1] : map_lhs) {
+                auto iter_rhs = map_rhs.find(symbol);
                 if (iter_rhs != map_rhs.end()) {
-                    const auto& map_pair_rhs = *iter_rhs;
+                    const auto& map_rhs1 = iter_rhs -> second;
                     if constexpr (std::is_same<SymbolProperty, no_type>::value) {
                         if (!reverse) {
-                            map[map_pair_lhs.first] = StatePair(map_pair_lhs.second, 
-                                                                map_pair_rhs.second);
+                            map[symbol] = StatePair(map_lhs1, map_rhs1);
                         } else {
-                            map[map_pair_lhs.first] = StatePair(map_pair_rhs.second, 
-                                                                map_pair_lhs.second);
+                            map[symbol] = StatePair(map_rhs1, map_lhs1);
                         }
                     } else {
-                        for (const auto& map_pair_lhs1 : map_pair_lhs.second) {
-                            for (const auto& map_pair_rhs1 : map_pair_rhs.second) {
+                        for (const auto& [p_lhs, state_lhs] : map_lhs1) {
+                            for (const auto& [p_rhs, state_rhs] : map_rhs1) {
                                 if (!reverse) {
-                                    map[map_pair_lhs.first][merge(map_pair_lhs1.first,
-                                                                  map_pair_rhs1.first)] =
-                                    StatePair(map_pair_lhs1.second, 
-                                              map_pair_rhs1.second);
+                                    map[symbol][merge(p_lhs, p_rhs)] = StatePair(state_lhs, state_rhs);
                                 } else {
-                                    map[map_pair_lhs.first][merge(map_pair_rhs1.first,
-                                                                  map_pair_lhs1.first)] =
-                                    StatePair(map_pair_rhs1.second, 
-                                              map_pair_lhs1.second);
+                                    map[symbol][merge(p_rhs, p_lhs)] = StatePair(state_rhs, state_lhs);
                                 }
                             }
                         }
@@ -109,13 +101,11 @@ namespace atl::detail {
             } else {
                 State new_state_lhs = state_pair.first;
                 State new_state_rhs = state_pair.second;
-                if constexpr (std::is_same<StateProperty, 
-                                           boost::no_property>::value) {
+                if constexpr (std::is_same<StateProperty, boost::no_property>::value) {
                     target = add_state(a_out);
                 } else {
-                    target = add_state(a_out, 
-                                   state_merge(atl::get_property(a_lhs, new_state_lhs), 
-                                               atl::get_property(a_rhs, new_state_rhs)));
+                    target = add_state(a_out, state_merge(atl::get_property(a_lhs, new_state_lhs), 
+                                                          atl::get_property(a_rhs, new_state_rhs)));
                 }
                 pair_map[state_pair] = target;
                 do_intersect(a_lhs, a_rhs, a_out, 
@@ -144,20 +134,18 @@ namespace atl::detail {
                 set_final_state(a_out, state_out);
             typename DFA::Symbol2StatePairMap map;
             get_intersect_map(a_lhs, a_rhs, state_lhs, state_rhs, map, symbol_property_merge);
-            for (auto& map_pair : map) {
-                auto& symbol = map_pair.first;
-                if constexpr (std::is_same<SymbolProperty, no_type>::value) {
-                    auto& state_pair = map_pair.second;
+            if constexpr (std::is_same<SymbolProperty, no_type>::value) {
+                for (auto& [symbol, state_pair] : map) {
                     add_intersect_transition(a_lhs, a_rhs, a_out,
                                              state_out, state_pair, pair_map, symbol,
                                              state_merge, symbol_property_merge);
-                } else {
-                    for (auto& map_pair1 : map_pair.second) {
-                        auto& symbol_property = map_pair1.first;
-                        auto& state_pair = map_pair1.second;
+                }
+            } else {
+                for (auto& [symbol, prop_map] : map) {
+                    for (auto& [property, state_pair] : prop_map) {
                         add_intersect_transition(a_lhs, a_rhs, a_out,
                                                  state_out, state_pair, pair_map,
-                                                 TransitionProperty(symbol, symbol_property),
+                                                 TransitionProperty(symbol, property),
                                                  state_merge, symbol_property_merge);
                     }
                 }
