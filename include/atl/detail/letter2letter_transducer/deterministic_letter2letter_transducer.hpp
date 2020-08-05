@@ -91,6 +91,11 @@ namespace atl {
                 l2ltransition_map_.clear();
             }
 
+            Symbol
+            epsilon_symbol() const {
+                return epsilon_;
+            }
+
             const L2LTransitionMap&
             l2ltransition_map() const {
                 return l2ltransition_map_;
@@ -162,6 +167,12 @@ namespace atl {
     }
     #define DL2LT_PARAMS typename DL2LT_SYMBOL, long DL2LT_EPSILON, typename DL2LT_LABEL_PROP, typename DL2LT_STATE_PROP, typename DL2LT_AUT_PROP
     #define DL2LT detail::deterministic_letter2letter_transducer_gen<DL2LT_SYMBOL, DL2LT_EPSILON, DL2LT_LABEL_PROP, DL2LT_STATE_PROP,DL2LT_AUT_PROP>
+
+    template <DL2LT_PARAMS>
+    inline typename DL2LT::symbol_type
+    epsilon_symbol(const DL2LT& dl2lt) {
+        return dl2lt.epsilon_symbol();
+    }
 
     template <DL2LT_PARAMS>
     inline typename DL2LT::L2LTransitionMap const&

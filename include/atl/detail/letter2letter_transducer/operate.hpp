@@ -20,38 +20,45 @@ namespace atl::detail {
         static void 
         get_composite_map(const DL2LT& a_lhs,
                           const DL2LT& a_rhs,
+                          typename DL2LT::State old_state_rhs,
                           typename DL2LT::Symbol2StatePairMap& map,
                           typename DL2LT::Label2StateMap const& map_lhs,
                           typename DL2LT::Label2StateMap const& map_rhs,
-                          Merge merge,
-                          bool reverse = false) {
+                          Merge merge) {
             typedef typename DL2LT::StatePair StatePair;
             typedef typename DL2LT::label_type Label;
             typedef typename DL2LT::label_property_type LabelProperty;
             for (const auto& [upper, map_lhs1] : map_lhs) {
-                for (const auto& [symbol, map_lhs2] : map_lhs1) {
-                    auto iter_rhs = map_rhs.find(symbol);
-                    if (iter_rhs != map_rhs.end()) {
-                        const auto& map_rhs1 = iter_rhs -> second;
-                        for (const auto& [lower, map_rhs2] : map_rhs1) {
-                            if constexpr (std::is_same<LabelProperty, no_type>::value) {
-                                if (!reverse) {
-                                    auto label = Label(upper, lower);
-                                    map[label] = StatePair(map_lhs2, map_rhs2);
-                                } else {
-                                    auto label = Label(lower, upper);
-                                    map[label] = StatePair(map_rhs2, map_lhs2);
-                                }
-                            } else {
-                                for (const auto& [p_lhs, state_lhs] : map_lhs2) {
-                                    for (const auto& [p_rhs, state_rhs] : map_rhs2) {
-                                        if (!reverse) {
-                                            auto label = Label(upper, lower);
-                                            map[label][merge(p_lhs, p_rhs)] = StatePair(state_lhs, state_rhs);
-                                        } else {
-                                            auto label = Label(lower, upper);
-                                            map[label][merge(p_rhs, p_lhs)] = StatePair(state_rhs, state_lhs);
-                                        }
+                if constexpr (std::is_same<LabelProperty, no_type>::value) {
+                    for (const auto& [symbol, state_lhs] : map_lhs1) {
+                        if (symbol == epsilon_symbol(a_lhs)) {
+                            map[Label(upper, epsilon_symbol(a_lhs))] = 
+                                StatePair(state_lhs, old_state_rhs);
+                        }
+                        auto iter_rhs = map_rhs.find(symbol);
+                        if (iter_rhs != map_rhs.end()) {
+                            const auto& map_rhs1 = iter_rhs -> second;
+                            for (const auto& [lower, state_rhs] : map_rhs1) {
+                                map[Label(upper, lower)] = StatePair(state_lhs, state_rhs);
+                            }
+                        }
+                    }
+                } else {
+                    for (const auto& [symbol, prop_map_lhs] : map_lhs1) {
+                        if (symbol == epsilon_symbol(a_lhs)) {
+                            for (const auto& [p_lhs, state_lhs] : prop_map_lhs) {
+                                map[Label(upper, epsilon_symbol(a_lhs))][merge(p_lhs, LabelProperty())] =
+                                    StatePair(state_lhs, old_state_rhs);
+                            }
+                        }
+                        auto iter_rhs = map_rhs.find(symbol);
+                        if (iter_rhs != map_rhs.end()) {
+                            const auto& map_rhs1 = iter_rhs -> second;
+                            for (const auto& [p_lhs, state_lhs] : prop_map_lhs) {
+                                for (const auto& [lower, prop_map_rhs] : map_rhs1) {
+                                    for (const auto& [p_rhs, state_rhs] : prop_map_rhs) {
+                                        map[Label(upper, lower)][merge(p_lhs, p_rhs)] =
+                                            StatePair(state_lhs, state_rhs);
                                     }
                                 }
                             }
@@ -77,11 +84,7 @@ namespace atl::detail {
             if (iter_lhs != transition_map_lhs.end() && iter_rhs != transition_map_rhs.end()) {
                 const auto& map_lhs = iter_lhs -> second;
                 const auto& map_rhs = iter_rhs -> second;
-                if (map_lhs.size() <= map_rhs.size()) {
-                    get_composite_map(a_lhs, a_rhs, map, map_lhs, map_rhs, merge);
-                } else {
-                    get_composite_map(a_lhs, a_rhs, map, map_rhs, map_lhs, merge, 1);
-                }
+                get_composite_map(a_lhs, a_rhs, state_rhs, map, map_lhs, map_rhs, merge);
             }
         }
 
@@ -206,7 +209,7 @@ namespace atl::detail {
 
     template <DL2LT_PARAMS>
     inline void
-    composite_fa(const DL2LT& a_lhs,
+    composite_l2lt(const DL2LT& a_lhs,
                  const DL2LT& a_rhs,
                  DL2LT& a_out) {
         composite_impl::apply(a_lhs, a_rhs, a_out, 
@@ -218,10 +221,10 @@ namespace atl::detail {
     template <DL2LT_PARAMS,
               typename Merge>
     inline void
-    composite_fa(const DL2LT& a_lhs,
-                 const DL2LT& a_rhs,
-                 DL2LT& a_out,
-                 Merge merge) {
+    composite_l2lt(const DL2LT& a_lhs,
+                   const DL2LT& a_rhs,
+                   DL2LT& a_out,
+                   Merge merge) {
         if constexpr (std::is_same<typename DL2LT::symbol_property_type, no_type>::value) {
             composite_impl::apply(a_lhs, a_rhs, a_out, merge, merge,
                                   intersect_merge<typename DL2LT::automaton_property_type>());
@@ -236,11 +239,11 @@ namespace atl::detail {
               typename Merge1,
               typename Merge2>
     inline void
-    composite_fa(const DL2LT& a_lhs,
-                 const DL2LT& a_rhs,
-                 DL2LT& a_out,
-                 Merge1 merge1,
-                 Merge2 merge2) {
+    composite_l2lt(const DL2LT& a_lhs,
+                   const DL2LT& a_rhs,
+                   DL2LT& a_out,
+                   Merge1 merge1,
+                   Merge2 merge2) {
         if constexpr (std::is_same<typename DL2LT::symbol_property_type, no_type>::value) {
             composite_impl::apply(a_lhs, a_rhs, a_out, merge1, merge1, merge2);
         } else {
@@ -254,12 +257,12 @@ namespace atl::detail {
               typename Merge2,
               typename Merge3>
     inline void
-    composite_fa(const DL2LT& a_lhs,
-                 const DL2LT& a_rhs,
-                 DL2LT& a_out,
-                 Merge1 merge1,
-                 Merge2 merge2,
-                 Merge3 merge3) {
+    composite_l2lt(const DL2LT& a_lhs,
+                   const DL2LT& a_rhs,
+                   DL2LT& a_out,
+                   Merge1 merge1,
+                   Merge2 merge2,
+                   Merge3 merge3) {
         if constexpr (std::is_same<typename DL2LT::symbol_property_type, no_type>::value) {
             composite_impl::apply(a_lhs, a_rhs, a_out, merge1, merge1, merge2);
         } else {
