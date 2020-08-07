@@ -271,8 +271,7 @@ namespace atl::detail {
                     initial_state = add_initial_state(a_out, state_merge(props.begin(), props.end()));
                 }
                 typename NFA::StateSetMap state_set_map({{state_set, initial_state}});
-                do_determinize(a_in, a_out, a_out.initial_state(), state_set, state_set_map,
-                               state_merge);
+                do_determinize(a_in, a_out, a_out.initial_state(), state_set, state_set_map, state_merge);
             } else {
                 NFA nfa;
                 remove_epsolon_transition(a_in, nfa, symbol_property_merge, state_merge);
@@ -281,12 +280,10 @@ namespace atl::detail {
                 if constexpr (std::is_same<StateProperty, boost::no_property>::value) {
                     initial_state = add_initial_state(a_out);
                 } else {
-                    initial_state = add_initial_state(a_out, 
-                                        atl::get_property(nfa, nfa.initial_state()));
+                    initial_state = add_initial_state(a_out, atl::get_property(nfa, nfa.initial_state()));
                 }
                 typename NFA::StateSetMap state_set_map({{state_set, initial_state}});
-                do_determinize(nfa, a_out, a_out.initial_state(), state_set, state_set_map,
-                               state_merge);
+                do_determinize(nfa, a_out, a_out.initial_state(), state_set, state_set_map, state_merge);
             }
             set_forward_reachable_flag(a_out, 1);
         }

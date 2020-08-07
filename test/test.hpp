@@ -11,6 +11,13 @@
 
 #endif /* test_hpp */
 
+//test finite automaton
+void test_determinize1();
+void test_determinize2();
+void test_determinize3();
+
+void test_equal();
+
 void test_basic_regular_expression();
 void test_propositional_logic();
 void test_ctl();

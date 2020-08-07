@@ -1,0 +1,133 @@
+#include <atl/finite_automaton/nondeterministic_finite_automaton.hpp>
+#include <atl/finite_automaton/deterministic_finite_automaton.hpp>
+#include "test.hpp"
+using namespace atl;
+
+//test determinize for nondeterministic_finite_automaton<char>
+void test_determinize1() {
+    nondeterministic_finite_automaton<> nfa;
+    add_initial_state(nfa);
+    add_state(nfa);
+    add_state(nfa);
+    add_state(nfa);
+    add_state(nfa);
+    add_final_state(nfa);
+    add_final_state(nfa);
+    add_state(nfa);
+    add_final_state(nfa);
+
+    add_transition(nfa, 0, 1, char(0));
+    add_transition(nfa, 0, 3, 'a');
+    add_transition(nfa, 0, 4, 'a');
+    add_transition(nfa, 1, 2, 'b');
+    add_transition(nfa, 2, 7, char(0));
+    add_transition(nfa, 3, 6, char(0));
+    add_transition(nfa, 4, 5, char(0));
+    add_transition(nfa, 5, 1, char(0));
+    add_transition(nfa, 5, 8, 'b');
+    add_transition(nfa, 6, 8, 'b');
+    add_transition(nfa, 7, 8, 'a');
+    print_fa(nfa);
+    cout << "****************************" << endl;
+    deterministic_finite_automaton<> dfa;
+    determinize(nfa, dfa);
+    print_fa(dfa);
+}
+
+class Symbol {
+public:
+    Symbol() : id_("") {}
+    Symbol(const string& id) : id_(id) {}
+    Symbol(long id) : id_("") {}
+    const string& id() const {
+        return id_;
+    }
+    bool operator== (const Symbol& x) const {
+        return id_ == x.id_;
+    }
+
+    bool operator!= (const Symbol& x) const {
+        return id_ != x.id_;
+    }
+
+    bool operator< (const Symbol& x) const {
+        return id_ < x.id_;
+    }
+
+    Symbol operator& (const Symbol& x) const {
+        return Symbol(id_ + x.id_);
+    }
+
+    friend std::ostream& operator<< (std::ostream& os, const Symbol& x) {
+        os << x.id_;
+        return os;
+    }
+private:
+    string id_;
+};
+
+std::size_t hash_value(const Symbol& c) {
+    return boost::hash<string>()(c.id());
+}
+
+//test determinize for nondeterministic_finite_automaton<Symbol>
+void test_determinize2() {
+    nondeterministic_finite_automaton<Symbol> nfa;
+    add_initial_state(nfa);
+    add_state(nfa);
+    add_state(nfa);
+    add_state(nfa);
+    add_state(nfa);
+    add_final_state(nfa);
+    add_final_state(nfa);
+    add_state(nfa);
+    add_final_state(nfa);
+
+    add_transition(nfa, 0, 1, Symbol(0));
+    add_transition(nfa, 0, 3, Symbol("a"));
+    add_transition(nfa, 0, 4, Symbol("a"));
+    add_transition(nfa, 1, 2, Symbol("b"));
+    add_transition(nfa, 2, 7, Symbol(0));
+    add_transition(nfa, 3, 6, Symbol(0));
+    add_transition(nfa, 4, 5, Symbol(0));
+    add_transition(nfa, 5, 1, Symbol(0));
+    add_transition(nfa, 5, 8, Symbol("b"));
+    add_transition(nfa, 6, 8, Symbol("b"));
+    add_transition(nfa, 7, 8, Symbol("a"));
+    print_fa(nfa);
+    cout << "****************************" << endl;
+    deterministic_finite_automaton<Symbol> dfa;
+    determinize(nfa, dfa);
+    print_fa(dfa);
+}
+
+//test determinize for nondeterministic_finite_automaton<char, 0, Symbol>
+void test_determinize3() {
+    nondeterministic_finite_automaton<char, 0, Symbol> nfa;
+    add_initial_state(nfa);
+    add_state(nfa);
+    add_state(nfa);
+    add_state(nfa);
+    add_state(nfa);
+    add_final_state(nfa);
+    add_final_state(nfa);
+    add_state(nfa);
+    add_final_state(nfa);
+
+    add_transition(nfa, 0, 1, char(0), Symbol("0"));
+    add_transition(nfa, 0, 3, 'a', Symbol("a"));
+    add_transition(nfa, 0, 4, 'a', Symbol("a"));
+    add_transition(nfa, 1, 2, 'b', Symbol("b"));
+    add_transition(nfa, 2, 7, char(0), Symbol("0"));
+    add_transition(nfa, 3, 6, char(0), Symbol("0"));
+    add_transition(nfa, 4, 5, char(0), Symbol("0"));
+    add_transition(nfa, 5, 1, char(0), Symbol("0"));
+    add_transition(nfa, 5, 8, 'b', Symbol("b"));
+    add_transition(nfa, 6, 8, 'b', Symbol("b"));
+    add_transition(nfa, 7, 8, 'a', Symbol("a"));
+    print_fa(nfa);
+    cout << "****************************" << endl;
+    deterministic_finite_automaton<char, 0, Symbol> dfa;
+    determinize(nfa, dfa);
+    print_fa(dfa);
+}

@@ -269,6 +269,17 @@ namespace atl::detail {
             composite_impl::apply(a_lhs, a_rhs, a_out, merge1, merge2, merge3);
         }
     }
+
+    struct translate_impl {
+        template <DL2LT_PARAMS>
+        static void
+        apply(const DL2LT& dl2lt,
+              const std::basic_string<typename DL2LT::symbol_type>& word_in,
+              std::basic_string<typename DL2LT::symbol_type>& word_out,
+              std::basic_string<typename DL2LT::label_property_type>& props,
+              typename DL2LT::StateSet& state_set) {
+        }
+    };
 }
 
 #endif /* atl_detail_letter2letter_transducer_operate_hpp */
