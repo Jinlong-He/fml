@@ -291,7 +291,35 @@ namespace atl::detail {
         }
     };
 }
+
 namespace atl {
+    template <NFA_PARAMS>
+    inline void
+    determinize(const NFA& a_in, 
+                typename NFA::dfa_type& a_out) {
+        if (is_undeterministic(a_in)) {
+            detail::determinize_impl::apply(a_in, a_out, 
+                                            intersect_merge<typename NFA::symbol_property_type>(), 
+                                            union_merge<typename NFA::state_property_type>());
+        } else {
+            copy_fa(a_in, a_out);
+        }
+    }
+
+    template <NFA_PARAMS,
+              typename SymbolPropertyMerge>
+    inline void
+    determinize(const NFA& a_in, 
+                typename NFA::dfa_type& a_out,
+                SymbolPropertyMerge symbol_property_merge) {
+        if (is_undeterministic(a_in)) {
+            detail::determinize_impl::apply(a_in, a_out, symbol_property_merge, 
+                                            union_merge<typename NFA::state_property_type>());
+        } else {
+            copy_fa(a_in, a_out);
+        }
+    }
+
     template <NFA_PARAMS,
               typename SymbolPropertyMerge,
               typename StatePropertyMerge>
@@ -302,38 +330,6 @@ namespace atl {
                 StatePropertyMerge state_property_merge) {
         if (is_undeterministic(a_in)) {
             detail::determinize_impl::apply(a_in, a_out, symbol_property_merge, state_property_merge);
-        } else {
-            copy_fa(a_in, a_out);
-        }
-    }
-
-    template <NFA_PARAMS,
-              typename Merge>
-    inline void
-    determinize(const NFA& a_in, 
-                typename NFA::dfa_type& a_out,
-                Merge merge) {
-        typedef typename NFA::symbol_property_type SymbolProperty;
-        if (is_undeterministic(a_in)) {
-            if constexpr (std::is_same<SymbolProperty, no_type>::value) {
-                detail::determinize_impl::apply(a_in, a_out, merge, merge);
-            } else {
-                detail::determinize_impl::apply(a_in, a_out, merge,
-                                                detail::union_merge<typename NFA::state_property_type>());
-            }
-        } else {
-            copy_fa(a_in, a_out);
-        }
-    }
-
-    template <NFA_PARAMS>
-    inline void
-    determinize(const NFA& a_in, 
-                typename NFA::dfa_type& a_out) {
-        if (is_undeterministic(a_in)) {
-            detail::determinize_impl::apply(a_in, a_out, 
-                                            detail::intersect_merge<typename NFA::symbol_property_type>(),
-                                            detail::union_merge<typename NFA::state_property_type>());
         } else {
             copy_fa(a_in, a_out);
         }
@@ -448,32 +444,27 @@ namespace atl::detail {
                 if (atl::get_property(dfa, s1) != atl::get_property(dfa, s2)) return false;
             }
             ID count1 = transition_map_.count(s1), count2 = transition_map_.count(s2);
-            if ((count1 * count2) == 0) return true;
-            const auto &map1 = count1 <= count2 ? transition_map_.at(s1) : transition_map_.at(s2);
-            const auto &map2 = count1 <= count2 ? transition_map_.at(s2) : transition_map_.at(s1);
-            auto iter1 = map1.begin(), end1 = map1.end();
+            if (count1 != count2 || count1 * count2 == 0) return false;
+            const auto &map1 = transition_map_.at(s1);
+            const auto &map2 = transition_map_.at(s2);
+            auto iter1 = map1.begin(), end1 = map1.end(), iter2 = map2.begin();
             while (iter1 != end1) {
-                auto iter2 = map2.find(iter1 -> first);
-                if (iter2 != map2.end()) {
-                    if constexpr (std::is_same<SymbolProperty, no_type>::value) {
-                        if (state2_map.at(iter1 -> second) != 
-                            state2_map.at(iter2 -> second)) return false;
-                    } else {
-                        ID size1 = iter1 -> second.size(), size2 = iter2 -> second.size();
-                        auto& map1_ = size1 <= size2 ? iter1 -> second : iter2 -> second;
-                        auto& map2_ = size1 <= size2 ? iter2 -> second : iter1 -> second;
-                        auto iter1_ = map1_.begin(), end1_ = map1_.end();
-                        while (iter1_ != end1_) {
-                            auto iter2_ = map2_.find(iter1_ -> first);
-                            if (iter2_ != map2_.end()) {
-                                if (state2_map.at(iter1_ -> second) != 
-                                    state2_map.at(iter2_ -> second)) return false;
-                            }
-                            iter1_++;
-                        }
+                if (iter1 -> first != iter2 -> first) return false;
+                if constexpr (std::is_same<SymbolProperty, no_type>::value) {
+                    if (state2_map.at(iter1 -> second) != state2_map.at(iter2 -> second)) return false;
+                } else {
+                    auto& map1_ = iter1 -> second;
+                    auto& map2_ = iter2 -> second;
+                    if (map1_.size() != map2_.size()) return false;
+                    auto iter1_ = map1_.begin(), end1_ = map1_.end(), iter2_ = map2_.begin();
+                    while (iter1_ != end1_) {
+                        if (state2_map.at(iter1_ -> second) != state2_map.at(iter2_ -> second)) return false;
+                        iter1_++;
+                        iter2_++;
                     }
                 }
                 iter1++;
+                iter2++;
             }
             return true;
         }
@@ -586,46 +577,6 @@ namespace atl::detail {
 };
 
 namespace atl {
-    template <FA_PARAMS,
-              typename SymbolPropertyMerge,
-              typename StatePropertyMerge>
-    inline void
-    minimize(const FA& a_in,
-             typename FA::dfa_type& a_out,
-             SymbolPropertyMerge symbol_property_merge,
-             StatePropertyMerge state_property_merge) {
-        if constexpr (std::is_same<FA, typename FA::dfa_type>::value) {
-            if (!is_minimal(a_in)) {
-                detail::minimize_impl::apply(a_in, a_out);
-            } else {
-                copy_fa(a_in, a_out);
-            }
-        } else {
-            typename FA::dfa_type dfa;
-            determinize(a_in, dfa, symbol_property_merge, state_property_merge);
-            detail::minimize_impl::apply(dfa, a_out);
-        }
-    }
-
-    template <FA_PARAMS,
-              typename Merge>
-    inline void
-    minimize(const FA& a_in,
-             typename FA::dfa_type& a_out,
-             Merge merge) {
-        if constexpr (std::is_same<FA, typename FA::dfa_type>::value) {
-            if (!is_minimal(a_in)) {
-                detail::minimize_impl::apply(a_in, a_out);
-            } else {
-                copy_fa(a_in, a_out);
-            }
-        } else {
-            typename FA::dfa_type dfa;
-            determinize(a_in, dfa, merge);
-            detail::minimize_impl::apply(dfa, a_out);
-        }
-    }
-
     template <DFA_PARAMS>
     inline void
     minimize(const DFA& a_in,
@@ -642,7 +593,33 @@ namespace atl {
     minimize(const NFA& a_in,
              typename NFA::dfa_type& a_out) {
         typename NFA::dfa_type dfa;
-        determinize(a_in, dfa);
+        determinize(a_in, dfa, intersect_merge<typename NFA::symbol_property_type>(), 
+                    union_merge<typename NFA::state_property_type>());
+        detail::minimize_impl::apply(dfa, a_out);
+    }
+
+    template <NFA_PARAMS,
+              typename SymbolPropertyMerge>
+    inline void
+    minimize(const NFA& a_in,
+             typename NFA::dfa_type& a_out,
+             SymbolPropertyMerge symbol_property_merge) {
+        typename NFA::dfa_type dfa;
+        determinize(a_in, dfa, symbol_property_merge, 
+                    union_merge<typename NFA::state_property_type>());
+        detail::minimize_impl::apply(dfa, a_out);
+    }
+
+    template <NFA_PARAMS,
+              typename SymbolPropertyMerge,
+              typename StatePropertyMerge>
+    inline void
+    minimize(const NFA& a_in,
+             typename NFA::dfa_type& a_out,
+             SymbolPropertyMerge symbol_property_merge,
+             StatePropertyMerge state_property_merge) {
+        typename NFA::dfa_type dfa;
+        determinize(a_in, dfa, symbol_property_merge, state_property_merge);
         detail::minimize_impl::apply(dfa, a_out);
     }
 }

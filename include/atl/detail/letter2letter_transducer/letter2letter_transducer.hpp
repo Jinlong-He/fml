@@ -54,15 +54,20 @@ namespace atl {
             }
         };
 
-        template <class Symbol>
-        std::size_t hash_value(const L2LTLabel<Symbol>& l) {
-            return boost::hash<pair<Symbol, Symbol> >()(pair(l.upper_symbol, l.lower_symbol));
-        }
-
         class letter2letter_transducer_gen {
         };
     }
 }
+
+namespace boost {
+    template<class Symbol>
+    struct hash<atl::detail::L2LTLabel<Symbol> > {
+        std::size_t operator() (const atl::detail::L2LTLabel<Symbol>& l) const {
+            return boost::hash<pair<Symbol, Symbol> >()(pair(l.upper_symbol, l.lower_symbol));
+        }
+    };
+}
+
 
 
 #endif /* atl_detail_letter2letter_transducer_hpp */

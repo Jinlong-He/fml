@@ -24,8 +24,7 @@ namespace atl {
     print_state(const Automaton& a,
                 typename Automaton::State state) {
         cout << state;
-        if constexpr (!std::is_same<typename Automaton::state_property_type, 
-                                    boost::no_property>::value) {
+        if constexpr (!std::is_same<typename Automaton::state_property_type, boost::no_property>::value) {
             cout << " {" << atl::get_property(a, state) << "}";
         }
     }
@@ -51,8 +50,12 @@ namespace atl {
 
     template <FA_PARAMS>
     inline void
-    print_fa(const FA& fa, const string& name = "") {
-        cout << "FA: " << name << endl;
+    print_fa(const FA& fa) {
+        cout << "FA: ";
+        if constexpr (!std::is_same<typename FA::automaton_property_type, boost::no_property>::value) {
+            cout << atl::get_property(fa);
+        }
+        cout << endl;
         cout << "States: " << state_set(fa).size() << endl;
         cout << "Alphabet: ";
         ID i = 0;
