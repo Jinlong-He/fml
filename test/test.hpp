@@ -15,6 +15,12 @@
 void test_determinize1();
 void test_determinize2();
 void test_determinize3();
+void test_determinize4();
+
+void test_minimize1();
+void test_minimize2();
+void test_minimize3();
+void test_minimize4();
 
 void test_equal();
 
