@@ -79,6 +79,7 @@ namespace test {
     bool test_basic_regular_expression2();
     bool test_basic_regular_expression3();
     bool test_basic_regular_expression4();
+    bool test_basic_regular_expression5();
 
     void test_intersect1();
     void test_intersect2();

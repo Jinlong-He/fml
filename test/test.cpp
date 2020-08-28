@@ -41,5 +41,9 @@ BOOST_AUTO_TEST_CASE(test_basic_regular_expression4) {
     BOOST_CHECK_EQUAL(test::test_basic_regular_expression4(), true);
 }
 
+BOOST_AUTO_TEST_CASE(test_basic_regular_expression5) {
+    BOOST_CHECK_EQUAL(test::test_basic_regular_expression5(), true);
+}
+
 BOOST_AUTO_TEST_SUITE_END()
 
