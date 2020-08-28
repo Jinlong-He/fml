@@ -8,6 +8,7 @@ INCLUDE_DIRECTORIES (
   /usr/local/include
   /usr/include
 )
+
 SET (EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/build/bin)
 SET (CMAKE_CXX_STANDARD 17)
 

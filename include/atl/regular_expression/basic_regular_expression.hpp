@@ -20,11 +20,18 @@ namespace atl {
             basic_regular_expression()
                 : Base() {}
 
-            basic_regular_expression(const std::basic_string<Symbol>& re)
+            basic_regular_expression(const std::vector<Symbol>& re)
                 : Base(re) {}
 
-            basic_regular_expression(const std::basic_string<Symbol>& re, 
-                                     const unordered_map<Symbol, char>& operator_map) 
+            basic_regular_expression(const std::string& re)
+                : Base(re) {}
+
+            basic_regular_expression(const std::vector<Symbol>& re, 
+                                     const unordered_map<char, Symbol>& operator_map) 
+                : Base(re, operator_map) {}
+
+            basic_regular_expression(const std::string& re, 
+                                     const unordered_map<char, char>& operator_map) 
                 : Base(re, operator_map) {}
     };
 }

@@ -51,15 +51,28 @@ namespace atl {
         public:
             basic_regular_expression_gen() {}
 
-            basic_regular_expression_gen(const std::basic_string<Symbol>& re) {
-                init_operator_map();
-                init(re);
+            basic_regular_expression_gen(const std::vector<Symbol>& re,
+                                         const unordered_map<char, Symbol>& operator_map = 
+                                         unordered_map<char, Symbol>(
+                                                               {{'*', Symbol('*')}, {'+', Symbol('+')},
+                                                                {'?', Symbol('?')}, {'|', Symbol('|')},
+                                                                {'.', Symbol('.')}, {'\\', Symbol('\\')},
+                                                                {'(', Symbol('(')}, {')', Symbol(')')}}))
+                : regular_expression_(re) {
+                init_operator_map(operator_map);
+                init(regular_expression_);
             }
 
-            basic_regular_expression_gen(const std::basic_string<Symbol>& re, 
-                                         const unordered_map<Symbol, char>& operator_map) 
-                : operator_map_(operator_map) {
-                init(re);
+            basic_regular_expression_gen(const std::string& re,
+                                         const unordered_map<char, Symbol>& operator_map =
+                                         unordered_map<char, char>(
+                                                               {{'*', Symbol('*')}, {'+', Symbol('+')},
+                                                                {'?', Symbol('?')}, {'|', Symbol('|')},
+                                                                {'.', Symbol('.')}, {'\\', Symbol('\\')},
+                                                                {'(', Symbol('(')}, {')', Symbol(')')}}))
+                : regular_expression_(re.begin(), re.end()) {
+                init_operator_map(operator_map);
+                init(regular_expression_);
             }
 
             const RegularSymbols& original_expression() const {
@@ -71,41 +84,33 @@ namespace atl {
             }
 
         private:
-            void init_operator_map() {
-                operator_map_[Symbol('*')] = '*';
-                operator_map_[Symbol('+')] = '+';
-                operator_map_[Symbol('?')] = '?';
-                operator_map_[Symbol('|')] = '|';
-                operator_map_[Symbol('.')] = '.';
-                operator_map_[Symbol('(')] = '(';
-                operator_map_[Symbol(')')] = ')';
-                operator_map_[Symbol('\\')] = '\\';
+            void init_operator_map(const unordered_map<char, Symbol>& operator_map) {
+                for (const auto& [c, symbol] : operator_map) {
+                    operator_map_[symbol] = c;
+                }
+                concat_optaror_ = RegularSymbol(operator_map.at('.'), '.');
             }
 
-            void init(const std::basic_string<Symbol>& re) {
+            void init(const std::vector<Symbol>& re) {
                 bool flag = false;
                 for (size_t i = 0; i < re.size(); i++) {
                     if (operator_map_.count(re[i]) > 0) {
-                        if (flag & ((operator_map_[re[i]] == '(') | 
-                                    (operator_map_[re[i]] == '\\' ))) {
-                            original_expression_.push_back(RegularSymbol<Symbol>(Symbol('.'),
-                                                           operator_map_[Symbol('.')]));
+                        if (flag & ((operator_map_.at(re[i]) == '(') | (operator_map_.at(re[i]) == '\\' ))) {
+                            original_expression_.push_back(concat_optaror_);
                         }
                         flag = true;
-                        if ((operator_map_[re[i]] == '|') | 
-                            (operator_map_[re[i]] == '(')) {
+                        if ((operator_map_.at(re[i]) == '|') | (operator_map_.at(re[i]) == '(')) {
                             flag = false;
                         }
-                        if (operator_map_[re[i]] == '\\') {
+                        if (operator_map_.at(re[i]) == '\\') {
                             original_expression_.push_back(RegularSymbol<Symbol>(re[++i]));
                         } else {
-                            original_expression_.push_back(RegularSymbol<Symbol>(Symbol(re[i]),
-                                                           operator_map_[Symbol(re[i])]));
+                            original_expression_.push_back(RegularSymbol<Symbol>(re[i],
+                                                           operator_map_.at(Symbol(re[i]))));
                         }
                     } else {
                         if (flag) {
-                            original_expression_.push_back(RegularSymbol<Symbol>(Symbol('.'),
-                                                           operator_map_[Symbol('.')]));
+                            original_expression_.push_back(concat_optaror_);
                         }
                         original_expression_.push_back(RegularSymbol<Symbol>(re[i]));
                         flag = true;
@@ -123,8 +128,7 @@ namespace atl {
                         if (original_expression_[i].opt == '(') {
                             operator_stack.push(original_expression_[i]);
                         } else if (original_expression_[i].opt == ')') {
-                            while ((!operator_stack.empty()) &&
-                                   (operator_stack.top().opt != '(')) {
+                            while ((!operator_stack.empty()) && (operator_stack.top().opt != '(')) {
                                 postfix_expression_.push_back(operator_stack.top());
                                 operator_stack.pop();
                             }
@@ -132,8 +136,7 @@ namespace atl {
                         } else {
                             while ((!operator_stack.empty()) &&
                                    ((operator_stack.top().opt != '(') &&
-                                   (original_expression_[i].priority <= 
-                                   operator_stack.top().priority))) {
+                                   (original_expression_[i].priority <= operator_stack.top().priority))) {
                                 postfix_expression_.push_back(operator_stack.top());
                                 operator_stack.pop();
                             }
@@ -149,8 +152,10 @@ namespace atl {
 
         private:
             unordered_map<Symbol, char> operator_map_;
+            std::vector<Symbol> regular_expression_;
             RegularSymbols original_expression_;
             RegularSymbols postfix_expression_;
+            RegularSymbol<Symbol> concat_optaror_;
         };
     }
 }

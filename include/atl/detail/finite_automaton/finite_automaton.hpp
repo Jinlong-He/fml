@@ -143,9 +143,9 @@ namespace atl::detail {
             return epsilon_;
         }
 
-        transition_property
+        transition_property_type
         epsilon_transition() const {
-            return transition_property(epsilon_);
+            return transition_property_type(epsilon_);
         }
 
         State
@@ -336,7 +336,7 @@ namespace atl {
     }
 
     template <FA_PARAMS>
-    inline typename FA::transition_property
+    inline typename FA::transition_property_type
     epsilon_transition(const FA& fa) {
         return fa.epsilon_transition();
     }

@@ -18,19 +18,30 @@ namespace atl::detail {
         copy_states(const FA& a_in,
                     FA& a_out,
                     typename FA::State2Map& state2_map,
-                    typename FA::StateSet const& states) {
+                    typename FA::StateSet const& state_set) {
             typedef typename FA::state_property_type StateProperty;
             typedef typename FA::State State;
-
+            typename FA::StateIter s_it, s_end;
             State state_copy = -1;
-            auto& states_copy = states.size() > 0 ? states : state_set(a_in);
-            for (auto state : states_copy) {
-                if constexpr (std::is_same<StateProperty, boost::no_property>::value) {
-                    state_copy = add_state(a_out);
-                } else {
-                    state_copy = add_state(a_out, atl::get_property(a_in, state));
+            if (state_set.size() > 0) {
+                for (auto state : state_set) {
+                    if constexpr (std::is_same<StateProperty, boost::no_property>::value) {
+                        state_copy = add_state(a_out);
+                    } else {
+                        state_copy = add_state(a_out, atl::get_property(a_in, state));
+                    }
+                    state2_map[state] = state_copy;
                 }
-                state2_map[state] = state_copy;
+            } else {
+                for (tie(s_it, s_end) = states(a_in); s_it != s_end; s_it++) {
+                    auto state = *s_it;
+                    if constexpr (std::is_same<StateProperty, boost::no_property>::value) {
+                        state_copy = add_state(a_out);
+                    } else {
+                        state_copy = add_state(a_out, atl::get_property(a_in, state));
+                    }
+                    state2_map[state] = state_copy;
+                }
             }
             set_initial_state(a_out, state2_map.at(initial_state(a_in)));
             for (auto state : final_state_set(a_in)) {
@@ -46,10 +57,8 @@ namespace atl::detail {
                          FA& a_out,
                          typename FA::State2Map const& state2_map) {
             typename FA::OutTransitionIter t_it, t_end;
-            for (const auto& map_pair : state2_map) {
-                auto state = map_pair.first;
+            for (const auto& [state, source] : state2_map) {
                 for (tie(t_it, t_end) = out_transitions(a_in, state); t_it != t_end; t_it++) {
-                    auto source = state2_map.at(state);
                     auto target = state2_map.at(atl::target(a_in, *t_it));
                     const auto& t = atl::get_property(a_in, *t_it);
                     add_transition(a_out, source, target, t);

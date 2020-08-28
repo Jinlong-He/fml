@@ -18,7 +18,9 @@ namespace test {
     public:
         Symbol() : id_("") {}
         Symbol(const string& id) : id_(id) {}
-        Symbol(long id) : id_("") {}
+        Symbol(char id) : id_(1, id) {
+            if (id == 0) id_ = "";
+        }
         const string& id() const {
             return id_;
         }
@@ -67,15 +69,26 @@ namespace test {
     void test_determinize3();
     void test_determinize4();
 
-    void test_minimize1();
-    void test_minimize2();
-    void test_minimize3();
-    void test_minimize4();
+    bool test_minimize1();
+    bool test_minimize2();
+    bool test_minimize3();
+    bool test_minimize4();
+    bool test_minimize5();
+
+    bool test_basic_regular_expression1();
+    bool test_basic_regular_expression2();
+    bool test_basic_regular_expression3();
+    bool test_basic_regular_expression4();
 
     void test_intersect1();
     void test_intersect2();
     void test_intersect3();
     void test_intersect4();
+
+    void test_union1();
+    void test_union2();
+    void test_union3();
+    void test_union4();
 
     void test_equal();
 

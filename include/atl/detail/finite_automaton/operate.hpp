@@ -280,14 +280,14 @@ namespace atl::detail {
             typedef typename DFA::StateSet StateSet;
             typedef typename DFA::State2Map State2Map;
             typedef typename DFA::automaton_property_type AutomatonProperty;
-            if constexpr (!std::is_same<AutomatonProperty, boost::no_property>::value) {
-                atl::set_property(a_out, automaton_property_merge(atl::get_property(a_lhs), 
-                                                                  atl::get_property(a_rhs)));
-            }
             typename DFA::nfa_type nfa;
             typename DFA::SymbolSet alphabet_;
             util::set_union(alphabet(a_lhs), alphabet(a_rhs), alphabet_);
             set_alphabet(nfa, alphabet_);
+            if constexpr (!std::is_same<AutomatonProperty, boost::no_property>::value) {
+                atl::set_property(nfa, automaton_property_merge(atl::get_property(a_lhs), 
+                                                                  atl::get_property(a_rhs)));
+            }
             State2Map state2_map_lhs, state2_map_rhs;
             State state_lhs, state_rhs, state;
             copy_fa_impl::copy_states(a_lhs, nfa, state2_map_lhs, StateSet());
@@ -299,7 +299,7 @@ namespace atl::detail {
             state = add_initial_state(nfa);
             add_transition(nfa, state, state_lhs, epsilon_transition(nfa));
             add_transition(nfa, state, state_rhs, epsilon_transition(nfa));
-            minimize(nfa, a_out);
+            minimize(nfa, a_out, symbol_property_merge, state_property_merge);
         }
     };
 };
@@ -321,8 +321,8 @@ namespace atl {
     inline void
     union_fa(const DFA& a_lhs,
              const DFA& a_rhs,
-             SymbolPropertyMerge symbol_property_merge,
-             DFA& a_out) {
+             DFA& a_out,
+             SymbolPropertyMerge symbol_property_merge) {
         detail::union_impl::apply(a_lhs, a_rhs, a_out, symbol_property_merge,
                                   union_merge<typename DFA::state_property_type>(),
                                   union_merge<typename DFA::automaton_property_type>());
@@ -334,9 +334,9 @@ namespace atl {
     inline void
     union_fa(const DFA& a_lhs,
              const DFA& a_rhs,
+             DFA& a_out,
              SymbolPropertyMerge symbol_property_merge,
-             StatePropertyMerge state_property_merge,
-             DFA& a_out) {
+             StatePropertyMerge state_property_merge) {
         detail::union_impl::apply(a_lhs, a_rhs, a_out, symbol_property_merge, state_property_merge,
                                   union_merge<typename DFA::automaton_property_type>());
     }
@@ -348,10 +348,10 @@ namespace atl {
     inline void
     union_fa(const DFA& a_lhs,
              const DFA& a_rhs,
+             DFA& a_out,
              SymbolPropertyMerge symbol_property_merge,
              StatePropertyMerge state_property_merge,
-             AutomatonPropertyMerge automaton_property_merge,
-             DFA& a_out) {
+             AutomatonPropertyMerge automaton_property_merge) {
         detail::union_impl::apply(a_lhs, a_rhs, a_out, symbol_property_merge, state_property_merge,
                                   automaton_property_merge);
     }
@@ -424,14 +424,14 @@ namespace atl::detail{
             typedef typename DFA::StateSet StateSet;
             typedef typename DFA::State2Map State2Map;
             typedef typename DFA::automaton_property_type AutomatonProperty;
-            if constexpr (!std::is_same<AutomatonProperty, boost::no_property>::value) {
-                atl::set_property(a_out, automaton_property_merge(atl::get_property(a_lhs), 
-                                                                  atl::get_property(a_rhs)));
-            }
             typename DFA::nfa_type nfa;
             typename DFA::SymbolSet alphabet_;
             util::set_union(alphabet(a_lhs), alphabet(a_rhs), alphabet_);
             set_alphabet(nfa, alphabet_);
+            if constexpr (!std::is_same<AutomatonProperty, boost::no_property>::value) {
+                atl::set_property(nfa, automaton_property_merge(atl::get_property(a_lhs), 
+                                                                  atl::get_property(a_rhs)));
+            }
             State2Map state2_map_lhs, state2_map_rhs;
             State state_lhs, state_rhs;
             copy_fa_impl::copy_states(a_lhs, nfa, state2_map_lhs, StateSet());
@@ -446,7 +446,7 @@ namespace atl::detail{
                 add_transition(nfa, state, state_rhs, epsilon_transition(nfa));
             }
             set_initial_state(nfa, state_lhs);
-            minimize(nfa, a_out);
+            minimize(nfa, a_out, symbol_property_merge, state_property_merge);
         }
     };
 };
@@ -510,6 +510,12 @@ namespace atl::detail {
         static bool
         apply(const DFA& a_lhs,
               const DFA& a_rhs) {
+            typedef typename DFA::state_property_type StateProperty;
+            typedef typename DFA::symbol_property_type SymbolProperty;
+            typedef typename DFA::automaton_property_type AutomatonProperty;
+            if constexpr (!std::is_same<AutomatonProperty, boost::no_property>::value) {
+                if (atl::get_property(a_lhs) != atl::get_property(a_rhs)) return false;
+            }
             if (state_set(a_lhs) != state_set(a_rhs)) return false;
             const auto& transition_map_lhs = transition_map(a_lhs);
             const auto& transition_map_rhs = transition_map(a_rhs);
@@ -521,10 +527,35 @@ namespace atl::detail {
                 const auto& map_lhs = transition_map_lhs.at(state);
                 const auto& map_rhs = transition_map_rhs.at(state);
                 auto iter_lhs = map_lhs.begin(), end_lhs = map_lhs.end(),
-                     iter_rhs = map_rhs.begin(), end_rhs = map_rhs.end();
+                     iter_rhs = map_rhs.begin();
                 while (iter_lhs != end_lhs) {
                     if (iter_lhs -> first != iter_rhs -> first) return false;
-                    if (iter_lhs -> second != iter_rhs -> second) return false;
+                    if constexpr (std::is_same<SymbolProperty, no_type>::value) {
+                        auto state_lhs = iter_lhs -> second;
+                        auto state_rhs = iter_rhs -> second;
+                        if (state_lhs != state_rhs) return false;
+                        if constexpr (!std::is_same<StateProperty, boost::no_property>::value) {
+                            if (atl::get_property(a_lhs, state_lhs) != atl::get_property(a_rhs, state_rhs))
+                                return false;
+                        }
+                    } else {
+                        const auto& prop_map_lhs = iter_lhs -> second;
+                        const auto& prop_map_rhs = iter_rhs -> second;
+                        auto iter_lhs1 = prop_map_lhs.begin(), end_lhs1 = prop_map_lhs.end(),
+                             iter_rhs1 = prop_map_rhs.begin();
+                        while (iter_lhs1 != end_lhs1) {
+                            if (iter_lhs1 -> first != iter_rhs1 -> first) return false;
+                            auto state_lhs = iter_lhs1 -> second;
+                            auto state_rhs = iter_rhs1 -> second;
+                            if (state_lhs != state_rhs) return false;
+                            if constexpr (!std::is_same<StateProperty, boost::no_property>::value) {
+                                if (atl::get_property(a_lhs, state_lhs) != 
+                                    atl::get_property(a_rhs, state_rhs)) return false;
+                            }
+                            iter_lhs1++;
+                            iter_rhs1++;
+                        }
+                    }
                     iter_lhs++;
                     iter_rhs++;
                 }

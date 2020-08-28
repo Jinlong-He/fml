@@ -5,7 +5,7 @@ using namespace atl;
 
 namespace test {
     //test minimize for nondeterministic_finite_automaton<char>
-    void test_minimize1() {
+    bool test_minimize1() {
         nondeterministic_finite_automaton<> nfa({'a', 'b'});
         add_initial_state(nfa);
         add_state(nfa);
@@ -14,14 +14,13 @@ namespace test {
         add_final_state(nfa);
         add_final_state(nfa);
         add_final_state(nfa);
-
         add_transition(nfa, 0, 1, char('a'));
         add_transition(nfa, 0, 2, char('b'));
         add_transition(nfa, 1, 2, char('b'));
         add_transition(nfa, 1, 3, char('a'));
         add_transition(nfa, 2, 1, char('a'));
         add_transition(nfa, 2, 4, char('b'));
-        add_transition(nfa, 3, 2, char('a'));
+        add_transition(nfa, 3, 3, char('a'));
         add_transition(nfa, 3, 5, char('b'));
         add_transition(nfa, 4, 4, char('b'));
         add_transition(nfa, 4, 6, char('a'));
@@ -29,110 +28,203 @@ namespace test {
         add_transition(nfa, 5, 6, char('a'));
         add_transition(nfa, 6, 5, char('b'));
         add_transition(nfa, 6, 3, char('a'));
-        print_fa(nfa);
-        cout << "****************************" << endl;
-        deterministic_finite_automaton<> dfa;
-        minimize(nfa, dfa);
-        print_fa(dfa);
-        cout << "**************************** end minimize1 ****************************" << endl;
+        deterministic_finite_automaton<> result;
+        minimize(nfa, result);
+        deterministic_finite_automaton<> expect({'a', 'b'});
+        add_initial_state(expect);
+        add_state(expect);
+        add_state(expect);
+        add_final_state(expect);
+        add_transition(expect, 0, 1, char('a'));
+        add_transition(expect, 0, 2, char('b'));
+        add_transition(expect, 1, 2, char('b'));
+        add_transition(expect, 1, 3, char('a'));
+        add_transition(expect, 2, 1, char('a'));
+        add_transition(expect, 2, 3, char('b'));
+        add_transition(expect, 3, 3, char('a'));
+        add_transition(expect, 3, 3, char('b'));
+        return (result == expect);
     }
 
     //test minimize for nondeterministic_finite_automaton<Symbol>
-    void test_minimize2() {
+    bool test_minimize2() {
+        nondeterministic_finite_automaton<Symbol> nfa({Symbol("a"), Symbol("b")});
+        add_initial_state(nfa);
+        set_final_state(nfa, 0);
+        add_final_state(nfa);
+        add_state(nfa);
+        add_state(nfa);
+        add_state(nfa);
+        add_state(nfa);
+
+        add_transition(nfa, 0, 1, Symbol("a"));
+        add_transition(nfa, 0, 2, Symbol("b"));
+        add_transition(nfa, 1, 1, Symbol("a"));
+        add_transition(nfa, 1, 4, Symbol("b"));
+        add_transition(nfa, 2, 1, Symbol("a"));
+        add_transition(nfa, 2, 3, Symbol("b"));
+        add_transition(nfa, 3, 3, Symbol("a"));
+        add_transition(nfa, 3, 2, Symbol("b"));
+        add_transition(nfa, 4, 0, Symbol("a"));
+        add_transition(nfa, 4, 5, Symbol("b"));
+        add_transition(nfa, 5, 5, Symbol("a"));
+        add_transition(nfa, 5, 4, Symbol("b"));
+        deterministic_finite_automaton<Symbol> result;
+        minimize(nfa, result);
+        deterministic_finite_automaton<Symbol> expect({Symbol("a"), Symbol("b")});
+        add_initial_state(expect);
+        set_final_state(expect, 0);
+        add_state(expect);
+        add_state(expect);
+        add_transition(expect, 0, 0, Symbol("a"));
+        add_transition(expect, 0, 1, Symbol("b"));
+        add_transition(expect, 1, 0, Symbol("a"));
+        add_transition(expect, 1, 2, Symbol("b"));
+        add_transition(expect, 2, 2, Symbol("a"));
+        add_transition(expect, 2, 1, Symbol("b"));
+        return (result == expect);
+    }
+
+    //test minimize for nondeterministic_finite_automaton<Symbol>
+    bool test_minimize3() {
         nondeterministic_finite_automaton<Symbol> nfa({Symbol("a"), Symbol("b")});
         add_initial_state(nfa);
         add_state(nfa);
         add_state(nfa);
-        add_final_state(nfa);
-        add_final_state(nfa);
-        add_final_state(nfa);
+        add_state(nfa);
+        add_state(nfa);
+        add_state(nfa);
+        add_state(nfa);
+        add_state(nfa);
+        add_state(nfa);
+        add_state(nfa);
         add_final_state(nfa);
 
-        add_transition(nfa, 0, 1, Symbol("a"));
-        add_transition(nfa, 0, 2, Symbol("b"));
-        add_transition(nfa, 1, 2, Symbol("b"));
-        add_transition(nfa, 1, 3, Symbol("a"));
-        add_transition(nfa, 2, 1, Symbol("a"));
-        add_transition(nfa, 2, 4, Symbol("b"));
-        add_transition(nfa, 3, 3, Symbol("a"));
-        add_transition(nfa, 3, 5, Symbol("b"));
-        add_transition(nfa, 4, 4, Symbol("b"));
-        add_transition(nfa, 4, 6, Symbol("a"));
-        add_transition(nfa, 5, 5, Symbol("b"));
-        add_transition(nfa, 5, 6, Symbol("a"));
-        add_transition(nfa, 6, 5, Symbol("b"));
-        add_transition(nfa, 6, 3, Symbol("a"));
-        print_fa(nfa);
-        cout << "****************************" << endl;
-        deterministic_finite_automaton<Symbol> dfa;
-        minimize(nfa, dfa);
-        print_fa(dfa);
-        cout << "**************************** end minimize2 ****************************" << endl;
+        add_transition(nfa, 0, 1, Symbol(0));
+        add_transition(nfa, 0, 7, Symbol(0));
+        add_transition(nfa, 1, 2, Symbol(0));
+        add_transition(nfa, 1, 4, Symbol(0));
+        add_transition(nfa, 2, 3, Symbol("a"));
+        add_transition(nfa, 3, 6, Symbol(0));
+        add_transition(nfa, 4, 5, Symbol("b"));
+        add_transition(nfa, 5, 6, Symbol(0));
+        add_transition(nfa, 6, 1, Symbol(0));
+        add_transition(nfa, 6, 7, Symbol(0));
+        add_transition(nfa, 7, 8, Symbol("a"));
+        add_transition(nfa, 8, 9, Symbol("b"));
+        add_transition(nfa, 9, 10, Symbol("b"));
+        deterministic_finite_automaton<Symbol> result;
+        minimize(nfa, result);
+        deterministic_finite_automaton<Symbol> expect({Symbol("a"), Symbol("b")});
+        add_initial_state(expect);
+        add_state(expect);
+        add_state(expect);
+        add_final_state(expect);
+        add_transition(expect, 0, 1, Symbol("a"));
+        add_transition(expect, 0, 0, Symbol("b"));
+        add_transition(expect, 1, 1, Symbol("a"));
+        add_transition(expect, 1, 2, Symbol("b"));
+        add_transition(expect, 2, 1, Symbol("a"));
+        add_transition(expect, 2, 3, Symbol("b"));
+        add_transition(expect, 3, 1, Symbol("a"));
+        add_transition(expect, 3, 0, Symbol("b"));
+        return (result == expect);
     }
 
-    //test minimize for nondeterministic_finite_automaton<char, 0, Symbol>
-    void test_minimize3() {
+    //test minimize for nondeterministic_finite_automaton<Symbol, 0, Symbol>
+    bool test_minimize4() {
         nondeterministic_finite_automaton<Symbol, 0, Symbol> nfa({Symbol("a"), Symbol("b")});
         add_initial_state(nfa);
         add_state(nfa);
         add_state(nfa);
-        add_final_state(nfa);
-        add_final_state(nfa);
-        add_final_state(nfa);
+        add_state(nfa);
+        add_state(nfa);
+        add_state(nfa);
+        add_state(nfa);
+        add_state(nfa);
+        add_state(nfa);
+        add_state(nfa);
         add_final_state(nfa);
 
-        add_transition(nfa, 0, 1, Symbol("a"), Symbol("a"));
-        add_transition(nfa, 0, 2, Symbol("b"), Symbol("b"));
-        add_transition(nfa, 1, 2, Symbol("b"), Symbol("b"));
-        add_transition(nfa, 1, 3, Symbol("a"), Symbol("a"));
-        add_transition(nfa, 2, 1, Symbol("a"), Symbol("a"));
-        add_transition(nfa, 2, 4, Symbol("b"), Symbol("b"));
-        add_transition(nfa, 3, 3, Symbol("a"), Symbol("b"));
-        add_transition(nfa, 3, 5, Symbol("b"), Symbol("b"));
-        add_transition(nfa, 4, 4, Symbol("b"), Symbol("b"));
-        add_transition(nfa, 4, 6, Symbol("a"), Symbol("a"));
-        add_transition(nfa, 5, 6, Symbol("b"), Symbol("b"));
-        add_transition(nfa, 5, 6, Symbol("a"), Symbol("a"));
-        add_transition(nfa, 6, 5, Symbol("b"), Symbol("b"));
-        add_transition(nfa, 6, 3, Symbol("a"), Symbol("a"));
-        print_fa(nfa);
-        cout << "****************************" << endl;
-        deterministic_finite_automaton<Symbol, 0, Symbol> dfa;
-        minimize(nfa, dfa);
-        print_fa(dfa);
-        cout << "**************************** end minimize3**************************" << endl;
+        add_transition(nfa, 0, 1, Symbol(0), Symbol("[01]"));
+        add_transition(nfa, 0, 7, Symbol(0), Symbol("[07]"));
+        add_transition(nfa, 1, 2, Symbol(0), Symbol("[12]"));
+        add_transition(nfa, 1, 4, Symbol(0), Symbol("[14]"));
+        add_transition(nfa, 2, 3, Symbol("a"), Symbol("[23]"));
+        add_transition(nfa, 3, 6, Symbol(0), Symbol("[36]"));
+        add_transition(nfa, 4, 5, Symbol("b"), Symbol("[45]"));
+        add_transition(nfa, 5, 6, Symbol(0), Symbol("[56]"));
+        add_transition(nfa, 6, 1, Symbol(0), Symbol("[61]"));
+        add_transition(nfa, 6, 7, Symbol(0), Symbol("[67]"));
+        add_transition(nfa, 7, 8, Symbol("a"), Symbol("[78]"));
+        add_transition(nfa, 8, 9, Symbol("b"), Symbol("[89]"));
+        add_transition(nfa, 9, 10, Symbol("b"), Symbol("[910]"));
+        deterministic_finite_automaton<Symbol, 0, Symbol> result;
+        minimize(nfa, result);
+        deterministic_finite_automaton<Symbol, 0, Symbol> expect;
+        add_initial_state(expect);
+        add_state(expect);
+        add_state(expect);
+        add_final_state(expect);
+        add_transition(expect, 0, 0, Symbol("a"), Symbol("[01][12][23]"));
+        add_transition(expect, 0, 1, Symbol("a"), Symbol("[07][78]"));
+        add_transition(expect, 0, 0, Symbol("b"), Symbol("[01][14][45]"));
+        add_transition(expect, 0, 0, Symbol("a"), Symbol("[36][61][12][23]"));
+        add_transition(expect, 0, 1, Symbol("a"), Symbol("[36][67][78]"));
+        add_transition(expect, 0, 0, Symbol("b"), Symbol("[36][61][14][45]"));
+        add_transition(expect, 0, 0, Symbol("a"), Symbol("[56][61][12][23]"));
+        add_transition(expect, 0, 1, Symbol("a"), Symbol("[56][67][78]"));
+        add_transition(expect, 0, 0, Symbol("b"), Symbol("[56][61][14][45]"));
+        add_transition(expect, 1, 2, Symbol("b"), Symbol("[89]"));
+        add_transition(expect, 2, 3, Symbol("b"), Symbol("[910]"));
+        return (result == expect);
     }
 
-    //test minimize for nondeterministic_finite_automaton<char, 0, Symbol, bool>
-    void test_minimize4() {
-        nondeterministic_finite_automaton<Symbol, 0, Symbol, bool> nfa({'a', 'b'});
+    //test minimize for nondeterministic_finite_automaton<Symbol, 0, Symbol, bool, Symbol>
+    bool test_minimize5() {
+        nondeterministic_finite_automaton<Symbol, 0, Symbol, bool, Symbol> nfa({Symbol("a"), Symbol("b")});
+        atl::set_property(nfa, Symbol("test5"));
         add_initial_state(nfa, false);
         add_state(nfa, false);
         add_state(nfa, false);
+        add_state(nfa, false);
+        add_state(nfa, false);
+        add_state(nfa, false);
+        add_state(nfa, false);
+        add_state(nfa, false);
+        add_state(nfa, false);
+        add_state(nfa, false);
         add_final_state(nfa, true);
-        add_final_state(nfa, true);
-        add_final_state(nfa, true);
-        add_final_state(nfa, false);
 
-        add_transition(nfa, 0, 1, Symbol("a"), Symbol("a"));
-        add_transition(nfa, 0, 2, Symbol("b"), Symbol("b"));
-        add_transition(nfa, 1, 2, Symbol("b"), Symbol("b"));
-        add_transition(nfa, 1, 3, Symbol("a"), Symbol("a"));
-        add_transition(nfa, 2, 1, Symbol("a"), Symbol("a"));
-        add_transition(nfa, 2, 4, Symbol("b"), Symbol("b"));
-        add_transition(nfa, 3, 3, Symbol("a"), Symbol("b"));
-        add_transition(nfa, 3, 5, Symbol("b"), Symbol("b"));
-        add_transition(nfa, 4, 4, Symbol("b"), Symbol("b"));
-        add_transition(nfa, 4, 6, Symbol("a"), Symbol("a"));
-        add_transition(nfa, 5, 5, Symbol("b"), Symbol("b"));
-        add_transition(nfa, 5, 6, Symbol("a"), Symbol("a"));
-        add_transition(nfa, 6, 5, Symbol("b"), Symbol("b"));
-        add_transition(nfa, 6, 3, Symbol("a"), Symbol("a"));
-        print_fa(nfa);
-        cout << "****************************" << endl;
-        deterministic_finite_automaton<Symbol, 0, Symbol, bool> dfa;
-        minimize(nfa, dfa);
-        print_fa(dfa);
-        cout << "**************************** end minimize4 ****************************" << endl;
+        add_transition(nfa, 0, 1, Symbol(0), Symbol(0));
+        add_transition(nfa, 0, 7, Symbol(0), Symbol(0));
+        add_transition(nfa, 1, 2, Symbol(0), Symbol(0));
+        add_transition(nfa, 1, 4, Symbol(0), Symbol(0));
+        add_transition(nfa, 2, 3, Symbol("a"), Symbol("a"));
+        add_transition(nfa, 3, 6, Symbol(0), Symbol(0));
+        add_transition(nfa, 4, 5, Symbol("b"), Symbol("b"));
+        add_transition(nfa, 5, 6, Symbol(0), Symbol(0));
+        add_transition(nfa, 6, 1, Symbol(0), Symbol(0));
+        add_transition(nfa, 6, 7, Symbol(0), Symbol(0));
+        add_transition(nfa, 7, 8, Symbol("a"), Symbol("a"));
+        add_transition(nfa, 8, 9, Symbol("b"), Symbol("b"));
+        add_transition(nfa, 9, 10, Symbol("b"), Symbol("b"));
+        deterministic_finite_automaton<Symbol, 0, Symbol, bool, Symbol> result;
+        minimize(nfa, result);
+        deterministic_finite_automaton<Symbol, 0, Symbol, bool, Symbol> expect({Symbol("a"), Symbol("b")});
+        atl::set_property(expect, Symbol("test5"));
+        add_initial_state(expect, false);
+        add_state(expect, false);
+        add_state(expect, false);
+        add_final_state(expect, true);
+        add_transition(expect, 0, 1, Symbol("a"), Symbol("a"));
+        add_transition(expect, 0, 0, Symbol("b"), Symbol("b"));
+        add_transition(expect, 1, 1, Symbol("a"), Symbol("a"));
+        add_transition(expect, 1, 2, Symbol("b"), Symbol("b"));
+        add_transition(expect, 2, 1, Symbol("a"), Symbol("a"));
+        add_transition(expect, 2, 3, Symbol("b"), Symbol("b"));
+        add_transition(expect, 3, 1, Symbol("a"), Symbol("a"));
+        add_transition(expect, 3, 0, Symbol("b"), Symbol("b"));
+        return (result == expect);
     }
 }

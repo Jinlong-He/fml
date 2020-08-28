@@ -36,32 +36,32 @@ namespace atl::detail {
             if constexpr (std::is_same<SymbolProperty, no_type>::value) {
             } else {
                 if (direction == forward) {
+                    auto new_source = state2_map.at(source);
                     typename NFA::OutTransitionIter o_it, o_end;
                     for (tie(o_it, o_end) = out_transitions(a_in, target); o_it != o_end; o_it++) {
                         const auto& t = atl::get_property(a_in, *o_it);
                         auto new_target = state2_map.at(atl::target(a_in, *o_it));
                         if (t.default_property == epsilon(a_in)) {
-                            set_final_state(a_out, new_target);
-                            add_epsilon_transition(a_in, a_out, state2_map.at(source), new_target,
+                            add_epsilon_transition(a_in, a_out, source, atl::target(a_in, *o_it),
                                                    symbol_property_merge(p, t.extended_property),
                                                    state2_map, symbol_property_merge, forward);
                         } else {
-                            add_transition(a_out, state2_map.at(source), new_target, t.default_property,
+                            add_transition(a_out, new_source, new_target, t.default_property,
                                            symbol_property_merge(p, t.extended_property));
                         }
                     }
                 } else {
+                    auto new_target = state2_map.at(target);
                     typename NFA::InTransitionIter i_it, i_end;
                     for (tie(i_it, i_end) = in_transitions(a_in, source); i_it != i_end; i_it++) {
                         const auto& t = atl::get_property(a_in, *i_it);
                         auto new_source = state2_map.at(atl::source(a_in, *i_it));
                         if (t.default_property == epsilon(a_in)) {
-                            set_final_state(a_out, new_source);
-                            add_epsilon_transition(a_in, a_out, new_source, state2_map.at(target),
+                            add_epsilon_transition(a_in, a_out, atl::source(a_in, *i_it), target,
                                                    symbol_property_merge(t.extended_property, p),
                                                    state2_map, symbol_property_merge, backward);
                         } else {
-                            add_transition(a_out, new_source, state2_map.at(target), t.default_property,
+                            add_transition(a_out, new_source, new_target, t.default_property,
                                            symbol_property_merge(t.extended_property, p));
                         }
                     }
@@ -344,7 +344,7 @@ namespace atl::detail {
                                 DFA& a_out,
                                 typename DFA::State source,
                                 typename DFA::State target,
-                                typename DFA::transition_property_type t,
+                                typename DFA::transition_property_type const& t,
                                 typename DFA::State2Map& state2_map,
                                 std::vector<typename DFA::State>& work) {
             typedef typename DFA::state_property_type StateProperty;
@@ -371,23 +371,13 @@ namespace atl::detail {
                                 typename DFA::State source,
                                 typename DFA::State2Map& state2_map) {
             typedef typename DFA::State State;
-            typedef typename DFA::symbol_property_type SymbolProperty;
-            typedef typename DFA::transition_property_type TransitionProperty;
-            if (transition_map(a_in).count(source) == 0) return;
-            const auto& map = transition_map(a_in).at(source);
             auto new_source = state2_map.at(source);
             std::vector<State> work;
-            if constexpr (std::is_same<SymbolProperty, no_type>::value) {
-                for (const auto& [symbol, target] : map) {
-                    add_nomalize_transition(a_in, a_out, new_source, target, symbol, state2_map, work);
-                }
-            } else {
-                for (const auto& [symbol, prop_map]: map) {
-                    for (const auto& [prop, target] : prop_map) {
-                        add_nomalize_transition(a_in, a_out, new_source, target, 
-                                                TransitionProperty(symbol, prop), state2_map, work);
-                    }
-                }
+            typename DFA::OutTransitionIter o_it, o_end;
+            for (tie(o_it, o_end) = out_transitions(a_in, source); o_it != o_end; o_it++) {
+                auto target = atl::target(a_in, *o_it);
+                add_nomalize_transition(a_in, a_out, new_source, target, atl::get_property(a_in, *o_it), 
+                                        state2_map, work);
             }
             for (auto state : work) {
                 add_nomalize_transition(a_in, a_out, state, state2_map);
@@ -404,7 +394,14 @@ namespace atl::detail {
             if constexpr (!std::is_same<AutomatonProperty, boost::no_property>::value) {
                 atl::set_property(a_out, atl::get_property(a_in));
             }
-            typename DFA::State2Map state2_map({{initial_state(a_in), add_initial_state(a_out)}});
+            typename DFA::State initial_state_ = -1;
+            if constexpr (std::is_same<AutomatonProperty, boost::no_property>::value) {
+                initial_state_ = add_initial_state(a_out);
+            } else {
+                initial_state_ = add_initial_state(a_out, atl::get_property(a_in, initial_state(a_in)));
+            }
+            typename DFA::State2Map state2_map({{initial_state(a_in), initial_state_}});
+            if (is_final_state(a_in, initial_state(a_in))) set_final_state(a_out, initial_state(a_out));
             add_nomalize_transition(a_in, a_out, initial_state(a_in), state2_map);
         }
     };
