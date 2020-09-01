@@ -59,9 +59,12 @@ namespace atl::detail {
             typename FA::OutTransitionIter t_it, t_end;
             for (const auto& [state, source] : state2_map) {
                 for (tie(t_it, t_end) = out_transitions(a_in, state); t_it != t_end; t_it++) {
-                    auto target = state2_map.at(atl::target(a_in, *t_it));
-                    const auto& t = atl::get_property(a_in, *t_it);
-                    add_transition(a_out, source, target, t);
+                    auto target = atl::target(a_in, *t_it);
+                    if (state2_map.count(target) > 0) {
+                        auto new_target = state2_map.at(target);
+                        const auto& t = atl::get_property(a_in, *t_it);
+                        add_transition(a_out, source, new_target, t);
+                    }
                 }
             }
         }

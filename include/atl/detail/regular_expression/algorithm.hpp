@@ -144,6 +144,8 @@ namespace atl::detail {
                     for (auto state : final_state_set(*a)) {
                         add_transition(*a, state, initial_state(*a), epsilon(*a));
                     }
+                } else if (opt == '?') {
+                    add_transition(*a, i_state, f_state, epsilon(*a));
                 }
                 add_transition(*a, i_state, initial_state(*a), epsilon(*a));
                 for (auto state : final_state_set(*a)) {

@@ -67,10 +67,13 @@ namespace atl {
             deterministic_finite_automaton(const deterministic_finite_automaton& x)
                 : Base(x) {}
 
+            deterministic_finite_automaton(const Base& x)
+                : Base(x) {}
+
             ~deterministic_finite_automaton() {}
 
             deterministic_finite_automaton& 
-            operator=(const deterministic_finite_automaton& x) {
+            operator=(const dfa_type& x) {
                 if (&x != this) {
                     Base::operator=(x);
                 }
@@ -78,7 +81,7 @@ namespace atl {
             }
 
             deterministic_finite_automaton
-            operator&(const deterministic_finite_automaton& x) {
+            operator&(const dfa_type& x) {
                 deterministic_finite_automaton out, dfa_lhs, dfa_rhs;
                 minimize(*this, dfa_lhs);
                 minimize(x, dfa_rhs);
@@ -96,7 +99,7 @@ namespace atl {
             }
             
             deterministic_finite_automaton
-            operator|(const deterministic_finite_automaton& x) {
+            operator|(const dfa_type& x) {
                 deterministic_finite_automaton out, dfa_lhs, dfa_rhs;
                 minimize(*this, dfa_lhs);
                 minimize(x, dfa_rhs);
@@ -114,7 +117,7 @@ namespace atl {
             }
 
             deterministic_finite_automaton
-            operator-(const deterministic_finite_automaton& x) {
+            operator-(const dfa_type& x) {
                 deterministic_finite_automaton out, dfa_lhs, dfa_rhs, dfa;
                 minimize(*this, dfa_lhs);
                 minimize(x, dfa_rhs);
@@ -134,7 +137,7 @@ namespace atl {
             }
             
             deterministic_finite_automaton
-            operator+(const deterministic_finite_automaton& x) {
+            operator+(const dfa_type& x) {
                 deterministic_finite_automaton out, dfa_lhs, dfa_rhs;
                 minimize(*this, dfa_lhs);
                 minimize(x, dfa_rhs);
@@ -160,7 +163,7 @@ namespace atl {
             }
 
             bool
-            operator==(const deterministic_finite_automaton& x) {
+            operator==(const dfa_type& x) {
                 deterministic_finite_automaton dfa_lhs, dfa_rhs;
                 minimize(*this, dfa_lhs);
                 minimize(x, dfa_rhs);

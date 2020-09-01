@@ -389,13 +389,14 @@ namespace atl::detail {
         apply(const DFA& a_in,
               DFA& a_out) {
             typedef typename DFA::automaton_property_type AutomatonProperty;
+            typedef typename DFA::state_property_type StateProperty;
             clear(a_out);
             atl::set_alphabet(a_out, atl::alphabet(a_in));
             if constexpr (!std::is_same<AutomatonProperty, boost::no_property>::value) {
                 atl::set_property(a_out, atl::get_property(a_in));
             }
             typename DFA::State initial_state_ = -1;
-            if constexpr (std::is_same<AutomatonProperty, boost::no_property>::value) {
+            if constexpr (std::is_same<StateProperty, boost::no_property>::value) {
                 initial_state_ = add_initial_state(a_out);
             } else {
                 initial_state_ = add_initial_state(a_out, atl::get_property(a_in, initial_state(a_in)));
@@ -440,10 +441,13 @@ namespace atl::detail {
             if constexpr (!std::is_same<StateProperty, boost::no_property>::value) {
                 if (atl::get_property(dfa, s1) != atl::get_property(dfa, s2)) return false;
             }
-            ID count1 = transition_map_.count(s1), count2 = transition_map_.count(s2);
-            if (count1 != count2 || count1 * count2 == 0) return false;
+            ID count1 = transition_map_.count(s1),
+               count2 = transition_map_.count(s2);
+            if (count1 != count2) return false;
+            if (count1 == 0) return true;
             const auto &map1 = transition_map_.at(s1);
             const auto &map2 = transition_map_.at(s2);
+            if (map1.size() != map2.size()) return false;
             auto iter1 = map1.begin(), end1 = map1.end(), iter2 = map2.begin();
             while (iter1 != end1) {
                 if (iter1 -> first != iter2 -> first) return false;

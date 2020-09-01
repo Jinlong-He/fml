@@ -12,7 +12,6 @@
 #include <boost/unordered_map.hpp>
 using std::string;
 
-
 namespace test {
     struct Symbol {
     public:
@@ -37,11 +36,15 @@ namespace test {
         }
 
         Symbol operator& (const Symbol& x) const {
-            return Symbol(id_ + x.id_);
+            if (x == Symbol(0)) return *this;
+            if (*this == Symbol(0)) return x;
+            return Symbol(id_ + "&" + x.id_);
         }
 
         Symbol operator| (const Symbol& x) const {
-            return Symbol(id_ + x.id_ + "or");
+            if (x == Symbol(0)) return *this;
+            if (*this == Symbol(0)) return x;
+            return Symbol(id_ + "|" + x.id_);
         }
 
         friend std::ostream& operator<< (std::ostream& os, const Symbol& x) {
@@ -64,16 +67,14 @@ namespace boost {
 
 namespace test {
     //test finite automaton
-    void test_determinize1();
-    void test_determinize2();
-    void test_determinize3();
-    void test_determinize4();
 
     bool test_minimize1();
     bool test_minimize2();
     bool test_minimize3();
     bool test_minimize4();
     bool test_minimize5();
+    bool test_minimize6();
+    bool test_minimize7();
 
     bool test_basic_regular_expression1();
     bool test_basic_regular_expression2();
@@ -81,15 +82,15 @@ namespace test {
     bool test_basic_regular_expression4();
     bool test_basic_regular_expression5();
 
-    void test_intersect1();
-    void test_intersect2();
-    void test_intersect3();
-    void test_intersect4();
+    bool test_intersect1();
+    bool test_intersect2();
+    bool test_intersect3();
+    bool test_intersect4();
 
-    void test_union1();
-    void test_union2();
-    void test_union3();
-    void test_union4();
+    bool test_union1();
+    bool test_union2();
+    bool test_union3();
+    bool test_union4();
 
     void test_equal();
 

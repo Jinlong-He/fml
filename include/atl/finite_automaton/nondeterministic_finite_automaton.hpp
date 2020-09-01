@@ -64,10 +64,13 @@ namespace atl {
             nondeterministic_finite_automaton(const nondeterministic_finite_automaton& x)
                 : Base(x) {}
 
+            nondeterministic_finite_automaton(const Base& x)
+                : Base(x) {}
+
             ~nondeterministic_finite_automaton() {}
 
             nondeterministic_finite_automaton& 
-            operator=(const nondeterministic_finite_automaton& x) {
+            operator=(const nfa_type& x) {
                 if (&x != this) {
                     Base::operator=(x);
                 }
@@ -84,7 +87,7 @@ namespace atl {
             }
 
             dfa_type
-            operator&(const nondeterministic_finite_automaton& x) {
+            operator&(const nfa_type& x) {
                 dfa_type out, dfa_lhs, dfa_rhs;
                 minimize(*this, dfa_lhs);
                 minimize(x, dfa_rhs);
@@ -102,7 +105,7 @@ namespace atl {
             }
 
             dfa_type
-            operator|(const nondeterministic_finite_automaton& x) {
+            operator|(const nfa_type& x) {
                 dfa_type out, dfa_lhs, dfa_rhs;
                 minimize(*this, dfa_lhs);
                 minimize(x, dfa_rhs);
@@ -121,7 +124,7 @@ namespace atl {
             }
 
             dfa_type
-            operator-(const nondeterministic_finite_automaton& x) {
+            operator-(const nfa_type& x) {
                 dfa_type out, dfa_lhs, dfa_rhs, dfa;
                 minimize(*this, dfa_lhs);
                 minimize(x, dfa_rhs);
@@ -140,7 +143,7 @@ namespace atl {
             }
 
             dfa_type
-            operator+(const nondeterministic_finite_automaton& x) {
+            operator+(const nfa_type& x) {
                 dfa_type out, dfa_lhs, dfa_rhs;
                 minimize(*this, dfa_lhs);
                 minimize(x, dfa_rhs);
@@ -165,7 +168,7 @@ namespace atl {
             }
 
             bool
-            operator==(const nondeterministic_finite_automaton& x) {
+            operator==(const nfa_type& x) {
                 dfa_type dfa_lhs, dfa_rhs;
                 minimize(*this, dfa_lhs);
                 minimize(x, dfa_rhs);

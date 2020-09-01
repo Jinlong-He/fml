@@ -166,15 +166,15 @@ namespace test {
         add_state(expect);
         add_state(expect);
         add_final_state(expect);
-        add_transition(expect, 0, 0, Symbol("a"), Symbol("[01][12][23]"));
-        add_transition(expect, 0, 1, Symbol("a"), Symbol("[07][78]"));
-        add_transition(expect, 0, 0, Symbol("b"), Symbol("[01][14][45]"));
-        add_transition(expect, 0, 0, Symbol("a"), Symbol("[36][61][12][23]"));
-        add_transition(expect, 0, 1, Symbol("a"), Symbol("[36][67][78]"));
-        add_transition(expect, 0, 0, Symbol("b"), Symbol("[36][61][14][45]"));
-        add_transition(expect, 0, 0, Symbol("a"), Symbol("[56][61][12][23]"));
-        add_transition(expect, 0, 1, Symbol("a"), Symbol("[56][67][78]"));
-        add_transition(expect, 0, 0, Symbol("b"), Symbol("[56][61][14][45]"));
+        add_transition(expect, 0, 0, Symbol("a"), Symbol("[01]&[12]&[23]"));
+        add_transition(expect, 0, 1, Symbol("a"), Symbol("[07]&[78]"));
+        add_transition(expect, 0, 0, Symbol("b"), Symbol("[01]&[14]&[45]"));
+        add_transition(expect, 0, 0, Symbol("a"), Symbol("[36]&[61]&[12]&[23]"));
+        add_transition(expect, 0, 1, Symbol("a"), Symbol("[36]&[67]&[78]"));
+        add_transition(expect, 0, 0, Symbol("b"), Symbol("[36]&[61]&[14]&[45]"));
+        add_transition(expect, 0, 0, Symbol("a"), Symbol("[56]&[61]&[12]&[23]"));
+        add_transition(expect, 0, 1, Symbol("a"), Symbol("[56]&[67]&[78]"));
+        add_transition(expect, 0, 0, Symbol("b"), Symbol("[56]&[61]&[14]&[45]"));
         add_transition(expect, 1, 2, Symbol("b"), Symbol("[89]"));
         add_transition(expect, 2, 3, Symbol("b"), Symbol("[910]"));
         return (result == expect);
@@ -225,6 +225,61 @@ namespace test {
         add_transition(expect, 2, 3, Symbol("b"), Symbol("b"));
         add_transition(expect, 3, 1, Symbol("a"), Symbol("a"));
         add_transition(expect, 3, 0, Symbol("b"), Symbol("b"));
+        return (result == expect);
+    }
+
+    //test minimize for nondeterministic_finite_automaton<Symbol, 0, Symbol, bool, Symbol>
+    bool test_minimize6() {
+        nondeterministic_finite_automaton<Symbol, 0, Symbol, bool, Symbol> nfa({Symbol("a"), Symbol("b")});
+        atl::set_property(nfa, Symbol("test6"));
+        add_initial_state(nfa, false);
+        add_state(nfa, false);
+        add_final_state(nfa, false);
+        add_state(nfa, false);
+
+        add_transition(nfa, 0, 0, Symbol("a"), Symbol("0"));
+        add_transition(nfa, 0, 1, Symbol("a"), Symbol("1"));
+        add_transition(nfa, 0, 3, Symbol("a"), Symbol("3"));
+        add_transition(nfa, 1, 2, Symbol("b"), Symbol("2"));
+        add_transition(nfa, 2, 2, Symbol("b"), Symbol("2"));
+        deterministic_finite_automaton<Symbol, 0, Symbol, bool, Symbol> result;
+        minimize(nfa, result);
+
+        deterministic_finite_automaton<Symbol, 0, Symbol, bool, Symbol> expect({Symbol("a"), Symbol("b")});
+        atl::set_property(expect, Symbol("test6"));
+        add_initial_state(expect, false);
+        add_state(expect, false);
+        add_final_state(expect, false);
+        add_state(expect, false);
+
+        add_transition(expect, 0, 0, Symbol("a"), Symbol("0"));
+        add_transition(expect, 0, 1, Symbol("a"), Symbol("1"));
+        add_transition(expect, 1, 2, Symbol("b"), Symbol("2"));
+        add_transition(expect, 2, 2, Symbol("b"), Symbol("2"));
+        return (result == expect);
+    }
+
+    //test minimize for nondeterministic_finite_automaton<>
+    bool test_minimize7() {
+        nondeterministic_finite_automaton<> nfa({'a', 'b'});
+        add_initial_state(nfa);
+        add_state(nfa);
+        add_final_state(nfa);
+        add_state(nfa);
+        add_transition(nfa, 0, 0, char('a'));
+        add_transition(nfa, 0, 1, char('a'));
+        add_transition(nfa, 1, 2, char('b'));
+        add_transition(nfa, 2, 2, char('b'));
+        add_transition(nfa, 0, 3, char('b'));
+        deterministic_finite_automaton<> expect, result;
+        minimize(nfa, result);
+        add_initial_state(expect);
+        add_state(expect);
+        add_final_state(expect);
+        add_transition(expect, 0, 1, char('a'));
+        add_transition(expect, 1, 1, char('a'));
+        add_transition(expect, 1, 2, char('b'));
+        add_transition(expect, 2, 2, char('b'));
         return (result == expect);
     }
 }

@@ -1,12 +1,13 @@
 ADD_LIBRARY (test_minimize test_minimize.cpp)
 ADD_LIBRARY (test_bre test_basic_regular_expression.cpp)
+ADD_LIBRARY (test_intersect test_intersect.cpp)
+ADD_LIBRARY (test_union test_union.cpp)
 
 ADD_EXECUTABLE (
     main main.cpp 
-    #test_determinize.cpp
     test_minimize.cpp
-    #test_intersect.cpp
-    #test_union.cpp
+    test_intersect.cpp
+    test_union.cpp
     test_basic_regular_expression.cpp 
     #test_transducer.cpp
     #test_template.cpp 
@@ -25,6 +26,8 @@ TARGET_LINK_LIBRARIES (test_fml
   PRIVATE
       test_minimize
       test_bre
+      test_intersect
+      test_union
       Boost::unit_test_framework
   )
 

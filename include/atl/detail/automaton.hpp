@@ -80,9 +80,9 @@ namespace atl {
                 : graph_(new BoostGraph(p)),
                   flag_(0) {}
 
-            automaton_gen(const automaton_gen& x) 
-                : graph_(new BoostGraph()) {
-                //todo
+            automaton_gen(const automaton_gen& x)
+                : graph_(new BoostGraph(*x.graph_)),
+                  flag_(x.flag_) {
             }
 
             virtual ~automaton_gen() {}
@@ -92,6 +92,7 @@ namespace atl {
                 if (&x != this) {
                     BoostGraphPtr ptr(new BoostGraph(*x.graph_));
                     graph_.swap(ptr);
+                    flag_ = x.flag_;
                 }
                 return *this;
             }

@@ -191,7 +191,7 @@ namespace atl::detail {
                                     initial_state_out}}); 
             do_intersect(a_lhs, a_rhs, a_out, 
                          initial_state_lhs, initial_state_rhs, 
-                         a_out.initial_state(), pair_map, state_property_merge, symbol_property_merge);
+                         initial_state(a_out), pair_map, state_property_merge, symbol_property_merge);
             if (final_state_set(a_out).size() == 0) clear(a_out);
         }
     };
@@ -517,15 +517,18 @@ namespace atl::detail {
                 if (atl::get_property(a_lhs) != atl::get_property(a_rhs)) return false;
             }
             if (state_set(a_lhs) != state_set(a_rhs)) return false;
+            if (final_state_set(a_lhs) != final_state_set(a_rhs)) return false;
+            if (initial_state(a_lhs) != initial_state(a_rhs)) return false;
             const auto& transition_map_lhs = transition_map(a_lhs);
             const auto& transition_map_rhs = transition_map(a_rhs);
             for (auto state : state_set(a_lhs)) {
                 ID count1 = transition_map_lhs.count(state),
                    count2 = transition_map_rhs.count(state);
                 if (count1 != count2) return false;
-                if (count1 == 0) continue;
+                if (count1 == 0) return true;
                 const auto& map_lhs = transition_map_lhs.at(state);
                 const auto& map_rhs = transition_map_rhs.at(state);
+                if (map_lhs.size() != map_rhs.size()) return false;
                 auto iter_lhs = map_lhs.begin(), end_lhs = map_lhs.end(),
                      iter_rhs = map_rhs.begin();
                 while (iter_lhs != end_lhs) {
