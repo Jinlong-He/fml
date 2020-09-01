@@ -38,6 +38,8 @@ namespace ll {
             return *this;
         }
 
+        virtual ~item() {}
+
         const string& to_string() const {
             return identifier_;
         }
@@ -53,7 +55,16 @@ namespace ll {
         void set_type(const string& type) {
             type_ = type;
         }
-    private:
+
+        friend std::ostream& operator<< (std::ostream& os, const item& x) {
+            if (x.type_ == "") {
+                os << x.identifier_;
+            } else {
+                os << x.type_ + " " + x.identifier_;
+            }
+            return os;
+        }
+    protected:
         string identifier_;
         string type_;
     };

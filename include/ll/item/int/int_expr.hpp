@@ -22,24 +22,28 @@ namespace ll {
               rhs_(nullptr) {}
 
         int_expr(const string& id)
-            : int_item(id),
+            : item(id),
+              int_item(),
               lhs_(nullptr),
               rhs_(nullptr) {}
 
         int_expr(const int_item& lhs, const int_item& rhs, const string& op)
-            : int_item("(" + lhs.to_string() + op + rhs.to_string() + ")"),
+            : item("(" + lhs.to_string() + op + rhs.to_string() + ")"),
+              int_item(),
               lhs_(new int_item(lhs)),
               rhs_(new int_item(rhs)),
               operator_(op) {}
 
         int_expr(const int_expr& v)
-            : int_item(v),
+            : item(v),
+              int_item(),
               lhs_(new int_item(v.lhs())),
               rhs_(new int_item(v.rhs())),
               operator_(v.operator_) {}
 
         int_expr& operator=(const int_expr& v) {
             if (this != &v) {
+                item::operator=(v);
                 int_item::operator=(v);
                 lhs_ = IntItemPtr(new int_item(v.lhs()));
                 rhs_ = IntItemPtr(new int_item(v.rhs()));
@@ -47,6 +51,8 @@ namespace ll {
             }
             return *this;
         }
+
+        ~int_expr() {}
 
         const int_item& lhs() const {
             return *lhs_;

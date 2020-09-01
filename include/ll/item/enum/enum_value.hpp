@@ -18,24 +18,30 @@ namespace ll {
           public enum_item {
     public:
         enum_value()
-            : value(),
+            : item(),
+              value(),
               enum_item() {}
 
         enum_value(const string& id)
-            : value(),
-              enum_item(id, "enum") {}
+            : item(id, "enum"),
+              value(),
+              enum_item() {}
 
         enum_value(const enum_value& v)
-            : value(v),
+            : item(v),
+              value(v),
               enum_item(v) {}
 
         enum_value& operator=(const enum_value& v) {
             if (this != &v) {
+                item::operator=(v);
                 value::operator=(v);
                 enum_item::operator=(v);
             }
             return *this;
         }
+
+        ~enum_value() {}
     private:
     };
 }

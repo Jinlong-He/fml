@@ -12,16 +12,11 @@
 #include "../item.hpp"
 
 namespace ll {
-    class bool_item : public item {
+    class bool_item 
+        : virtual public item {
     public:
         bool_item()
             : item("") {}
-
-        bool_item(const string& identifier)
-            : item(identifier) {}
-
-        bool_item(const string& identifier, const string& type)
-            : item(identifier, type) {}
 
         bool_item(const bool_item& i)
             : item(i) {}
@@ -32,6 +27,8 @@ namespace ll {
             }
             return *this;
         }
+
+        virtual ~bool_item() {}
     };
 }
 

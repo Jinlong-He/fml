@@ -22,20 +22,25 @@ namespace ll {
               int_item() {}
 
         int_value(int v)
-            : value(),
-              int_item(std::to_string(v), "integer") {}
+            : item(std::to_string(v), "integer"),
+              value(),
+              int_item() {}
 
         int_value(const int_value& v)
-            : value(v),
+            : item(v),
+              value(v),
               int_item(v) {}
 
         int_value& operator=(const int_value& v) {
             if (this != &v) {
+                item::operator=(v);
                 value::operator=(v);
                 int_item::operator=(v);
             }
             return *this;
         }
+
+        ~int_value() {}
     private:
     };
 }

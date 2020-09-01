@@ -9,8 +9,8 @@
 #ifndef ll_atomic_proposition_hpp 
 #define ll_atomic_proposition_hpp
 
-#include "item/int/int_value.hpp"
-#include "item/bool/bool_value.hpp"
+#include "item/int/int_variable.hpp"
+#include "item/bool/bool_variable.hpp"
 #include "fomula.hpp"
 
 namespace ll {

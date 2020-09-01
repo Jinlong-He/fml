@@ -12,16 +12,11 @@
 #include "../item.hpp"
 
 namespace ll {
-    class enum_item : public item {
+    class enum_item 
+        : virtual public item {
     public:
         enum_item()
             : item("") {}
-
-        enum_item(const string& identifier)
-            : item(identifier) {}
-
-        enum_item(const string& identifier, const string& type)
-            : item(identifier, type) {}
 
         enum_item(const enum_item& i)
             : item(i) {}
@@ -32,6 +27,8 @@ namespace ll {
             }
             return *this;
         }
+
+        virtual ~enum_item() {}
     };
 }
 

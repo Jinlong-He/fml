@@ -13,20 +13,11 @@
 #include "../../ll/propositional_logic.hpp"
 
 namespace atl {
-    template <class Fomula = ll::propositional_fomula,
-              class FomulaProperty = no_type, 
-              class StateVarProperty = no_type,
-              class AutomatonProperty = no_type>
+    template <class Fomula = ll::propositional_fomula>
     class fomula_automaton 
-        : public detail::fomula_automaton_gen<Fomula,
-                                              FomulaProperty,
-                                              StateVarProperty,
-                                              AutomatonProperty> {
+        : public detail::fomula_automaton_gen<Fomula> {
     public:
-        typedef detail::fomula_automaton_gen<Fomula,
-                                             FomulaProperty,
-                                             StateVarProperty,
-                                             AutomatonProperty> Base;
+        typedef detail::fomula_automaton_gen<Fomula> Base;
 
         typedef typename Base::State State;
         typedef typename Base::Transition Transition;

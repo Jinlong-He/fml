@@ -37,6 +37,11 @@ namespace ll {
         void set_content(const string& content) {
             content_ = content;
         }
+
+        friend std::ostream& operator<< (std::ostream& os, const fomula& x) {
+            os << x.content_;
+            return os;
+        }
     private:
         string content_;
     };

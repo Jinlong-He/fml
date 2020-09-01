@@ -19,163 +19,164 @@
 using boost::unordered_map;
 using boost::unordered_set;
 
+namespace atl::detail {
+    template <class Fomula>
+    class fomula_automaton_gen 
+        : public automaton_gen<Fomula, ll::item, boost::no_property> {
+    public:
+        typedef Fomula fomula_type;
+        typedef Fomula transition_property_type;
+        typedef ll::item Item;
+        typedef ll::variable Variable;
+        typedef Item state_property_type;
+
+        typedef automaton_gen<transition_property_type,
+                              state_property_type,
+                              boost::no_property> Base;
+
+        typedef typename Base::State State;
+        typedef typename Base::Transition Transition;
+
+        typedef typename Base::StateIter StateIter;
+        typedef typename Base::TransitionIter TransitionIter;
+        typedef typename Base::InTransitionIter InTransitionIter;
+        typedef typename Base::OutTransitionIter OutTransitionIter;
+
+        typedef unordered_set<State> StateSet;
+        typedef unordered_map<State, State> State2Map;
+
+        typedef unordered_set<Item const*> ItemSet;
+        typedef unordered_set<Variable const*> VariableSet;
+    public:
+        fomula_automaton_gen()
+            : Base() {}
+
+        fomula_automaton_gen(const fomula_automaton_gen& x)
+            : Base(x),
+              state_set_(x.state_set_),
+              control_state_set_(x.control_state_set_),
+              input_state_set_(x.input_state_set_) {}
+
+        fomula_automaton_gen& 
+        operator=(const fomula_automaton_gen& x) {
+            if (&x != this) {
+                Base::operator=(x);
+                state_set_ = x.state_set_;
+                control_state_set_ = x.control_state_set_;
+                input_state_set_ = x.input_state_set_;
+            }
+            return *this;
+        }
+
+        const StateSet&
+        state_set() const {
+            return state_set_;
+        }
+
+        void
+        set_state_set(const StateSet& state_set) {
+            state_set_ = state_set;
+        }
+
+        const StateSet&
+        control_state_set() const {
+            return control_state_set_;
+        }
+
+        void 
+        set_control_state_set(const StateSet& control_state_set) {
+            control_state_set_ = control_state_set;
+        }
+
+        const StateSet&
+        input_state_set() const {
+            return input_state_set_;
+        }
+
+        void 
+        set_input_state_set(const StateSet& input_state_set) {
+            input_state_set_ = input_state_set;
+        }
+
+        const std::list<ll::atomic_proposition>&
+        init_list() const {
+            return init_list_;
+        }
+
+        void set_init_list(const std::list<ll::atomic_proposition>& list) {
+            init_list_ = list;
+        }
+
+        void 
+        set_state(State state) {
+            state_set_.insert(state);
+        }
+
+        void 
+        set_control_state(State state) {
+            control_state_set_.insert(state);
+        }
+
+        void 
+        set_input_state(State state) {
+            input_state_set_.insert(state);
+        }
+
+        void 
+        add_init_list(const ll::atomic_proposition& ap) {
+            init_list_.push_back(ap);
+        }
+
+        State
+        add_state(const state_property_type& p) {
+            if (p.type() == "integer") this -> set_flag(1, 1);
+            auto state = Base::add_state(p);
+            item_map_[&p] = state;
+            return state;
+        }
+
+        State
+        add_control_state(const state_property_type& p) {
+            auto state = add_state(p);
+            control_variable_set_.insert(dynamic_cast<const Variable*>(&p));
+            return state;
+        }
+        
+        using Base::add_transition;
+        pair<Transition, bool>
+        add_transition(const Variable& v, const Item& i,
+                       const Fomula& p) {
+            auto source = -1, target = -1;
+            if (item_map_.count(&v) == 0) {
+                source = add_state(v);
+                set_control_state(source);
+            } else {
+                source = item_map_.at(&v);
+            }
+            if (item_map_.count(&i) == 0) {
+                target = add_state(i);
+            } else {
+                target = item_map_.at(&i);
+            }
+            return add_transition(source, target, p);
+        }
+
+    private:
+        //VariableSet variable_set_;
+        VariableSet input_variable_set_;
+        VariableSet control_variable_set_;
+        unordered_map<Item const*, State> item_map_;
+
+        StateSet state_set_;
+        StateSet control_state_set_;
+        StateSet input_state_set_;
+        std::list<ll::atomic_proposition> init_list_;
+    };
+}
+
 namespace atl {
-    namespace detail {
-
-        template <class Fomula,
-                  class FomulaProperty, 
-                  class StateVarProperty,
-                  class AutomatonProperty>
-        class fomula_automaton_gen 
-            : public automaton_gen<
-                     typename std::conditional<std::is_same<FomulaProperty, no_type>::value,
-                                   Fomula,
-                                   Property<Fomula, FomulaProperty> >::type,
-                     typename std::conditional<std::is_same<StateVarProperty, no_type>::value,
-                                   ll::item, Property<ll::item, StateVarProperty> >::type,
-                     typename std::conditional<std::is_same<AutomatonProperty, no_type>::value,
-                                   boost::no_property, AutomatonProperty>::type> {
-        public:
-            typedef Fomula fomula;
-            typedef FomulaProperty fomula_property_type;
-            typedef StateVarProperty statevar_property_type;
-
-            typedef Property<Fomula, FomulaProperty> fomula_property;
-            typedef Property<ll::item, StateVarProperty> statevar_property;
-
-            typedef typename std::conditional<std::is_same<FomulaProperty, no_type>::value,
-                                  Fomula, fomula_property>::type transition_property_type;
-            typedef typename std::conditional<std::is_same<StateVarProperty, no_type>::value,
-                                  ll::item, statevar_property>::type state_property_type;
-            typedef typename std::conditional<std::is_same<AutomatonProperty, no_type>::value,
-                                  boost::no_property, 
-                                  AutomatonProperty>::type automaton_property_type;
-
-            typedef automaton_gen<transition_property_type,
-                                  state_property_type,
-                                  automaton_property_type> Base;
-
-            typedef typename Base::State State;
-            typedef typename Base::Transition Transition;
-
-            typedef typename Base::StateIter StateIter;
-            typedef typename Base::TransitionIter TransitionIter;
-            typedef typename Base::InTransitionIter InTransitionIter;
-            typedef typename Base::OutTransitionIter OutTransitionIter;
-
-            typedef unordered_set<State> StateSet;
-            typedef unordered_map<State, State> State2Map;
-        public:
-            fomula_automaton_gen()
-                : Base() {}
-
-            fomula_automaton_gen(const fomula_automaton_gen& x)
-                : Base(x),
-                  state_set_(x.state_set_),
-                  control_state_set_(x.control_state_set_),
-                  input_state_set_(x.input_state_set_) {}
-
-            fomula_automaton_gen& 
-            operator=(const fomula_automaton_gen& x) {
-                if (&x != this) {
-                    Base::operator=(x);
-                    state_set_ = x.state_set_;
-                    control_state_set_ = x.control_state_set_;
-                    input_state_set_ = x.input_state_set_;
-                }
-                return *this;
-            }
-
-            const StateSet&
-            state_set() const {
-                return state_set_;
-            }
-
-            void
-            set_state_set(const StateSet& state_set) {
-                state_set_ = state_set;
-            }
-
-            const StateSet&
-            control_state_set() const {
-                return control_state_set_;
-            }
-
-            void 
-            set_control_state_set(const StateSet& control_state_set) {
-                control_state_set_ = control_state_set;
-            }
-
-            const StateSet&
-            input_state_set() const {
-                return input_state_set_;
-            }
-
-            void 
-            set_input_state_set(const StateSet& input_state_set) {
-                input_state_set_ = input_state_set;
-            }
-
-            const std::list<ll::atomic_proposition>&
-            init_list() const {
-                return init_list_;
-            }
-
-            void set_init_list(const std::list<ll::atomic_proposition>& list) {
-                init_list_ = list;
-            }
-
-            void 
-            set_state(State state) {
-                state_set_.insert(state);
-            }
-
-            void 
-            set_control_state(State state) {
-                control_state_set_.insert(state);
-            }
-
-            void 
-            set_input_state(State state) {
-                input_state_set_.insert(state);
-            }
-
-            void 
-            add_init_list(const ll::atomic_proposition& ap) {
-                init_list_.push_back(ap);
-            }
-
-            State
-            add_state(const state_property_type& p) {
-                if constexpr (std::is_same<StateVarProperty, boost::no_property>::value) {
-                    if (p.type() == "integer") this -> set_flag(1, 1);
-                } else {
-                    if (p.default_property.type() == "integer") this -> set_flag(1, 1);
-                }
-                return Base::add_state(p);
-            }
-            
-            pair<Transition, bool>
-            add_transition(State s, State t,
-                           const ll::atomic_proposition& f,
-                           const FomulaProperty& p) {
-                if constexpr (std::is_same<FomulaProperty, no_type>::value) {
-                    return Base::add_transition(s, t, f);
-                } else {
-                    return Base::add_transition(s, t, transition_property(f, p));
-                }
-            }
-
-        private:
-            StateSet state_set_;
-            StateSet control_state_set_;
-            StateSet input_state_set_;
-            std::list<ll::atomic_proposition> init_list_;
-        };
-    }
-
-    #define FOA_PARAMS typename FOMULA, typename FP, typename SP, typename AP
-    #define FOA detail::fomula_automaton_gen<FOMULA, FP, SP, AP>
+    #define FOA_PARAMS typename FOMULA
+    #define FOA detail::fomula_automaton_gen<FOMULA>
 
     template <FOA_PARAMS>
     const typename FOA::StateSet&
@@ -200,24 +201,9 @@ namespace atl {
     add_control_state(FOA& foa,
                       typename FOA::state_property_type const& p,
                       const ll::atomic_proposition& ap) {
-        typename FOA::State s = add_state(foa, p);
-        foa.set_control_state(s);
+        typename FOA::State s = foa.add_control_state(p);
         foa.add_init_list(ap);
         return s;
-    }
-
-    template <FOA_PARAMS>
-    inline typename FOA::State
-    add_control_state(FOA& foa,
-                      const ll::item& v,
-                      typename FOA::statevar_property_type const& p,
-                      const ll::atomic_proposition& ap) {
-        typedef typename FOA::statevar_property_type StateVarProperty;
-        if constexpr (std::is_same<StateVarProperty, boost::no_property>::value) {
-            return add_control_state(foa, v, ap);
-        } else {
-            return add_control_state(foa, Property(v, p), ap);
-        }
     }
 
     template <FOA_PARAMS>
@@ -228,28 +214,14 @@ namespace atl {
         foa.set_input_state(s);
         return s;
     }
-    
-    template <FOA_PARAMS>
-    inline typename FOA::State
-    add_input_state(FOA& foa,
-                    const ll::item& v,
-                    typename FOA::statevar_property_type const& p) {
-        typedef typename FOA::statevar_property_type StateVarProperty;
-        if constexpr (std::is_same<StateVarProperty, boost::no_property>::value) {
-            return add_input_state(foa, v);
-        } else {
-            return add_input_state(foa, Property(v, p));
-        }
-    }
 
     template <FOA_PARAMS>
     inline pair<typename FOA::Transition, bool>
     add_transition(FOA& foa,
-                   typename FOA::State s, 
-                   typename FOA::State t,
-                   typename FOA::fomula& f,
-                   typename FOA::fomula_property_type const& p) {
-        return foa.add_transition(s, t, f, p);
+                   const ll::variable& v,
+                   const ll::item& i,
+                   typename FOA::fomula_type const& f) {
+        return foa.add_transition(v, i, f);
     }
 
     template <FOA_PARAMS>

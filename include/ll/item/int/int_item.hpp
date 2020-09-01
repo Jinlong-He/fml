@@ -12,17 +12,10 @@
 #include "../item.hpp"
 
 namespace ll {
-    class int_expr;
-    class int_item : public item {
+    class int_item : virtual public item {
     public:
         int_item()
             : item() {}
-
-        int_item(const string& identifier)
-            : item(identifier) {}
-
-        int_item(const string& identifier, const string& type)
-            : item(identifier, type) {}
 
         int_item(const int_item& i)
             : item(i) {}
@@ -33,6 +26,8 @@ namespace ll {
             }
             return *this;
         }
+
+        virtual ~int_item() {}
     };
 }
 

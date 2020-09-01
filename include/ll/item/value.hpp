@@ -10,18 +10,23 @@
 #define ll_value_hpp
 
 #include <iostream>
-using std::string;
+#include "item.hpp"
 
 namespace ll {
-    class value {
+    class value
+        : virtual public item {
     public:
-        value() {}
+        value()
+            : item() {}
 
         value& operator=(const value& v) {
             if (this != &v) {
+                item::operator=(v);
             }
             return *this;
         }
+        
+        virtual ~value() {}
 
     private:
     };

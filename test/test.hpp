@@ -102,6 +102,8 @@ namespace test {
     void test_state_prop();
     void test_poststar();
     void test_transducer();
+
+    void test_fomula_automaton();
 }
 
 #endif /* test_hpp */

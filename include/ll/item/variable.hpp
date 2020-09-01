@@ -10,18 +10,23 @@
 #define ll_variable_hpp
 
 #include <string>
-using std::string;
+#include "item.hpp"
 
 namespace ll {
-    class variable {
+    class variable 
+        : virtual public item {
     public:
-        variable() {}
+        variable()
+            : item() {}
 
         variable& operator=(const variable& v) {
             if (this != &v) {
+                item::operator=(v);
             }
             return *this;
         }
+
+        virtual ~variable() {}
 
     private:
     };

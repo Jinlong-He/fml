@@ -21,33 +21,31 @@ namespace ll {
         typedef std::list<IntValuePtr> int_values;
     public:
         int_variable()
-            : variable(),
+            : item("", "integer"),
+              variable(),
               int_item(),
               min_(nullptr),
-              max_(nullptr) {
-                  this -> set_type("integer");
-              }
+              max_(nullptr) {}
 
         int_variable(const string& id)
-            : variable(),
-              int_item(id),
+            : item(id, "integer"),
+              variable(),
+              int_item(),
               min_(nullptr),
-              max_(nullptr) {
-                  this -> set_type("integer");
-              }
+              max_(nullptr) {}
 
         int_variable(const string& id, 
-                         const int_value& min, const int_value& max)
-            : variable(),
-              int_item(id),
+                     const int_value& min, const int_value& max)
+            : item(id, min_ -> to_string() + ".." + max_ -> to_string()),
+              variable(),
+              int_item(),
               min_(new int_value(min)),
-              max_(new int_value(max)) {
-                this -> set_type(min_ -> to_string() + ".." + max_ -> to_string());
-              }
+              max_(new int_value(max)) { }
 
         int_variable(const string& id, std::initializer_list<int_value> list)
-            : variable(),
-              int_item(id),
+            : item(id),
+              variable(),
+              int_item(),
               min_(nullptr),
               max_(nullptr) {
                   string res = "{";
@@ -76,7 +74,8 @@ namespace ll {
         //      }
 
         int_variable(const int_variable& v)
-            : variable(v),
+            : item(v),
+              variable(v),
               int_item(v),
               min_(new int_value(v.min())),
               max_(new int_value(v.max())) {
@@ -85,6 +84,7 @@ namespace ll {
 
         int_variable& operator=(const int_variable& v) {
             if (this != &v) {
+                item::operator=(v);
                 variable::operator=(v);
                 int_item::operator=(v);
                 min_ = IntValuePtr(new int_value(v.min()));
@@ -93,6 +93,8 @@ namespace ll {
             }
             return *this;
         }
+
+        ~int_variable() {}
 
         const int_values& range_values() const {
             return range_values_;

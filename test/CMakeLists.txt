@@ -9,6 +9,7 @@ ADD_EXECUTABLE (
     test_intersect.cpp
     test_union.cpp
     test_basic_regular_expression.cpp 
+    test_fomula_automaton.cpp
     #test_transducer.cpp
     #test_template.cpp 
     #test_state_prop.cpp 

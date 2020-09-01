@@ -18,12 +18,14 @@ namespace ll {
           public bool_item {
     public:
         bool_value()
-            : value(),
+            : item(),
+              value(),
               bool_item() {}
 
         bool_value(bool b)
-            : value(),
-              bool_item(std::to_string(b), "boolean") {
+            : item(std::to_string(b), "boolean"),
+              value(),
+              bool_item() {
                   if (b) set_identifier("TRUE");
                   if (!b) set_identifier("FALSE");
               }
@@ -33,16 +35,21 @@ namespace ll {
         //      bool_item(id, "boolean") {}
 
         bool_value(const bool_value& v)
-            : value(v),
+            : item(v),
+              value(v),
               bool_item(v) {}
 
         bool_value& operator=(const bool_value& v) {
             if (this != &v) {
+                item::operator=(v);
                 value::operator=(v);
                 bool_item::operator=(v);
             }
             return *this;
         }
+
+        ~bool_value() {}
+
     private:
     };
 }

@@ -19,28 +19,30 @@ namespace ll {
           public bool_item {
     public:
         bool_variable()
-            : variable(),
-              bool_item() {
-                  this -> set_type("boolean");
-              }
+            : item("", "boolean"),
+              variable(),
+              bool_item() { }
 
         bool_variable(const string& id)
-            : variable(),
-              bool_item(id) {
-                  this -> set_type("boolean");
-              }
+            : item(id, "boolean"),
+              variable(),
+              bool_item() { }
 
         bool_variable(const bool_variable& v)
-            : variable(v),
+            : item(v),
+              variable(v),
               bool_item(v) {}
 
         bool_variable& operator=(const bool_variable& v) {
             if (this != &v) {
+                item::operator=(v);
                 variable::operator=(v);
                 bool_item::operator=(v);
             }
             return *this;
         }
+
+        ~bool_variable() {}
 
     private:
     };
