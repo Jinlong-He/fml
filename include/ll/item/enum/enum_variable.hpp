@@ -38,7 +38,7 @@ namespace ll {
                   string res = "{";
                   for (auto& v : list) {
                       range_values_.push_back(EnumValuePtr(new enum_value(v)));
-                      res += v.to_string() + ",";
+                      res += v.identifier() + ",";
                   }
                   res[res.length() - 1] = '}';
                   this -> set_type(res);

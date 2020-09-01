@@ -10,6 +10,7 @@
 #define atl_fomula_automaton_hpp
 
 #include "../detail/fomula_automaton/fomula_automaton.hpp"
+#include "../detail/fomula_automaton/translate.hpp"
 #include "../../ll/propositional_logic.hpp"
 
 namespace atl {

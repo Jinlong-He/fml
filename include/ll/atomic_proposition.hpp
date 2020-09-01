@@ -31,7 +31,7 @@ namespace ll {
 
         atomic_proposition(const item& lhs, const item& rhs, 
                            const string& predicate) 
-            : fomula(lhs.to_string() + predicate + rhs.to_string()),
+            : fomula(lhs.identifier() + predicate + rhs.identifier()),
               lhs_(new item(lhs)),
               rhs_(new item(rhs)),
               predicate_(predicate) {}

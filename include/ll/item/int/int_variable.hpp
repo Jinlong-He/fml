@@ -36,11 +36,19 @@ namespace ll {
 
         int_variable(const string& id, 
                      const int_value& min, const int_value& max)
-            : item(id, min_ -> to_string() + ".." + max_ -> to_string()),
+            : item(id, min.identifier() + ".." + max.identifier()),
               variable(),
               int_item(),
               min_(new int_value(min)),
-              max_(new int_value(max)) { }
+              max_(new int_value(max)) {}
+
+        int_variable(const string& id, 
+                     int min, int max)
+            : item(id, std::to_string(min) + ".." + std::to_string(max)),
+              variable(),
+              int_item(),
+              min_(new int_value(min)),
+              max_(new int_value(max)) {}
 
         int_variable(const string& id, std::initializer_list<int_value> list)
             : item(id),
@@ -51,7 +59,7 @@ namespace ll {
                   string res = "{";
                   for (auto& v : list) {
                       range_values_.push_back(IntValuePtr(new int_value(v)));
-                      res += v.to_string() + ",";
+                      res += v.identifier() + ",";
                   }
                   res[res.length() - 1] = '}';
                   this -> set_type(res);

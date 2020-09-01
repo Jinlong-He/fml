@@ -85,14 +85,16 @@ namespace atl::detail {
             copy_transitions(a_in, a_out, state2_map);
         }
     };
+};
 
+namespace atl {
     template <FA_PARAMS>
     inline void
     copy_fa(const FA& a_in,
             FA& a_out,
             typename FA::State2Map& state2_map,
             typename FA::StateSet const& states = typename FA::StateSet()) {
-        copy_fa_impl::apply(a_in, a_out, state2_map, states);
+        detail::copy_fa_impl::apply(a_in, a_out, state2_map, states);
     }
 
     template <FA_PARAMS>
@@ -101,7 +103,7 @@ namespace atl::detail {
             FA& a_out,
             typename FA::StateSet const& states = typename FA::StateSet()) {
         typename FA::State2Map state2_map;
-        copy_fa_impl::apply(a_in, a_out, state2_map, states);
+        detail::copy_fa_impl::apply(a_in, a_out, state2_map, states);
     }
 }
 

@@ -28,7 +28,7 @@ namespace ll {
               rhs_(nullptr) {}
 
         int_expr(const int_item& lhs, const int_item& rhs, const string& op)
-            : item("(" + lhs.to_string() + op + rhs.to_string() + ")"),
+            : item("(" + lhs.identifier() + op + rhs.identifier() + ")"),
               int_item(),
               lhs_(new int_item(lhs)),
               rhs_(new int_item(rhs)),

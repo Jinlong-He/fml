@@ -424,7 +424,7 @@ namespace atl::detail {
         remove_dead_states(const DFA& a_in,
                            DFA& a_out) {
             typename DFA::StateSet reachable_closure;
-            atl::detail::reachable_closure(a_in, reachable_closure);
+            atl::reachable_closure(a_in, reachable_closure);
             copy_fa(a_in, a_out, reachable_closure);
         }
 

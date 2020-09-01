@@ -40,7 +40,7 @@ namespace ll {
 
         virtual ~item() {}
 
-        const string& to_string() const {
+        const string& identifier() const {
             return identifier_;
         }
 

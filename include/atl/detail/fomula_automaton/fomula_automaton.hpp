@@ -98,6 +98,36 @@ namespace atl::detail {
             input_state_set_ = input_state_set;
         }
 
+        const VariableSet&
+        variable_set() const {
+            return variable_set_;
+        }
+
+        void
+        set_variable_set(const VariableSet& variable_set) {
+            variable_set_ = variable_set;
+        }
+
+        const VariableSet&
+        control_variable_set() const {
+            return control_variable_set_;
+        }
+
+        void
+        set_control_variable_set(const VariableSet& control_variable_set) {
+            control_variable_set_ = control_variable_set;
+        }
+
+        const VariableSet&
+        input_variable_set() const {
+            return input_variable_set_;
+        }
+
+        void
+        set_input_variable_set(const VariableSet& input_variable_set) {
+            input_variable_set_ = input_variable_set;
+        }
+
         const std::list<ll::atomic_proposition>&
         init_list() const {
             return init_list_;
@@ -105,6 +135,11 @@ namespace atl::detail {
 
         void set_init_list(const std::list<ll::atomic_proposition>& list) {
             init_list_ = list;
+        }
+
+        const unordered_map<Item const*, State>&
+        item_map() const {
+            return item_map_();
         }
 
         void 
@@ -122,6 +157,21 @@ namespace atl::detail {
             input_state_set_.insert(state);
         }
 
+        void
+        set_variable(const state_property_type& v) {
+            variable_set_.insert(dynamic_cast<const Variable*>(&v));
+        }
+
+        void
+        set_control_variable(const state_property_type& v) {
+            control_variable_set_.insert(dynamic_cast<const Variable*>(&v));
+        }
+
+        void
+        set_input_variable(const state_property_type& v) {
+            input_variable_set_.insert(dynamic_cast<const Variable*>(&v));
+        }
+
         void 
         add_init_list(const ll::atomic_proposition& ap) {
             init_list_.push_back(ap);
@@ -131,17 +181,11 @@ namespace atl::detail {
         add_state(const state_property_type& p) {
             if (p.type() == "integer") this -> set_flag(1, 1);
             auto state = Base::add_state(p);
+            set_state(state);
             item_map_[&p] = state;
             return state;
         }
 
-        State
-        add_control_state(const state_property_type& p) {
-            auto state = add_state(p);
-            control_variable_set_.insert(dynamic_cast<const Variable*>(&p));
-            return state;
-        }
-        
         using Base::add_transition;
         pair<Transition, bool>
         add_transition(const Variable& v, const Item& i,
@@ -162,14 +206,13 @@ namespace atl::detail {
         }
 
     private:
-        //VariableSet variable_set_;
-        VariableSet input_variable_set_;
-        VariableSet control_variable_set_;
-        unordered_map<Item const*, State> item_map_;
-
         StateSet state_set_;
         StateSet control_state_set_;
         StateSet input_state_set_;
+        VariableSet variable_set_;
+        VariableSet input_variable_set_;
+        VariableSet control_variable_set_;
+        unordered_map<Item const*, State> item_map_;
         std::list<ll::atomic_proposition> init_list_;
     };
 }
@@ -201,7 +244,10 @@ namespace atl {
     add_control_state(FOA& foa,
                       typename FOA::state_property_type const& p,
                       const ll::atomic_proposition& ap) {
-        typename FOA::State s = foa.add_control_state(p);
+        auto s = foa.add_state(p);
+        foa.set_control_state(s);
+        foa.set_control_variable(p);
+        foa.set_variable(p);
         foa.add_init_list(ap);
         return s;
     }
@@ -210,8 +256,9 @@ namespace atl {
     inline typename FOA::State
     add_input_state(FOA& foa,
                     typename FOA::state_property_type const& p) {
-        typename FOA::State s = add_state(foa, p);
+        auto s = add_state(foa, p);
         foa.set_input_state(s);
+        foa.set_input_variable(p);
         return s;
     }
 

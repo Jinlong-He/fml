@@ -57,14 +57,16 @@ namespace atl::detail {
             }
         }
     };
+};
 
+namespace atl {
     template <FA_PARAMS>
     inline void
     reachable_closure(const FA& a,
                      typename FA::StateSet const& states_in,
                      typename FA::StateSet& states_out,
-                     Direction direction = forward) {
-        reachable_closure_impl::apply(a, states_in, states_out, direction);
+                     detail::Direction direction = detail::forward) {
+        detail::reachable_closure_impl::apply(a, states_in, states_out, direction);
     }
 
     template <FA_PARAMS>
@@ -72,12 +74,14 @@ namespace atl::detail {
     reachable_closure(const FA& fa,
                       typename FA::StateSet& reachable_closure) {
             typename FA::StateSet forward_states({initial_state(fa)}),
-                                               backward_states(final_state_set(fa));
-            atl::detail::reachable_closure(fa, forward_states, forward_states, forward);
-            atl::detail::reachable_closure(fa, backward_states, backward_states, backward);
+                                                 backward_states(final_state_set(fa));
+            atl::reachable_closure(fa, forward_states, forward_states, detail::forward);
+            atl::reachable_closure(fa, backward_states, backward_states, detail::backward);
             util::set_intersection(forward_states, backward_states, reachable_closure);
     }
+}
 
+namespace atl::detail {
     struct epsilon_closure_impl {
         template <NFA_PARAMS>
         static void apply(const NFA& nfa,
@@ -103,13 +107,15 @@ namespace atl::detail {
             }
         }
     };
+}
 
+namespace atl {
     template <NFA_PARAMS>
     inline void
     epsilon_closure(const NFA& fa,
                     typename NFA::StateSet const& states_in,
                     typename NFA::StateSet& states_out) {
-        epsilon_closure_impl::apply(fa, states_in, states_out);
+        detail::epsilon_closure_impl::apply(fa, states_in, states_out);
     }
 
     template <NFA_PARAMS>
