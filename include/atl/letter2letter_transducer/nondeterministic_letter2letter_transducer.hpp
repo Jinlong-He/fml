@@ -9,9 +9,9 @@
 #ifndef atl_nondeterministic_letter2letter_transducer_hpp 
 #define atl_nondeterministic_letter2letter_transducer_hpp
 
-#include "../detail/letter2letter_transducer/nondeterministic_letter2letter_transducer.hpp"
-#include "../detail/letter2letter_transducer/deterministic_letter2letter_transducer.hpp"
-#include "../detail/finite_automaton/operate.hpp"
+#include <atl/detail/letter2letter_transducer/nondeterministic_letter2letter_transducer.hpp>
+#include <atl/detail/letter2letter_transducer/deterministic_letter2letter_transducer.hpp>
+#include <atl/detail/finite_automaton/operate.hpp>
 
 namespace atl {
     template <class Symbol = char, 

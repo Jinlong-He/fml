@@ -11,9 +11,9 @@
 
 #include <boost/unordered_set.hpp>
 #include <boost/unordered_map.hpp>
-#include "../../../util/util.hpp"
-#include "../automaton.hpp"
-#include "../no_type.hpp"
+#include <util/util.hpp>
+#include <atl/detail/automaton.hpp>
+#include <atl/detail/no_type.hpp>
 
 using boost::unordered_map;
 using boost::unordered_set;

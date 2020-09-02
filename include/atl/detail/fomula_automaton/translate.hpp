@@ -10,7 +10,7 @@
 #define atl_detail_fomula_automaton_translate_hpp 
 
 #include <iostream>
-#include "fomula_automaton.hpp"
+#include <atl/detail/fomula_automaton/fomula_automaton.hpp>
 using std::endl;
 
 namespace atl::detail {

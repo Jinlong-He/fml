@@ -9,9 +9,9 @@
 #ifndef atl_detail_letter2letter_transducer_operate_hpp 
 #define atl_detail_letter2letter_transducer_operate_hpp 
 
-#include "deterministic_letter2letter_transducer.hpp"
-#include "nondeterministic_letter2letter_transducer.hpp"
-#include "../finite_automaton/merge.hpp"
+#include <atl/detail/letter2letter_transducer/deterministic_letter2letter_transducer.hpp>
+#include <atl/detail/letter2letter_transducer/nondeterministic_letter2letter_transducer.hpp>
+#include <atl/detail/finite_automaton/merge.hpp>
 
 namespace atl::detail {
     struct composite_impl {

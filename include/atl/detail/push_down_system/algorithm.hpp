@@ -9,9 +9,9 @@
 #ifndef atl_detail_push_down_system_operate_hpp 
 #define atl_detail_push_down_system_operate_hpp
 
-#include "../finite_automaton/nondeterministic_finite_automaton.hpp"
-#include "../finite_automaton/copy.hpp"
-#include "../finite_automaton/closure.hpp"
+#include <atl/detail/finite_automaton/nondeterministic_finite_automaton.hpp>
+#include <atl/detail/finite_automaton/copy.hpp>
+#include <atl/detail/finite_automaton/closure.hpp>
 #include "push_down_system.hpp"
 
 namespace atl::detail {

@@ -9,7 +9,7 @@
 #ifndef computation_tree_logic_fomular_hpp 
 #define computation_tree_logic_fomular_hpp
 
-#include "../propositional_logic/propositional_fomula.hpp"
+#include <ll/propositional_logic/propositional_fomula.hpp>
 
 namespace ll {
     class computation_tree_logic_fomula : public propositional_fomula {

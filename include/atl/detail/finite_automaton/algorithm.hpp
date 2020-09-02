@@ -10,11 +10,11 @@
 #define atl_detail_finite_automaton_algorithm_hpp 
 
 #include <queue>
-#include "closure.hpp"
-#include "merge.hpp"
-#include "copy.hpp"
-#include "deterministic_finite_automaton.hpp"
-#include "nondeterministic_finite_automaton.hpp"
+#include <atl/detail/finite_automaton/closure.hpp>
+#include <atl/detail/finite_automaton/merge.hpp>
+#include <atl/detail/finite_automaton/copy.hpp>
+#include <atl/detail/finite_automaton/deterministic_finite_automaton.hpp>
+#include <atl/detail/finite_automaton/nondeterministic_finite_automaton.hpp>
 using std::queue;
 
 namespace atl::detail {

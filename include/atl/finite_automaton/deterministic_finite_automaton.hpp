@@ -9,9 +9,9 @@
 #ifndef atl_deterministic_finite_automaton_hpp 
 #define atl_deterministic_finite_automaton_hpp
 
-#include "../detail/finite_automaton/deterministic_finite_automaton.hpp"
-#include "../detail/finite_automaton/operate.hpp"
-#include "../detail/finite_automaton/cast.hpp"
+#include <atl/detail/finite_automaton/deterministic_finite_automaton.hpp>
+#include <atl/detail/finite_automaton/operate.hpp>
+#include <atl/detail/finite_automaton/cast.hpp>
 
 namespace atl {
     template <class Symbol = char, 

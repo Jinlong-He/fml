@@ -11,7 +11,7 @@
 
 #include <boost/scoped_ptr.hpp>
 #include <boost/unordered_set.hpp>
-#include "boost/graph/adjacency_list.hpp"
+#include <boost/graph/adjacency_list.hpp>
 
 using boost::adjacency_list;
 using boost::vecS;

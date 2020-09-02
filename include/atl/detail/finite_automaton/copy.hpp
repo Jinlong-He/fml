@@ -9,7 +9,7 @@
 #ifndef atl_detail_finite_automaton_copy_hpp 
 #define atl_detail_finite_automaton_copy_hpp 
 
-#include "finite_automaton.hpp"
+#include <atl/detail/finite_automaton/finite_automaton.hpp>
 
 namespace atl::detail {
     struct copy_fa_impl {

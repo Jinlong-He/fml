@@ -9,8 +9,8 @@
 #ifndef ll_enum_value_hpp 
 #define ll_enum_value_hpp
 
-#include "../value.hpp"
-#include "enum_item.hpp"
+#include <ll/item/value.hpp>
+#include <ll/item/enum/enum_item.hpp>
 
 namespace ll {
     class enum_value 

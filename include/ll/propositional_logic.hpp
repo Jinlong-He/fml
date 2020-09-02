@@ -9,9 +9,9 @@
 #ifndef ll_propositional_logic_hpp 
 #define ll_propositional_logic_hpp
 
-#include "item/bool/bool_variable.hpp"
-#include "item/int/int_expr.hpp"
-#include "item/enum/enum_variable.hpp"
-#include "propositional_logic/propositional_fomula.hpp"
+#include <ll/item/bool/bool_variable.hpp>
+#include <ll/item/int/int_expr.hpp>
+#include <ll/item/enum/enum_variable.hpp>
+#include <ll/propositional_logic/propositional_fomula.hpp>
 
 #endif /* propositional_logic_hpp */

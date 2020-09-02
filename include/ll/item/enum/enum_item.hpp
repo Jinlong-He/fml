@@ -9,7 +9,7 @@
 #ifndef ll_enum_item_hpp 
 #define ll_enum_item_hpp
 
-#include "../item.hpp"
+#include <ll/item/item.hpp>
 
 namespace ll {
     class enum_item 

@@ -10,7 +10,7 @@
 #define atl_detail_nondeterministic_finite_automaton_hpp
 
 #include <boost/unordered_map.hpp>
-#include "finite_automaton.hpp"
+#include <atl/detail/finite_automaton/finite_automaton.hpp>
 
 using boost::unordered_map;
 

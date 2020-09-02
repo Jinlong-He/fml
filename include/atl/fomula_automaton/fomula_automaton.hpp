@@ -9,9 +9,9 @@
 #ifndef atl_fomula_automaton_hpp 
 #define atl_fomula_automaton_hpp
 
-#include "../detail/fomula_automaton/fomula_automaton.hpp"
-#include "../detail/fomula_automaton/translate.hpp"
-#include "../../ll/propositional_logic.hpp"
+#include <atl/detail/fomula_automaton/fomula_automaton.hpp>
+#include <atl/detail/fomula_automaton/translate.hpp>
+#include <ll/propositional_logic.hpp>
 
 namespace atl {
     template <class Fomula = ll::propositional_fomula>

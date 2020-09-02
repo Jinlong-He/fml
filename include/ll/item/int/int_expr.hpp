@@ -9,7 +9,7 @@
 #ifndef ll_int_expr_hpp 
 #define ll_int_expr_hpp
 
-#include "int_variable.hpp"
+#include <ll/item/int/int_variable.hpp>
 
 namespace ll {
     class int_expr 

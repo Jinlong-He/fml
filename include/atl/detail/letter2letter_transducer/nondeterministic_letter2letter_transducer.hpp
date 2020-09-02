@@ -11,8 +11,8 @@
 
 #include <map>
 #include <boost/unordered_map.hpp>
-#include "../finite_automaton/nondeterministic_finite_automaton.hpp"
-#include "letter2letter_transducer.hpp"
+#include <atl/detail/finite_automaton/nondeterministic_finite_automaton.hpp>
+#include <atl/detail/letter2letter_transducer/letter2letter_transducer.hpp>
 
 using boost::unordered_map;
 

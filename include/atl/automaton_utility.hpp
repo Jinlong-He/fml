@@ -11,10 +11,10 @@
 
 #include <iostream>
 #include <fstream>
-#include "detail/automaton.hpp"
-#include "detail/no_type.hpp"
-#include "finite_automaton/nondeterministic_finite_automaton.hpp"
-#include "push_down_system/push_down_system.hpp"
+#include <atl/detail/automaton.hpp>
+#include <atl/detail/no_type.hpp>
+#include <atl/finite_automaton/nondeterministic_finite_automaton.hpp>
+#include <atl/push_down_system/push_down_system.hpp>
 using std::cout;
 using std::endl;
 using std::fstream;
