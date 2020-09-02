@@ -92,18 +92,17 @@ namespace test {
     bool test_union3();
     bool test_union4();
 
+    bool test_fomula_automaton();
+
+    bool test_propositional_logic();
+    bool test_ctl();
+    bool test_ltl();
+
     void test_equal();
 
     void test_basic_regular_expression();
-    void test_propositional_logic();
-    void test_ctl();
-    void test_ltl();
-    void test_tempalte();
-    void test_state_prop();
     void test_poststar();
     void test_transducer();
-
-    void test_fomula_automaton();
 }
 
 #endif /* test_hpp */

@@ -74,5 +74,22 @@ BOOST_AUTO_TEST_CASE(test_union1) {
     BOOST_CHECK_EQUAL(test::test_union1(), true);
 }
 
+BOOST_AUTO_TEST_CASE(test_fomula_automaton) {
+    BOOST_CHECK_EQUAL(test::test_fomula_automaton(), true);
+}
+
+// test for ll.
+BOOST_AUTO_TEST_CASE(test_propositional_logic) {
+    BOOST_CHECK_EQUAL(test::test_propositional_logic(), true);
+}
+
+BOOST_AUTO_TEST_CASE(test_ltl) {
+    BOOST_CHECK_EQUAL(test::test_ltl(), true);
+}
+
+BOOST_AUTO_TEST_CASE(test_ctl) {
+    BOOST_CHECK_EQUAL(test::test_ctl(), true);
+}
+
 BOOST_AUTO_TEST_SUITE_END()
 

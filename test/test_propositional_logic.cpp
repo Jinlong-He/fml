@@ -2,9 +2,13 @@
 #include <iostream>
 #include "test.hpp"
 using namespace ll;
-void test_propositional_logic() {
-    auto a = int_variable("a");
-    //auto v = int_value(1);
-    auto b = a+1;
-    std::cout << ((b==0)|(b>true)&(b<1)).to_string() << std::endl;
+namespace test {
+    bool test_propositional_logic() {
+        auto a = int_variable("a");
+        auto b = int_variable("b");
+        auto expr = a+1;
+        string result = (((b==0)|(a>1))&(expr == 4)).to_string();
+        string expect = "((b=0|a>1)&(a+1)=4)";
+        return (result == expect);
+    }
 }

@@ -5,7 +5,7 @@
 using namespace atl;
 using namespace ll;
 namespace test {
-    void test_fomula_automaton() {
+    bool test_fomula_automaton() {
         fomula_automaton<> foa;
         int_variable a("a");
         int_variable b("b", int_value(1), int_value(10));
@@ -17,6 +17,7 @@ namespace test {
         add_transition(foa, a, int_value(1), a>1);
         add_transition(foa, a, int_value(1), atomic_proposition("TRUE"));
         add_transition(foa, b, int_value(2), c>1);
-        translate_nuxmv(foa, cout);
+        //translate_nuxmv(foa, cout);
+        return true;
     }
 }
