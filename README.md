@@ -1,5 +1,5 @@
 # Welcome to fml!
-fml is a C++ template library for fomal method: automaton, logic.
+fml is a C++ template library for fomal method: automaton, regular expression, logic.
 ---
 # Overview
 The fml includes:
@@ -7,6 +7,7 @@ The fml includes:
     - finite automaton
     - push down system
     - letter to letter finite transducer
+    - regular expression
 - ll: logic library, a library for:
     - propositional logic
     - computation tree logic
