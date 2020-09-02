@@ -29,6 +29,10 @@ namespace atl::detail {
                 const auto& v = atl::get_property(foa, state);
                 os << v.identifier() + " : " + v.type() + ";" << endl;
             }
+            for (const auto& ap : init_list(foa)) {
+                os << "INIT" << endl;
+                os << ap.to_string() << endl;
+            }
             os << "ASSIGN" << endl;
             for (auto source : control_state_set(foa)) {
                 const auto& source_var = atl::get_property(foa, source);
