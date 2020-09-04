@@ -28,15 +28,28 @@ namespace atl {
                 FTLable() {}
                 FTLable(const UpperSymbol& upper, const LowerSymbol& lower)
                     : upper_symbol(upper),
-                      lower_symbol(lower) {}
+                      lower_symbols(lower) {}
+
+                FTLable(const UpperSymbol& upper, const std::initializer_list<LowerSymbol>& lowers)
+                    : upper_symbol(upper),
+                      lower_symbols(lowers) {}
+
+                FTLable(const UpperSymbol& upper, const std::vector<LowerSymbol>& lowers)
+                    : upper_symbol(upper),
+                      lower_symbols(lowers) {}
+
             friend std::ostream& operator<< (std::ostream& os, const FTLable& x) {
-                os << "<" << x.upper_symbol << "," << x.lower_symbol << ">";
+                os << "<" << x.upper_symbol << "," << "[";
+                for (const auto& lower_symbol : x.lower_symbols) {
+                    os << x.lower_symbol << " ";
+                }
+                os << "]";
                 return os;
             }
 
             private:
                 UpperSymbol upper_symbol;
-                LowerSymbol lower_symbol;
+                std::vector<LowerSymbol> lower_symbols;
             };
 
         
