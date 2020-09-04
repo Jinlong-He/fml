@@ -10,6 +10,8 @@
 #define atl_detail_finite_automaton_algorithm_hpp 
 
 #include <queue>
+#include <vector>
+#include <util/util.hpp>
 #include <atl/detail/finite_automaton/closure.hpp>
 #include <atl/detail/finite_automaton/merge.hpp>
 #include <atl/detail/finite_automaton/copy.hpp>
@@ -22,7 +24,7 @@ namespace atl::detail {
         template <DFA_PARAMS>
         static bool 
         apply(const DFA& dfa,
-              const std::basic_string<typename DFA::symbol_type>& word) {
+              const std::vector<typename DFA::symbol_type>& word) {
             typedef typename DFA::StateSet StateSet;
             StateSet work({initial_state(dfa)}), new_work;
             for (const auto& symbol : word) {
@@ -37,15 +39,34 @@ namespace atl::detail {
                     return false;
                 }
             }
+            StateSet res;
+            util::set_intersection(work, final_state_set(dfa), res);
+            if (res.size() == 0) return false;
+            return true;
+        }
+
+        template <NFA_PARAMS>
+        static bool 
+        apply(const NFA& dfa,
+              const std::vector<typename NFA::symbol_type>& word) {
             return true;
         }
     };
+}
+
+namespace atl {
+    template <DFA_PARAMS>
+    inline bool
+    accept(const DFA& dfa,
+           const std::vector<typename DFA::symbol_type>& word) {
+        return detail::accept_impl::apply(dfa, word);
+    }
 
     template <DFA_PARAMS>
     inline bool
     accept(const DFA& dfa,
-           const std::basic_string<typename DFA::symbol_type>& word) {
-        return accept_impl::apply(dfa, word);
+           const std::string& word) {
+        return detail::accept_impl::apply(dfa, std::vector<char>(word.begin(), word.end()));
     }
 }
 

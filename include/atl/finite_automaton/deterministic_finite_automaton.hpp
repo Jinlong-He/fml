@@ -10,6 +10,7 @@
 #define atl_deterministic_finite_automaton_hpp
 
 #include <atl/detail/finite_automaton/deterministic_finite_automaton.hpp>
+#include <atl/detail/finite_automaton/algorithm.hpp>
 #include <atl/detail/finite_automaton/operate.hpp>
 #include <atl/detail/finite_automaton/cast.hpp>
 
