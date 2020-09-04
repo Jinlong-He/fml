@@ -137,6 +137,18 @@ namespace atl {
         get_targets_in_map(nfa, closure, c, targets);
         epsilon_closure(nfa, targets, targets);
     }
+
+    template <NFA_PARAMS>
+    inline void
+    get_targets(const NFA& nfa, 
+                typename NFA::StateSet const& states, 
+                typename NFA::symbol_type const& c, 
+                typename NFA::StateSet& targets) {
+        typename NFA::StateSet closure(states);
+        epsilon_closure(nfa, closure, closure);
+        get_targets_in_map(nfa, closure, c, targets);
+        epsilon_closure(nfa, targets, targets);
+    }
 }
 
 #endif /* atl_detail_finite_automaton_closure_hpp */

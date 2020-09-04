@@ -43,7 +43,9 @@ namespace test {
         add_transition(expect, 2, 3, char('b'));
         add_transition(expect, 3, 3, char('a'));
         add_transition(expect, 3, 3, char('b'));
-        return (result == expect) && !accept(expect, "a") && accept(expect, "abbbbbbb");
+        return (result == expect) && 
+               !accept(nfa, "a") && accept(nfa, "abbbbbbb") &&
+               !accept(expect, "a") && accept(expect, "abbbbbbb");
     }
 
     //test minimize for nondeterministic_finite_automaton<Symbol>
@@ -84,7 +86,9 @@ namespace test {
         add_transition(expect, 2, 1, Symbol("b"));
         std::vector<Symbol> word1({Symbol("b"), Symbol("b"), Symbol("b")});
         std::vector<Symbol> word2({Symbol("a")});
-        return (result == expect) && !accept(expect, word1) && accept(expect, word2);
+        return (result == expect) && 
+               !accept(nfa, word1) && accept(nfa, word2) &&
+               !accept(expect, word1) && accept(expect, word2);
     }
 
     //test minimize for nondeterministic_finite_automaton<Symbol>
@@ -132,7 +136,9 @@ namespace test {
         add_transition(expect, 3, 0, Symbol("b"));
         std::vector<Symbol> word1({Symbol("c")});
         std::vector<Symbol> word2({Symbol("a"), Symbol("b"), Symbol("b")});
-        return (result == expect) && !accept(expect, word1) && accept(expect, word2);
+        return (result == expect) && 
+               !accept(nfa, word1) && accept(nfa, word2) &&
+               !accept(expect, word1) && accept(expect, word2);
     }
 
     //test minimize for nondeterministic_finite_automaton<Symbol, 0, Symbol>
@@ -183,7 +189,9 @@ namespace test {
         add_transition(expect, 2, 3, Symbol("b"), Symbol("[910]"));
         std::vector<Symbol> word1({Symbol("a"), Symbol("b")});
         std::vector<Symbol> word2({Symbol("a"), Symbol("b"), Symbol("b")});
-        return (result == expect) && !accept(expect, word1) && accept(expect, word2);
+        return (result == expect) && 
+               !accept(nfa, word1) && accept(nfa, word2) &&
+               !accept(expect, word1) && accept(expect, word2);
     }
 
     //test minimize for nondeterministic_finite_automaton<Symbol, 0, Symbol, bool, Symbol>
@@ -233,7 +241,9 @@ namespace test {
         add_transition(expect, 3, 0, Symbol("b"), Symbol("b"));
         std::vector<Symbol> word1({Symbol("a"), Symbol("b")});
         std::vector<Symbol> word2({Symbol("a"), Symbol("b"), Symbol("b")});
-        return (result == expect) && !accept(expect, word1) && accept(expect, word2);
+        return (result == expect) && 
+               !accept(nfa, word1) && accept(nfa, word2) &&
+               !accept(expect, word1) && accept(expect, word2);
     }
 
     //test minimize for nondeterministic_finite_automaton<Symbol, 0, Symbol, bool, Symbol>
@@ -266,7 +276,9 @@ namespace test {
         add_transition(expect, 2, 2, Symbol("b"), Symbol("2"));
         std::vector<Symbol> word1({Symbol("a"), Symbol("b"), Symbol("a")});
         std::vector<Symbol> word2({Symbol("a"), Symbol("b"), Symbol("b")});
-        return (result == expect) && !accept(expect, word1) && accept(expect, word2);
+        return (result == expect) && 
+               !accept(nfa, word1) && accept(nfa, word2) &&
+               !accept(expect, word1) && accept(expect, word2);
     }
 
     //test minimize for nondeterministic_finite_automaton<>
@@ -290,6 +302,8 @@ namespace test {
         add_transition(expect, 1, 1, char('a'));
         add_transition(expect, 1, 2, char('b'));
         add_transition(expect, 2, 2, char('b'));
-        return (result == expect) && !accept(expect, "aaaaaa") && accept(expect, "aabbbbbbbb");
+        return (result == expect) && 
+               !accept(nfa, "aaaaaa") && accept(nfa, "aabbbbbbbb") &&
+               !accept(expect, "aaaaaa") && accept(expect, "aabbbbbbbb");
     }
 }
