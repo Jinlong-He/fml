@@ -15,11 +15,17 @@ The fml includes:
     - linear temporal logic
 ---
 # Data Structure 
+
 #####deterministic_finite_automaton< Symbol, epsilon, SymbolProperty, StateProperty, AutomatonProperty >
+
 #####nondeterministic_finite_automaton< Symbol, epsilon, SymbolProperty, StateProperty, AutomatonProperty >
+
 #####push_down_system< Symbol, epsilon, Symbolproperty, StateProperty, AutomatonProperty >
+
 #####deterministic_letter2letter_transducer< Symbol, epsilon, LabelProperty, StateProperty, AutomatonProperty >
+
 #####nondeterministic_letter2letter_transducer< Symbol, epsilon, LabelProperty, StateProperty, AutomatonProperty >
+
 |||
 |-|-|
 |Symbol|the symbol type of the alphabet, *default char*|
