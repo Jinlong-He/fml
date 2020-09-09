@@ -1,6 +1,6 @@
 # Welcome to fml!
 ---
-#### fml is a C++ template library for fomal method: automaton, regular expression, logic.
+#### fml is a C++ template library for formal method: automaton, regular expression, logic.
 ---
 # Overview
 The fml includes:
@@ -16,11 +16,11 @@ The fml includes:
 ---
 # Data Structure 
 
-###deterministic_finite_automaton< Symbol, epsilon, SymbolProperty, StateProperty, AutomatonProperty >
-###nondeterministic_finite_automaton< Symbol, epsilon, SymbolProperty, StateProperty, AutomatonProperty >
-###push_down_system< Symbol, epsilon, Symbolproperty, StateProperty, AutomatonProperty >
-###deterministic_letter2letter_transducer< Symbol, epsilon, LabelProperty, StateProperty, AutomatonProperty >
-###nondeterministic_letter2letter_transducer< Symbol, epsilon, LabelProperty, StateProperty, AutomatonProperty >
+##### deterministic_finite_automaton< Symbol, epsilon, SymbolProperty, StateProperty, AutomatonProperty >
+##### nondeterministic_finite_automaton< Symbol, epsilon, SymbolProperty, StateProperty, AutomatonProperty >
+##### push_down_system< Symbol, epsilon, Symbolproperty, StateProperty, AutomatonProperty >
+##### deterministic_letter2letter_transducer< Symbol, epsilon, LabelProperty, StateProperty, AutomatonProperty >
+##### nondeterministic_letter2letter_transducer< Symbol, epsilon, LabelProperty, StateProperty, AutomatonProperty >
 
 |||
 |-|-|
