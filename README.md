@@ -36,6 +36,11 @@ int main() {
     print_fa(dfa);
 }
 ```
+Copy the text of this program into a file called example.cpp.
+Now, in the directory where you saved example.cpp, issue the following command:
+```
+c++ -I path/to/boost -I path/to/fml/include example.cpp -o example
+```
 ---
 # Data Structure 
 
