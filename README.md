@@ -14,6 +14,29 @@ The fml includes:
     - computation tree logic
     - linear temporal logic
 ---
+# How to build 
+- To compile in fml, you need a directory containing the fml/include subdirectory and boost/ subdirectory in your #include path.
+- fml is based on c++17, your compiler need to support.
+- fml is a Header-Only libraries, there is nothing to build.
+---
+
+# Build a Simple Program Using fml
+The following program builds a deterministic finite automaton and outputs it.
+```
+#include <atl/finite_automaton/deterministic_finite_automaton.hpp>
+using namespace atl;
+
+int main() {
+    deterministic_finite_automaton<> dfa;
+    add_initial_state(dfa);
+    add_state(dfa);
+    add_final_state(dfa);
+    add_transition(dfa, 0, 1, 'a');
+    add_transition(dfa, 1, 2, 'b');
+    print_fa(dfa);
+}
+```
+---
 # Data Structure 
 
 ##### deterministic_finite_automaton< Symbol, epsilon, SymbolProperty, StateProperty, AutomatonProperty >
