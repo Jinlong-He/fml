@@ -88,28 +88,26 @@ namespace atl::detail {
                 atl::set_property(a_out, atl::get_property(a_in));
             }
             typename NFA::State2Map state2_map;
-            typename NFA::StateSet set;
-            typename NFA::StateSetMap set_map;
+            typename NFA::StateSet closure;
             for (auto state_in : state_set(a_in)) {
-                set.clear();
-                set.insert(state_in);
-                epsilon_closure(a_in, set, set);
+                closure.clear();
+                closure.insert(state_in);
+                epsilon_closure(a_in, closure, closure);
                 State state_out = -1;
-                auto iter = set_map.find(set);
-                if (iter == set_map.end()) {
+                auto iter = state2_map.find(state_in);
+                if (iter == state2_map.end()) {
                     if constexpr (std::is_same<StateProperty, boost::no_property>::value) {
                         state_out = add_state(a_out);
                     } else {
                         std::vector<StateProperty> props;
-                        for (auto s : set) props.push_back(atl::get_property(a_in, s));
+                        for (auto s : closure) props.push_back(atl::get_property(a_in, s));
                         state_out = add_state(a_out, state_property_merge(props.begin(), props.end()));
                     }
-                    if (has_final_state(a_in, set)) set_final_state(a_out, state_out);
-                    set_map[set] = state_out;
+                    if (has_final_state(a_in, closure)) set_final_state(a_out, state_out);
+                    state2_map[state_in] = state_out;
                 } else {
                     state_out = iter -> second;
                 }
-                state2_map[state_in] = state_out;
             }
             set_initial_state(a_out, state2_map[initial_state(a_in)]);
             typename NFA::TransitionIter it, end;
@@ -463,6 +461,7 @@ namespace atl::detail {
                     if (map1_.size() != map2_.size()) return false;
                     auto iter1_ = map1_.begin(), end1_ = map1_.end(), iter2_ = map2_.begin();
                     while (iter1_ != end1_) {
+                        if (iter1_ -> first != iter2_ -> first) return false;
                         if (state2_map.at(iter1_ -> second) != state2_map.at(iter2_ -> second)) return false;
                         iter1_++;
                         iter2_++;

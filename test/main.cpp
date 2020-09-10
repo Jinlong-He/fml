@@ -9,6 +9,7 @@ int main(int argc, char* argv[]) {
     //test_minimize4();
     //test_minimize5();
     //test_minimize6();
-    test_minimize7();
-    test_fomula_automaton();
+    //test_minimize7();
+    //test_fomula_automaton();
+    test_union3();
 }

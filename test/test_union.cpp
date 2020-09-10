@@ -87,20 +87,29 @@ namespace test {
         deterministic_finite_automaton<Symbol, 0, Symbol> rhs_dfa;
         minimize(lhs, lhs_dfa);
         minimize(rhs, rhs_dfa);
-        deterministic_finite_automaton<Symbol, 0, Symbol> result1, result2, expect1, expect2;
+        deterministic_finite_automaton<Symbol, 0, Symbol> result1, result2, 
+                                                          expect1({Symbol("a"), Symbol("b")}), 
+                                                          expect2({Symbol("a"), Symbol("b")});
         result1 = (lhs | rhs);
         union_fa(lhs_dfa, rhs_dfa, result2, intersect_merge<Symbol>());
         add_initial_state(expect1);
+        set_final_state(expect1, 0);
         add_final_state(expect1);
-        add_transition(expect1, 0, 0, Symbol("a"), Symbol("2"));
+        add_final_state(expect1);
         add_transition(expect1, 0, 1, Symbol("a"), Symbol("1"));
+        add_transition(expect1, 0, 2, Symbol("a"), Symbol("2"));
         add_transition(expect1, 1, 1, Symbol("a"), Symbol("1"));
+        add_transition(expect1, 2, 2, Symbol("a"), Symbol("2"));
 
         add_initial_state(expect2);
+        set_final_state(expect2, 0);
+        add_final_state(expect2);
         add_final_state(expect2);
         add_transition(expect2, 0, 1, Symbol("a"), Symbol("1"));
+        add_transition(expect2, 0, 2, Symbol("a"), Symbol("2"));
         add_transition(expect2, 1, 1, Symbol("a"), Symbol("1"));
-        std::vector<Symbol> word1({Symbol("a"), Symbol("a"), Symbol("a"), Symbol("a"), Symbol("a")});
+        add_transition(expect2, 2, 2, Symbol("a"), Symbol("2"));
+        std::vector<Symbol> word1({});
         std::vector<Symbol> word2({Symbol("b")});
         return (result1 == expect1) && (result2 == expect2) &&
                accept(expect1, word1) && !accept(expect2, word2);

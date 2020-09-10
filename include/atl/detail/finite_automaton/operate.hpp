@@ -545,6 +545,7 @@ namespace atl::detail {
                     } else {
                         const auto& prop_map_lhs = iter_lhs -> second;
                         const auto& prop_map_rhs = iter_rhs -> second;
+                        if (prop_map_lhs.size() != prop_map_rhs.size()) return false;
                         auto iter_lhs1 = prop_map_lhs.begin(), end_lhs1 = prop_map_lhs.end(),
                              iter_rhs1 = prop_map_rhs.begin();
                         while (iter_lhs1 != end_lhs1) {
