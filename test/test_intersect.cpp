@@ -35,7 +35,7 @@ namespace test {
         set_final_state(expect, 0);
         add_transition(expect, 0, 1, char('a'));
         add_transition(expect, 1, 2, char('b'));
-        return (result == expect);
+        return (result == expect && accept(expect, "ab") && !accept(expect, "aaa"));
     }
 
     //test intersect for nondeterministic_finite_automaton<Symbol> &
@@ -77,7 +77,10 @@ namespace test {
         add_final_state(expect2);
         add_transition(expect2, 0, 1, Symbol("a"), Symbol("1|2"));
         add_transition(expect2, 1, 2, Symbol("b"), Symbol("1|2"));
-        return (result1 == expect1) && (result2 == expect2);
+        std::vector<Symbol> word1({Symbol("a"), Symbol("b")});
+        std::vector<Symbol> word2({Symbol("a")});
+        return (result1 == expect1) && (result2 == expect2) &&
+               accept(expect1, word1) && !accept(expect2, word2);
     }
 
     //test intersect for nondeterministic_finite_automaton<Symbol> &
@@ -137,8 +140,11 @@ namespace test {
         add_transition(expect4, 0, 1, Symbol("a"), Symbol("1|2"));
         add_transition(expect4, 1, 2, Symbol("b"), Symbol("1|2"));
 
+        std::vector<Symbol> word1({Symbol("a"), Symbol("b")});
+        std::vector<Symbol> word2({Symbol("a"), Symbol("b"), Symbol("b")});
         return (result2 == expect2) && (result2 == expect2) && 
-               (result3 == expect3) && (result4 == expect4);
+               (result3 == expect3) && (result4 == expect4) &&
+               accept(expect1, word1) && !accept(expect2, word2);
     }
 
     //test intersect for nondeterministic_finite_automaton<Symbol> &
@@ -190,6 +196,9 @@ namespace test {
         add_final_state(expect2, true);
         add_transition(expect2, 0, 1, Symbol("a"), Symbol("1|1"));
         add_transition(expect2, 1, 2, Symbol("b"), Symbol("2|2"));
-        return (result1 == expect1) && (result2 == expect2);
+        std::vector<Symbol> word1({Symbol("a"), Symbol("b")});
+        std::vector<Symbol> word2({});
+        return (result1 == expect1) && (result2 == expect2) &&
+               accept(expect1, word1) && !accept(expect2, word2);
     }
 }

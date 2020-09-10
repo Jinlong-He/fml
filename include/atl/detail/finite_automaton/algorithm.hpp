@@ -12,7 +12,6 @@
 
 #include <queue>
 #include <vector>
-#include <util/util.hpp>
 #include <atl/detail/finite_automaton/closure.hpp>
 #include <atl/detail/finite_automaton/merge.hpp>
 #include <atl/detail/finite_automaton/copy.hpp>
@@ -40,10 +39,8 @@ namespace atl::detail {
                     return false;
                 }
             }
-            StateSet res;
-            util::set_intersection(work, final_state_set(dfa), res);
-            if (res.size() == 0) return false;
-            return true;
+            if (has_final_state(dfa, work)) return true;
+            return false;
         }
 
         template <NFA_PARAMS>
@@ -62,10 +59,8 @@ namespace atl::detail {
                     return false;
                 }
             }
-            StateSet res;
-            util::set_intersection(work, final_state_set(nfa), res);
-            if (res.size() == 0) return false;
-            return true;
+            if (has_final_state(nfa, work)) return true;
+            return false;
         }
     };
 }

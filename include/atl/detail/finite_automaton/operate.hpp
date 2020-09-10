@@ -287,7 +287,7 @@ namespace atl::detail {
             set_alphabet(nfa, alphabet_);
             if constexpr (!std::is_same<AutomatonProperty, boost::no_property>::value) {
                 atl::set_property(nfa, automaton_property_merge(atl::get_property(a_lhs), 
-                                                                  atl::get_property(a_rhs)));
+                                                                atl::get_property(a_rhs)));
             }
             State2Map state2_map_lhs, state2_map_rhs;
             State state_lhs, state_rhs, state;
@@ -298,8 +298,8 @@ namespace atl::detail {
             copy_fa_impl::copy_transitions(a_rhs, nfa, state2_map_rhs);
             state_rhs = initial_state(nfa);
             state = add_initial_state(nfa);
-            add_transition(nfa, state, state_lhs, epsilon_transition(nfa));
-            add_transition(nfa, state, state_rhs, epsilon_transition(nfa));
+            add_epsilon_transition(nfa, state, state_lhs);
+            add_epsilon_transition(nfa, state, state_rhs);
             minimize(nfa, a_out, symbol_property_merge, state_property_merge);
         }
     };
@@ -444,7 +444,7 @@ namespace atl::detail{
             copy_fa_impl::copy_transitions(a_rhs, nfa, state2_map_rhs);
             state_rhs = initial_state(nfa);
             for (auto state : final_state_set_) {
-                add_transition(nfa, state, state_rhs, epsilon_transition(nfa));
+                add_epsilon_transition(nfa, state, state_rhs);
             }
             set_initial_state(nfa, state_lhs);
             minimize(nfa, a_out, symbol_property_merge, state_property_merge);

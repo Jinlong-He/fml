@@ -99,12 +99,14 @@ namespace atl::detail {
         virtual pair<Transition, bool>
         add_transition(State s, State t, const transition_property_type& c) {
             if constexpr (std::is_same<SymbolProperty, no_type>::value) {
+                if (c == epsilon(*this)) this -> set_flag(4, 1);
                 auto& targets = transition_map_[s][c];
                 if (targets.insert(t).second) {
                     if (targets.size() > 1) set_undeterministic_flag(*this);
                     return Base::add_transition(s, t, c);
                 }
             } else {
+                if (c.default_property == epsilon(*this)) this -> set_flag(4, 1);
                 auto& targets = transition_map_[s][c.default_property][c.extended_property];
                 if (targets.insert(t).second) {
                     if (targets.size() > 1) set_undeterministic_flag(*this);
@@ -118,6 +120,7 @@ namespace atl::detail {
         add_transition(State s, State t,
                        const Symbol& c,
                        const SymbolProperty& p) {
+            if (c == epsilon(*this)) this -> set_flag(4, 1);
             if constexpr (!std::is_same<SymbolProperty, no_type>::value) {
                 auto& targets = transition_map_[s][c][p];
                 if (targets.insert(t).second) {
@@ -172,15 +175,15 @@ namespace atl {
     #define NFA_PARAMS typename NFA_SYMBOL, long NFA_EPSILON, typename NFA_SYMBOL_PROP, typename NFA_STATE_PROP, typename NFA_AUT_PROP
     #define NFA detail::nondeterministic_finite_automaton_gen<NFA_SYMBOL, NFA_EPSILON, NFA_SYMBOL_PROP, NFA_STATE_PROP,NFA_AUT_PROP>
 
-    //template <typename NFA>
-    //inline pair<typename NFA::Transition, bool>
-    //add_epsilon_transition(NFA& a,
-    //                       typename NFA::State s,
-    //                       typename NFA::State t) {
-    //    set_modified_flag(a);
-    //    set_epsilon_flag(a);
-    //    return a.add_transition(s, t, a.epsilon());
-    //}
+    template <NFA_PARAMS>
+    inline pair<typename NFA::Transition, bool>
+    add_epsilon_transition(NFA& a,
+                           typename NFA::State s,
+                           typename NFA::State t) {
+        set_modified_flag(a);
+        set_epsilon_flag(a);
+        return a.add_transition(s, t, a.epsilon_transition());
+    }
 
     template <NFA_PARAMS>
     inline void
