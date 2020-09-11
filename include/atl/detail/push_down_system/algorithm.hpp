@@ -100,7 +100,6 @@ namespace atl::detail {
     }
 
     struct pds_pre_star_impl {
-
         template <PDS_PARAMS,
                   NFA_PARAMS>
         static void

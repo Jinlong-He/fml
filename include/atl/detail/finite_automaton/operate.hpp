@@ -169,6 +169,8 @@ namespace atl::detail {
             typedef typename DFA::StatePairMap StatePairMap;
             typedef typename DFA::state_property_type StateProperty;
             typedef typename DFA::automaton_property_type AutomatonProperty;
+            clear(a_out);
+            if (is_empty(a_lhs) || is_empty(a_rhs)) return;
             if constexpr (!std::is_same<AutomatonProperty, boost::no_property>::value) {
                 atl::set_property(a_out, automaton_property_merge(atl::get_property(a_lhs), 
                                                                   atl::get_property(a_rhs)));
@@ -281,6 +283,15 @@ namespace atl::detail {
             typedef typename DFA::StateSet StateSet;
             typedef typename DFA::State2Map State2Map;
             typedef typename DFA::automaton_property_type AutomatonProperty;
+            clear(a_out);
+            if (is_empty(a_lhs)) {
+                minimize(a_rhs, a_out);
+                return;
+            }
+            if (is_empty(a_rhs)) {
+                minimize(a_lhs, a_out);
+                return;
+            }
             typename DFA::nfa_type nfa;
             typename DFA::SymbolSet alphabet_;
             util::set_union(alphabet(a_lhs), alphabet(a_rhs), alphabet_);
@@ -425,6 +436,15 @@ namespace atl::detail{
             typedef typename DFA::StateSet StateSet;
             typedef typename DFA::State2Map State2Map;
             typedef typename DFA::automaton_property_type AutomatonProperty;
+            clear(a_out);
+            if (is_empty(a_lhs)) {
+                minimize(a_rhs, a_out);
+                return;
+            }
+            if (is_empty(a_rhs)) {
+                minimize(a_lhs, a_out);
+                return;
+            }
             typename DFA::nfa_type nfa;
             typename DFA::SymbolSet alphabet_;
             util::set_union(alphabet(a_lhs), alphabet(a_rhs), alphabet_);
@@ -517,6 +537,7 @@ namespace atl::detail {
             if constexpr (!std::is_same<AutomatonProperty, boost::no_property>::value) {
                 if (atl::get_property(a_lhs) != atl::get_property(a_rhs)) return false;
             }
+            if (is_empty(a_lhs) && is_empty(a_rhs)) return true;
             if (state_set(a_lhs) != state_set(a_rhs)) return false;
             if (final_state_set(a_lhs) != final_state_set(a_rhs)) return false;
             if (initial_state(a_lhs) != initial_state(a_rhs)) return false;

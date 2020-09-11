@@ -241,8 +241,8 @@ namespace atl::detail {
             typedef typename NFA::state_property_type StateProperty;
             typedef typename NFA::symbol_property_type SymbolProperty;
             typedef typename NFA::automaton_property_type AutomatonProperty;
-
             atl::clear(a_out);
+            if (is_empty(a_in)) return;
             atl::set_alphabet(a_out, atl::alphabet(a_in));
             if constexpr (!std::is_same<AutomatonProperty, boost::no_property>::value) {
                 atl::set_property(a_out, atl::get_property(a_in));
@@ -393,6 +393,7 @@ namespace atl::detail {
             typedef typename DFA::automaton_property_type AutomatonProperty;
             typedef typename DFA::state_property_type StateProperty;
             clear(a_out);
+            if (is_empty(a_in)) return;
             atl::set_alphabet(a_out, atl::alphabet(a_in));
             if constexpr (!std::is_same<AutomatonProperty, boost::no_property>::value) {
                 atl::set_property(a_out, atl::get_property(a_in));
@@ -531,7 +532,8 @@ namespace atl::detail {
             typedef typename DFA::symbol_property_type SymbolProperty;
             typedef typename DFA::automaton_property_type AutomatonProperty;
             typedef typename DFA::transition_property_type TransitionProperty;
-
+            clear(a_out);
+            if (is_empty(a_in)) return;
             StateSet unfinal_states, final_states;
             State2Map state2_map;
             DFA dfa1, dfa2;

@@ -80,6 +80,21 @@ namespace atl {
             atl::reachable_closure(fa, backward_states, backward_states, detail::backward);
             util::set_intersection(forward_states, backward_states, reachable_closure);
     }
+
+    template <FA_PARAMS>
+    inline bool
+    is_empty(const FA& a) {
+        if (initial_state(a) == -1) return true;
+        if (is_forward_reachable(a)) {
+            if (a.final_state_set().size() == 0) return true;
+            return false;
+        } else {
+            typename FA::StateSet states;
+            reachable_closure(a, states);
+            if (!has_final_state(a, states)) return true;
+            return false;
+        }
+    }
 }
 
 namespace atl::detail {

@@ -78,6 +78,7 @@ namespace atl::detail {
               typename FA::StateSet const& states) {
             typedef typename FA::automaton_property_type AutomatonProperty;
             atl::clear(a_out);
+            if (is_empty(a_in)) return;
             set_alphabet(a_out, alphabet(a_in));
             if constexpr (!std::is_same<AutomatonProperty, boost::no_property>::value) {
                 atl::set_property(a_out, atl::get_property(a_in));

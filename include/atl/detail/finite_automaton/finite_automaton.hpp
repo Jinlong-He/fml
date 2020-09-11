@@ -459,19 +459,6 @@ namespace atl {
         return a.flag(4);
     }
 
-    template <FA_PARAMS>
-    inline bool
-    is_empty(const FA& a) {
-        if (is_forward_reachable(a)) {
-            if (a.final_state_set().size() == 0) return true;
-            return false;
-        } else {
-            typename FA::StateSet states;
-            reachable_closure(a, states);
-            if (!has_final_state(a, states)) return true;
-            return false;
-        }
-    }
 };
 
 #endif /* atl_detail_finite_automaton_hpp */
