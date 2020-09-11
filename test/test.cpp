@@ -110,6 +110,10 @@ BOOST_AUTO_TEST_CASE(test_concat3) {
     BOOST_CHECK_EQUAL(test::test_concat3(), true);
 }
 
+BOOST_AUTO_TEST_CASE(test_poststar) {
+    BOOST_CHECK_EQUAL(test::test_poststar(), true);
+}
+
 BOOST_AUTO_TEST_CASE(test_prestar) {
     BOOST_CHECK_EQUAL(test::test_prestar(), true);
 }
