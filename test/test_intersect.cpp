@@ -201,4 +201,20 @@ namespace test {
         return (result1 == expect1) && (result2 == expect2) &&
                accept(expect1, word1) && !accept(expect2, word2);
     }
+
+    bool test_intersect5() {
+        nondeterministic_finite_automaton<> empty;
+        nondeterministic_finite_automaton<> nfa({'a', 'b'});
+        add_initial_state(nfa);
+        add_state(nfa);
+        add_final_state(nfa);
+        add_state(nfa);
+        set_final_state(nfa, 0);
+        add_transition(nfa, 0, 0, char('a'));
+        add_transition(nfa, 0, 1, char('a'));
+        add_transition(nfa, 1, 2, char('b'));
+        add_transition(nfa, 2, 2, char('b'));
+        add_transition(nfa, 0, 3, char('a'));
+        return (empty == (empty & nfa)) && (empty == (nfa & empty));
+    }
 }

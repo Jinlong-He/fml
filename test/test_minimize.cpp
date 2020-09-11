@@ -308,4 +308,11 @@ namespace test {
                !accept(nfa, "aaaaaa") && accept(nfa, "aabbbbbbbb") &&
                !accept(expect, "aaaaaa") && accept(expect, "aabbbbbbbb");
     }
+
+    //test minimize for nondeterministic_finite_automaton<>
+    bool test_minimize8() {
+        nondeterministic_finite_automaton<> result({'a', 'b'});
+        deterministic_finite_automaton<> expect({'a', 'b'});
+        return (result == expect);
+    }
 }

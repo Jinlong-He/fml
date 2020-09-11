@@ -34,6 +34,10 @@ BOOST_AUTO_TEST_CASE(test_minimize7) {
     BOOST_CHECK_EQUAL(test::test_minimize7(), true);
 }
 
+BOOST_AUTO_TEST_CASE(test_minimize8) {
+    BOOST_CHECK_EQUAL(test::test_minimize8(), true);
+}
+
 BOOST_AUTO_TEST_CASE(test_basic_regular_expression1) {
     BOOST_CHECK_EQUAL(test::test_basic_regular_expression1(), true);
 }
@@ -70,6 +74,10 @@ BOOST_AUTO_TEST_CASE(test_intersect4) {
     BOOST_CHECK_EQUAL(test::test_intersect4(), true);
 }
 
+BOOST_AUTO_TEST_CASE(test_intersect5) {
+    BOOST_CHECK_EQUAL(test::test_intersect5(), true);
+}
+
 BOOST_AUTO_TEST_CASE(test_union1) {
     BOOST_CHECK_EQUAL(test::test_union1(), true);
 }
@@ -80,6 +88,26 @@ BOOST_AUTO_TEST_CASE(test_union2) {
 
 BOOST_AUTO_TEST_CASE(test_union3) {
     BOOST_CHECK_EQUAL(test::test_union3(), true);
+}
+
+BOOST_AUTO_TEST_CASE(test_union4) {
+    BOOST_CHECK_EQUAL(test::test_union4(), true);
+}
+
+BOOST_AUTO_TEST_CASE(test_union5) {
+    BOOST_CHECK_EQUAL(test::test_union5(), true);
+}
+
+BOOST_AUTO_TEST_CASE(test_concat1) {
+    BOOST_CHECK_EQUAL(test::test_concat1(), true);
+}
+
+BOOST_AUTO_TEST_CASE(test_concat2) {
+    BOOST_CHECK_EQUAL(test::test_concat2(), true);
+}
+
+BOOST_AUTO_TEST_CASE(test_concat3) {
+    BOOST_CHECK_EQUAL(test::test_concat3(), true);
 }
 
 BOOST_AUTO_TEST_CASE(test_fomula_automaton) {

@@ -75,6 +75,7 @@ namespace test {
     bool test_minimize5();
     bool test_minimize6();
     bool test_minimize7();
+    bool test_minimize8();
 
     bool test_basic_regular_expression1();
     bool test_basic_regular_expression2();
@@ -86,11 +87,18 @@ namespace test {
     bool test_intersect2();
     bool test_intersect3();
     bool test_intersect4();
+    bool test_intersect5();
 
     bool test_union1();
     bool test_union2();
     bool test_union3();
     bool test_union4();
+    bool test_union5();
+
+    bool test_concat1();
+    bool test_concat2();
+    bool test_concat3();
+    bool test_concat4();
 
     bool test_fomula_automaton();
 
