@@ -34,9 +34,6 @@ namespace atl::detail {
                 if (state2_map.count(state) == 0) {
                     state2_map[state] = add_state(nfa_out);
                 }
-                for (auto& symbol : alphabet(pds)) {
-                    mid_state_map[pair<State, Symbol>(state, symbol)] = add_state(nfa_out);
-                }
             }
 
             ID count = 1;
@@ -60,8 +57,13 @@ namespace atl::detail {
                                         if (add_transition(nfa_out, source, target, 
                                                            stack[0]).second) count++;
                                     } else {
-                                        State mid = mid_state_map.at(pair<State, Symbol>
-                                                                      (source, stack[0]));
+                                        State mid = -1;
+                                        if (mid_state_map.count(pair(source, stack[0])) == 0) {
+                                            mid = add_state(nfa_out);
+                                            mid_state_map[pair(source, stack[0])] = mid;
+                                        } else {
+                                            mid = mid_state_map.at(pair(source, stack[0]));
+                                        }
                                         if (add_transition(nfa_out, source, mid, 
                                                            stack[0]).second) count++;
                                         if (add_transition(nfa_out, mid, target, 
@@ -106,7 +108,7 @@ namespace atl::detail {
         apply(const PDS& pds,
               const NFA& nfa_in,
               NFA& nfa_out,
-              typename PDS::State2Map const& state2_map) {
+              typename PDS::State2Map& state2_map) {
             typedef typename PDS::State State;
             typedef typename PDS::StateSet StateSet;
             typename NFA::State2Map cp_map;
@@ -142,25 +144,23 @@ namespace atl::detail {
                         for (const auto& map_pair2 : map_pair1.second) {
                             State state = cp_map.at(state2_map.at(map_pair2.first));
                             for (const auto& stack : map_pair2.second) {
-                                for (const auto target : targets) {
-                                    if (stack.size() == 0) {
-                                        continue;
-                                    } else if (stack.size() == 1) {
-                                        targets.clear();
-                                        get_targets(nfa_out, state, stack[0], targets);
-                                        for (auto target : targets) {
-                                            if (add_transition(nfa_out, source, target, 
-                                                               symbol).second) count++;
-                                        }
-                                    } else {
-                                        targets.clear();
-                                        new_targets.clear();
-                                        get_targets(nfa_out, state, stack[0], targets);
-                                        get_targets(nfa_out, targets, stack[1], new_targets);
-                                        for (auto target : new_targets) {
-                                            if (add_transition(nfa_out, source, target, 
-                                                               symbol).second) count++;
-                                        }
+                                if (stack.size() == 0) {
+                                    continue;
+                                } else if (stack.size() == 1) {
+                                    targets.clear();
+                                    get_targets(nfa_out, state, stack[0], targets);
+                                    for (auto target : targets) {
+                                        if (add_transition(nfa_out, source, target, 
+                                                           symbol).second) count++;
+                                    }
+                                } else {
+                                    targets.clear();
+                                    new_targets.clear();
+                                    get_targets(nfa_out, state, stack[0], targets);
+                                    get_targets(nfa_out, targets, stack[1], new_targets);
+                                    for (auto target : new_targets) {
+                                        if (add_transition(nfa_out, source, target, 
+                                                           symbol).second) count++;
                                     }
                                 }
                             }

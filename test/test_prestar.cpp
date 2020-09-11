@@ -4,7 +4,7 @@
 using namespace atl;
 
 namespace test {
-    bool test_poststar() {
+    bool test_prestar() {
         nondeterministic_finite_automaton<char> nfa({'a','b','c','d'});
         add_initial_state(nfa);
         add_state(nfa);
@@ -23,10 +23,20 @@ namespace test {
         add_transition(pds, 2, 0, 'c', std::vector<char>({'b'}));
         add_transition(pds, 0, 0, 'b', std::vector<char>());
 
-        nondeterministic_finite_automaton res1, res2;
-        pds_post_star(pds, nfa, res1);
-        pds_pre_star(pds, nfa, res2);
-        //print_fa(res1);
-        print_fa(res2);
+        nondeterministic_finite_automaton result, expect;
+        pds_pre_star(pds, nfa, result);
+        add_initial_state(expect);
+        add_state(expect);
+        add_state(expect);
+        add_state(expect);
+        add_final_state(expect);
+        add_transition(expect, 0, 0, 'b');
+        add_transition(expect, 0, 3, 'a');
+        add_transition(expect, 0, 4, 'a');
+        add_transition(expect, 1, 3, 'b');
+        add_transition(expect, 1, 4, 'b');
+        add_transition(expect, 2, 0, 'c');
+        add_transition(expect, 3, 4, 'a');
+        return (result == expect);
     }
 }

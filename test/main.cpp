@@ -10,7 +10,8 @@ int main(int argc, char* argv[]) {
     //test_minimize4();
     //test_minimize5();
     //test_minimize6();
-    test_minimize8();
+    //test_minimize8();
     //test_fomula_automaton();
     //cout << test_union4() << endl;
+    test_poststar();
 }

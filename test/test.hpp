@@ -100,6 +100,9 @@ namespace test {
     bool test_concat3();
     bool test_concat4();
 
+    bool test_poststar();
+    bool test_prestar();
+
     bool test_fomula_automaton();
 
     bool test_propositional_logic();
@@ -109,7 +112,6 @@ namespace test {
     void test_equal();
 
     void test_basic_regular_expression();
-    void test_poststar();
     void test_transducer();
 }
 
