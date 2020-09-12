@@ -13,5 +13,6 @@ int main(int argc, char* argv[]) {
     //test_minimize8();
     //test_fomula_automaton();
     //cout << test_union4() << endl;
-    test_poststar();
+    //test_poststar();
+    test_composite1();
 }

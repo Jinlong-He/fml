@@ -5,6 +5,7 @@ ADD_LIBRARY (test_union test_union.cpp)
 ADD_LIBRARY (test_concat test_concat.cpp)
 ADD_LIBRARY (test_poststar test_poststar.cpp)
 ADD_LIBRARY (test_prestar test_prestar.cpp)
+ADD_LIBRARY (test_composite test_composite.cpp)
 ADD_LIBRARY (test_fomula_automaton test_fomula_automaton.cpp)
 ADD_LIBRARY (test_propositional_logic test_propositional_logic.cpp)
 ADD_LIBRARY (test_ltl test_ltl.cpp)
@@ -20,6 +21,7 @@ TARGET_LINK_LIBRARIES (main
       test_concat
       test_poststar
       test_prestar
+      test_composite
       test_fomula_automaton
       test_propositional_logic
       test_ltl
@@ -41,6 +43,7 @@ TARGET_LINK_LIBRARIES (test_fml
       test_concat
       test_poststar
       test_prestar
+      test_composite
       test_fomula_automaton
       test_propositional_logic
       test_ltl

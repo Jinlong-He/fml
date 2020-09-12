@@ -1,5 +1,5 @@
-#include <atl/detail/push_down_system/algorithm.hpp>
-#include <atl/automaton_utility.hpp>
+#include <atl/push_down_system/push_down_system.hpp>
+#include <atl/finite_automaton/nondeterministic_finite_automaton.hpp>
 #include "test.hpp"
 using namespace atl;
 

@@ -45,6 +45,7 @@ namespace atl {
                                                                       LabelProperty,
                                                                       StateProperty,
                                                                       AutomatonProperty> nl2lt_type;
+        typedef Base dl2lt_type;
 
         typedef typename Base::state_property_type state_property_type;
         typedef typename Base::automaton_property_type automaton_property_type;
@@ -74,53 +75,53 @@ namespace atl {
 
         ~deterministic_letter2letter_transducer() {}
 
-        deterministic_letter2letter_transducer& 
-        operator=(const deterministic_letter2letter_transducer& x) {
+        dl2lt_type& 
+        operator=(const dl2lt_type& x) {
             if (&x != this) {
                 Base::operator=(x);
             }
             return *this;
         }
 
-        deterministic_letter2letter_transducer
-        operator&(const deterministic_letter2letter_transducer& x) {
-            deterministic_letter2letter_transducer out, dfa_lhs, dfa_rhs;
+        dl2lt_type
+        operator&(const dl2lt_type& x) {
+            dl2lt_type out, dfa_lhs, dfa_rhs;
             minimize(*this, dfa_lhs);
             minimize(x, dfa_rhs);
             intersect_fa(dfa_lhs, dfa_rhs, out);
             return out;
         }
 
-        deterministic_letter2letter_transducer
+        dl2lt_type
         operator&(const nfa_type& x) {
-            deterministic_letter2letter_transducer out, dfa_lhs, dfa_rhs;
+            dl2lt_type out, dfa_lhs, dfa_rhs;
             minimize(*this, dfa_lhs);
             minimize(x, dfa_rhs);
             intersect_fa(dfa_lhs, dfa_rhs, out);
             return out;
         }
         
-        deterministic_letter2letter_transducer
-        operator|(const deterministic_letter2letter_transducer& x) {
-            deterministic_letter2letter_transducer out, dfa_lhs, dfa_rhs;
+        dl2lt_type
+        operator|(const dl2lt_type& x) {
+            dl2lt_type out, dfa_lhs, dfa_rhs;
             minimize(*this, dfa_lhs);
             minimize(x, dfa_rhs);
             union_fa(dfa_lhs, dfa_rhs, out);
             return out;
         }
 
-        deterministic_letter2letter_transducer
+        dl2lt_type
         operator|(const nfa_type& x) {
-            deterministic_letter2letter_transducer out, dfa_lhs, dfa_rhs;
+            dl2lt_type out, dfa_lhs, dfa_rhs;
             minimize(*this, dfa_lhs);
             minimize(x, dfa_rhs);
             union_fa(dfa_lhs, dfa_rhs, out);
             return out;
         }
 
-        deterministic_letter2letter_transducer
-        operator-(const deterministic_letter2letter_transducer& x) {
-            deterministic_letter2letter_transducer out, dfa_lhs, dfa_rhs, dfa;
+        dl2lt_type
+        operator-(const dl2lt_type& x) {
+            dl2lt_type out, dfa_lhs, dfa_rhs, dfa;
             minimize(*this, dfa_lhs);
             minimize(x, dfa_rhs);
             complement_fa(dfa_rhs, dfa);
@@ -128,9 +129,9 @@ namespace atl {
             return out;
         }
 
-        deterministic_letter2letter_transducer
+        dl2lt_type
         operator-(const nfa_type& x) {
-            deterministic_letter2letter_transducer out, dfa_lhs, dfa_rhs, dfa;
+            dl2lt_type out, dfa_lhs, dfa_rhs, dfa;
             minimize(*this, dfa_lhs);
             minimize(x, dfa_rhs);
             complement_fa(dfa_rhs, dfa);
@@ -138,35 +139,35 @@ namespace atl {
             return out;
         }
         
-        deterministic_letter2letter_transducer
-        operator+(const deterministic_letter2letter_transducer& x) {
-            deterministic_letter2letter_transducer out, dfa_lhs, dfa_rhs;
+        dl2lt_type
+        operator+(const dl2lt_type& x) {
+            dl2lt_type out, dfa_lhs, dfa_rhs;
             minimize(*this, dfa_lhs);
             minimize(x, dfa_rhs);
             concat_fa(dfa_lhs, dfa_rhs, out);
             return out;
         }
 
-        deterministic_letter2letter_transducer
+        dl2lt_type
         operator+(const nfa_type& x) {
-            deterministic_letter2letter_transducer out, dfa_lhs, dfa_rhs;
+            dl2lt_type out, dfa_lhs, dfa_rhs;
             minimize(*this, dfa_lhs);
             minimize(x, dfa_rhs);
             concat_fa(dfa_lhs, dfa_rhs, out);
             return out;
         }
 
-        deterministic_letter2letter_transducer
+        dl2lt_type
         operator!() {
-            deterministic_letter2letter_transducer dfa, out;
+            dl2lt_type dfa, out;
             minimize(*this, dfa);
             complement_fa(dfa, out);
             return out;
         }
 
         bool
-        operator==(const deterministic_letter2letter_transducer& x) {
-            deterministic_letter2letter_transducer dfa_lhs, dfa_rhs;
+        operator==(const dl2lt_type& x) {
+            dl2lt_type dfa_lhs, dfa_rhs;
             minimize(*this, dfa_lhs);
             minimize(x, dfa_rhs);
             return equal_fa(dfa_lhs, dfa_rhs);
@@ -174,24 +175,24 @@ namespace atl {
 
         bool
         operator==(const nfa_type& x) {
-            deterministic_letter2letter_transducer dfa_lhs, dfa_rhs;
+            dl2lt_type dfa_lhs, dfa_rhs;
             minimize(*this, dfa_lhs);
             minimize(x, dfa_rhs);
             return equal_fa(dfa_lhs, dfa_rhs);
         }
 
-        deterministic_letter2letter_transducer
-        operator*(const deterministic_letter2letter_transducer& x) {
-            deterministic_letter2letter_transducer out, dl2lt_lhs, dl2lt_rhs, dl2lt;
+        dl2lt_type
+        operator*(const dl2lt_type& x) {
+            dl2lt_type out, dl2lt_lhs, dl2lt_rhs, dl2lt;
             minimize(*this, dl2lt_lhs);
             minimize(x, dl2lt_rhs);
             composite_l2lt(dl2lt_lhs, dl2lt_rhs, out);
             return out;
         }
         
-        deterministic_letter2letter_transducer
+        dl2lt_type
         operator*(const nl2lt_type& x) {
-            deterministic_letter2letter_transducer out, dl2lt_lhs, dl2lt_rhs, dl2lt;
+            dl2lt_type out, dl2lt_lhs, dl2lt_rhs, dl2lt;
             minimize(*this, dl2lt_lhs);
             minimize(x, dl2lt_rhs);
             composite_l2lt(dl2lt_lhs, dl2lt_rhs, out);

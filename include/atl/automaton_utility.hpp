@@ -14,8 +14,8 @@
 #include <fstream>
 #include <atl/detail/automaton.hpp>
 #include <atl/detail/no_type.hpp>
-#include <atl/finite_automaton/nondeterministic_finite_automaton.hpp>
-#include <atl/push_down_system/push_down_system.hpp>
+#include <atl/detail/finite_automaton/nondeterministic_finite_automaton.hpp>
+#include <atl/detail/push_down_system/push_down_system.hpp>
 using std::cout;
 using std::endl;
 using std::fstream;
