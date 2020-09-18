@@ -42,13 +42,65 @@ Now, in the directory where you saved example.cpp, issue the following command:
 c++ -I path/to/boost -I path/to/fml/include -std=c++17 example.cpp -o example
 ```
 ---
-# Data Structure 
+# Data Structures
+The fml currently provides five automaton classes:
+- deterministic_finite_automaton
+- nondeterministic_finite_automaton
+- push_down_system
+- deterministic_letter2letter_transducer
+- nondeterministic_letter2letter_transducer
 
-##### deterministic_finite_automaton< Symbol, epsilon, SymbolProperty, StateProperty, AutomatonProperty >
-##### nondeterministic_finite_automaton< Symbol, epsilon, SymbolProperty, StateProperty, AutomatonProperty >
-##### push_down_system< Symbol, epsilon, Symbolproperty, StateProperty, AutomatonProperty >
-##### deterministic_letter2letter_transducer< Symbol, epsilon, LabelProperty, StateProperty, AutomatonProperty >
-##### nondeterministic_letter2letter_transducer< Symbol, epsilon, LabelProperty, StateProperty, AutomatonProperty >
+### deterministic_finite_automaton < Symbol, epsilon, SymbolProperty, StateProperty, AutomatonProperty >
+### nondeterministic_finite_automaton< Symbol, epsilon, SymbolProperty, StateProperty, AutomatonProperty >
+The deterministic_finite_automaton and nondeterministic_finite_automaton classes implements two generalized finite automaton structures.
+
+The `Symbol` template parameter of the `deterministic_finite_automaton` and
+`nondeterministic_finite_automaton` classes controls what kind of type is used to represent the input symbol.
+The `epsilon` template parameter of the `deterministic_finite_automaton` and
+`nondeterministic_finite_automaton` classes controls what kind of value is used to represent the empty input.
+
+The `SymbolProperty`, `StateProperty` and `AutomatonProperty` template parameter of the `deterministic_finite_automaton` and
+`nondeterministic_finite_automaton` classes control what kind of type is used to represent the property of the input symbol, state and automaton.
+
+|Parameter|Description|Default|
+|-|-|-|
+|Symbol| the selector for type used to represent the input symbol |char|
+|epsilon|the selector for value used to represent the empty inpu |0L|
+|SymbolProperty|the selector for type used to represent the property of the input symbol |no_type|
+|StateProperty|the selector for type used to represent the property of the state |no_type|
+|AutomatonProperty|the selector for type used to represent the property of the automaton |no_type|
+
+#### Associated Types
+---
+`deterministic_finite_automaton::State`
+
+The type for the state descreptors associated with the `deterministic_finite_automaton`
+
+---
+
+#### Non-Member Function
+##### Structure Access
+---
+```
+const boost::unordered_set<Symbol>&
+alphabet(const finite_automaton& fa)
+```
+Returns a set providing access to the input symbol alphabet of finite automaton `fa`.
+
+---
+```
+State
+initial_state(const finite_automaton& fa)
+```
+Returns a set providing access to the input symbol alphabet of finite automaton `fa`.
+
+---
+
+
+
+### push_down_system< Symbol, epsilon, Symbolproperty, StateProperty, AutomatonProperty >
+### deterministic_letter2letter_transducer< Symbol, epsilon, LabelProperty, StateProperty, AutomatonProperty >
+### nondeterministic_letter2letter_transducer< Symbol, epsilon, LabelProperty, StateProperty, AutomatonProperty >
 
 |||
 |-|-|
