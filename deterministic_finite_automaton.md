@@ -1,5 +1,5 @@
 
-### deterministic_finite_automaton < Symbol, epsilon, SymbolProperty, StateProperty, AutomatonProperty >
+# deterministic_finite_automaton < Symbol, epsilon, SymbolProperty, StateProperty, AutomatonProperty >
 The deterministic_finite_automaton class implements a generalized deterministic finite automaton structure.
 
 The `Symbol` template parameter of the `deterministic_finite_automaton` class controls what kind of type is used to represent the input symbol.
@@ -15,7 +15,7 @@ The `SymbolProperty`, `StateProperty` and `AutomatonProperty` template parameter
 |StateProperty|the selector for type used to represent the property of the state |no_type|
 |AutomatonProperty|the selector for type used to represent the property of the automaton |no_type|
 
-#### Associated Types
+## Associated Types
 ---
 `deterministic_finite_automaton<Symbol, epsilon, SymbolProperty, StateProperty, AutomatonProperty>::State`
 
@@ -67,7 +67,7 @@ The type for the iterators returned by `in_transitions()`
 The type for the iterators returned by `out_transitions()`
 
 ---
-#### Member Function
+## Member Function
 ---
 ```
 deterministic_finite_automaton_gen()
@@ -160,7 +160,7 @@ Plus operator. Returns the concatenation of this object and nondeterministic fin
 deterministic_finite_automaton
 operator!()
 ```
-Boolean negation operator. Returns the complement of this object.
+Boolean negation operator. Returns the complementation of this object.
 
 ---
 ```
@@ -177,8 +177,8 @@ operator==(const nondeterministic_finite_automaton& x)
 Equality operator. Compares the equality of this object and nondeterministic finite automaon `x`.
 
 ---
-#### Non-Member Function
-##### Structure Access
+## Non-Member Function
+### Structure Access
 ---
 ```
 const SymbolSet&
@@ -283,7 +283,7 @@ target(const deterministic_finite_automaton& dfa,
 Returns the target state of transition `t`.
 
 ---
-##### Structure Modification 
+### Structure Modification 
 ---
 ```
 State
@@ -388,7 +388,7 @@ clear_finale_state_set(deterministic_finite_automaton& dfa)
 Clears final states of deterministic finite automaton.
 
 ---
-##### Property Access
+### Property Access
 ---
 ```
 const AutomatonProperty&
@@ -437,5 +437,79 @@ set_property(deterministic_finite_automaton& dfa,
              const StateProperty& p)
 ```
 Sets `p` as the property of transition `t` in deterministic finite automaton `dfa`.
+
+---
+### Finite Automaton Algorithm
+---
+```
+void
+reachable_closure(const DFA& dfa,
+                  const StateSet& states_in,
+                  StateSet& states_out,
+                  detail::Direction direction = detail::forward)
+```
+Sets `states_out` as the reachable closure from the state set `states_in` in deterministic finite automaton `dfa` with `direction`.
+
+---
+```
+void
+reachable_closure(const DFA& dfa,
+                  StateSet& states_out)
+```
+Sets `states_out` as the reachable closure in deterministic finite automaton `dfa`.
+
+---
+```
+void
+minimize(const DFA& a_in,
+         DFA& a_out)
+```
+Minimizes deterministic finite automaton `a_in` to `a_out`.
+
+---
+```
+void
+intersect_fa(const DFA& a_lhs,
+             const DFA& a_rhs,
+             DFA& a_out)
+```
+Intersects deterministic finite automaton `a_lhs` and deterministic finite automaton `a_rhs` to `a_out`.
+
+---
+```
+void
+intersect_fa(const DFA& a_lhs,
+             const DFA& a_rhs,
+             DFA& a_out,
+             SymbolPropertyMerge symbol_property_merge)
+```
+Intersects deterministic finite automaton `a_lhs` and deterministic finite automaton `a_rhs` with merging symbol property by `symbol_property_merge` to `a_out`. 
+If `SymbolProperty` is not `no_type`, and `(s1,c{p1},t1)` in `a_lhs` and `(s2,c{p2},t2)` in `a_rhs`, then `(<s1,s2>,c{symbol_property_merge(p1,p2)},<t1,t2>)` in `a_out`.
+
+---
+```
+void
+intersect_fa(const DFA& a_lhs,
+             const DFA& a_rhs,
+             DFA& a_out,
+             SymbolPropertyMerge symbol_property_merge,
+             StatePropertyMerge state_property_merge)
+```
+Intersects deterministic finite automaton `a_lhs` and deterministic finite automaton `a_rhs` with merging symbol property by `symbol_property_merge` and merging state property bt `state_property_merge` to `a_out`. 
+If `SymbolProperty` is not `no_type`, and `(s1{sp1},c{p1},t1{tp1})` in `a_lhs` and `(s2{sp2},c{p2},t2{tp2})` in `a_rhs`, then `(<s1,s2>{sp},c{symbol_property_merge(p1,p2)},<t1,t2>{tp})` in `a_out`, where `sp` is `state_property_merge(sp1,sp2)`.
+
+
+---
+```
+void
+intersect_fa(const DFA& a_lhs,
+             const DFA& a_rhs,
+             DFA& a_out,
+             SymbolPropertyMerge symbol_property_merge,
+             StatePropertyMerge state_property_merge,
+             AutomatonPropertyMerge automaton_property_merge)
+```
+Intersects deterministic finite automaton `a_lhs` and deterministic finite automaton `a_rhs` with merging symbol property by `symbol_property_merge` and merging state property bt `state_property_merge` and merging automaton property by `automaton_property_merge` to `a_out`. 
+Also see `intersect_fa()` for more details.
 
 ---
