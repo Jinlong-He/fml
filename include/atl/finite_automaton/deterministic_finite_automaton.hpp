@@ -75,7 +75,7 @@ namespace atl {
 
             ~deterministic_finite_automaton() {}
 
-            deterministic_finite_automaton& 
+            dfa_type& 
             operator=(const dfa_type& x) {
                 if (&x != this) {
                     Base::operator=(x);
@@ -83,45 +83,45 @@ namespace atl {
                 return *this;
             }
 
-            deterministic_finite_automaton
+            dfa_type
             operator&(const dfa_type& x) {
-                deterministic_finite_automaton out, dfa_lhs, dfa_rhs;
+                dfa_type out, dfa_lhs, dfa_rhs;
                 minimize(*this, dfa_lhs);
                 minimize(x, dfa_rhs);
                 intersect_fa(dfa_lhs, dfa_rhs, out);
                 return out;
             }
 
-            deterministic_finite_automaton
+            dfa_type
             operator&(const nfa_type& x) {
-                deterministic_finite_automaton out, dfa_lhs, dfa_rhs;
+                dfa_type out, dfa_lhs, dfa_rhs;
                 minimize(*this, dfa_lhs);
                 minimize(x, dfa_rhs);
                 intersect_fa(dfa_lhs, dfa_rhs, out);
                 return out;
             }
             
-            deterministic_finite_automaton
+            dfa_type
             operator|(const dfa_type& x) {
-                deterministic_finite_automaton out, dfa_lhs, dfa_rhs;
+                dfa_type out, dfa_lhs, dfa_rhs;
                 minimize(*this, dfa_lhs);
                 minimize(x, dfa_rhs);
                 union_fa(dfa_lhs, dfa_rhs, out);
                 return out;
             }
 
-            deterministic_finite_automaton
+            dfa_type
             operator|(const nfa_type& x) {
-                deterministic_finite_automaton out, dfa_lhs, dfa_rhs;
+                dfa_type out, dfa_lhs, dfa_rhs;
                 minimize(*this, dfa_lhs);
                 minimize(x, dfa_rhs);
                 union_fa(dfa_lhs, dfa_rhs, out);
                 return out;
             }
 
-            deterministic_finite_automaton
+            dfa_type
             operator-(const dfa_type& x) {
-                deterministic_finite_automaton out, dfa_lhs, dfa_rhs, dfa;
+                dfa_type out, dfa_lhs, dfa_rhs, dfa;
                 minimize(*this, dfa_lhs);
                 minimize(x, dfa_rhs);
                 complement_fa(dfa_rhs, dfa);
@@ -129,9 +129,9 @@ namespace atl {
                 return out;
             }
 
-            deterministic_finite_automaton
+            dfa_type
             operator-(const nfa_type& x) {
-                deterministic_finite_automaton out, dfa_lhs, dfa_rhs, dfa;
+                dfa_type out, dfa_lhs, dfa_rhs, dfa;
                 minimize(*this, dfa_lhs);
                 minimize(x, dfa_rhs);
                 complement_fa(dfa_rhs, dfa);
@@ -139,27 +139,27 @@ namespace atl {
                 return out;
             }
             
-            deterministic_finite_automaton
+            dfa_type
             operator+(const dfa_type& x) {
-                deterministic_finite_automaton out, dfa_lhs, dfa_rhs;
+                dfa_type out, dfa_lhs, dfa_rhs;
                 minimize(*this, dfa_lhs);
                 minimize(x, dfa_rhs);
                 concat_fa(dfa_lhs, dfa_rhs, out);
                 return out;
             }
 
-            deterministic_finite_automaton
+            dfa_type
             operator+(const nfa_type& x) {
-                deterministic_finite_automaton out, dfa_lhs, dfa_rhs;
+                dfa_type out, dfa_lhs, dfa_rhs;
                 minimize(*this, dfa_lhs);
                 minimize(x, dfa_rhs);
                 concat_fa(dfa_lhs, dfa_rhs, out);
                 return out;
             }
 
-            deterministic_finite_automaton
+            dfa_type
             operator!() {
-                deterministic_finite_automaton dfa, out;
+                dfa_type dfa, out;
                 minimize(*this, dfa);
                 complement_fa(dfa, out);
                 return out;
@@ -167,7 +167,7 @@ namespace atl {
 
             bool
             operator==(const dfa_type& x) {
-                deterministic_finite_automaton dfa_lhs, dfa_rhs;
+                dfa_type dfa_lhs, dfa_rhs;
                 minimize(*this, dfa_lhs);
                 minimize(x, dfa_rhs);
                 return equal_fa(dfa_lhs, dfa_rhs);
@@ -175,10 +175,26 @@ namespace atl {
 
             bool
             operator==(const nfa_type& x) {
-                deterministic_finite_automaton dfa_lhs, dfa_rhs;
+                dfa_type dfa_lhs, dfa_rhs;
                 minimize(*this, dfa_lhs);
                 minimize(x, dfa_rhs);
                 return equal_fa(dfa_lhs, dfa_rhs);
+            }
+
+            bool
+            operator<=(const dfa_type& x) {
+                dfa_type dfa_lhs, dfa_rhs;
+                minimize(*this, dfa_lhs);
+                minimize(x, dfa_rhs);
+                return is_empty(dfa_rhs - dfa_lhs);
+            }
+
+            bool
+            operator<=(const nfa_type& x) {
+                dfa_type dfa_lhs, dfa_rhs;
+                minimize(*this, dfa_lhs);
+                minimize(x, dfa_rhs);
+                return is_empty(dfa_rhs - dfa_lhs);
             }
         private:
         };

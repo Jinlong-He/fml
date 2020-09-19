@@ -177,6 +177,21 @@ namespace atl {
                 return equal_fa(dfa_lhs, dfa_rhs);
             }
 
+            bool
+            operator<=(const dfa_type& x) {
+                dfa_type dfa_lhs, dfa_rhs;
+                minimize(*this, dfa_lhs);
+                minimize(x, dfa_rhs);
+                return is_empty(dfa_rhs - dfa_lhs);
+            }
+
+            bool
+            operator<=(const nfa_type& x) {
+                dfa_type dfa_lhs, dfa_rhs;
+                minimize(*this, dfa_lhs);
+                minimize(x, dfa_rhs);
+                return is_empty(dfa_rhs - dfa_lhs);
+            }
         private:
         };
 }
