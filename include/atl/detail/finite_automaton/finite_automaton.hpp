@@ -76,8 +76,10 @@ namespace atl::detail {
                                                       StateProperty,
                                                       AutomatonProperty> nfa_type;
 
-        typedef typename Base::Transition Transition;
         typedef typename Base::State State;
+        typedef typename Base::Transition Transition;
+        typedef typename Base::InTransitionIter InTransitionIter;
+        typedef typename Base::OutTransitionIter OutTransitionIter;
 
         typedef unordered_set<State> StateSet;
         typedef unordered_set<Symbol> SymbolSet;
@@ -138,6 +140,29 @@ namespace atl::detail {
             return state;
         }
 
+        virtual void 
+        clear_state(State s) {
+            clear_out_transitions(s);
+            clear_in_transitions(s);
+            Base::clear_state(s);
+        }
+                        
+        virtual void 
+        clear_out_transitions(State s) {
+            Base::clear_out_transitions(s);
+        }
+                        
+        virtual void 
+        clear_in_transitions(State s) {
+            Base::clear_in_transitions(s);
+        }
+                        
+        virtual void 
+        remove_state(State s) {
+            state_set_.erase(s);
+            Base::remove_state(s);
+        }
+
         Symbol
         epsilon() const {
             return epsilon_;
@@ -161,11 +186,6 @@ namespace atl::detail {
         const StateSet&
         state_set() const {
             return state_set_;
-        }
-
-        void
-        set_state_set(const StateSet& state_set) {
-            state_set_ = state_set;
         }
 
         const StateSet&
@@ -194,13 +214,8 @@ namespace atl::detail {
         }
 
         void 
-        set_alphabet(const Symbol& c) {
+        add_alphabet(const Symbol& c) {
             alphabet_.insert(c);
-        }
-
-        void 
-        set_state(State state) {
-            state_set_.insert(state);
         }
 
         void 
@@ -283,20 +298,6 @@ namespace atl {
     }
 
     template <FA_PARAMS>
-    inline void  
-    set_state_set(FA& fa, 
-                  typename FA::StateSet const& set) {
-        fa.set_state_set(set);
-    }
-
-    template <FA_PARAMS>
-    inline void  
-    set_state(FA& fa, 
-              typename FA::State state) {
-        fa.set_state(state);
-    }
-
-    template <FA_PARAMS>
     inline typename FA::StateSet const&
     final_state_set(const FA& fa) {
         return fa.final_state_set();
@@ -339,6 +340,13 @@ namespace atl {
     inline typename FA::transition_property_type
     epsilon_transition(const FA& fa) {
         return fa.epsilon_transition();
+    }
+
+    template <FA_PARAMS>
+    inline void
+    add_alphabet(FA& fa,
+                 typename FA::symbol_type const& c) {
+        fa.add_alphabet(c);
     }
 
     template <FA_PARAMS>

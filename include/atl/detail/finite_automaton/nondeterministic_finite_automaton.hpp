@@ -49,6 +49,8 @@ namespace atl::detail {
         typedef typename Base::StateSet StateSet;
         typedef typename Base::SymbolSet SymbolSet;
         typedef typename Base::Transition Transition;
+        typedef typename Base::InTransitionIter InTransitionIter;
+        typedef typename Base::OutTransitionIter OutTransitionIter;
 
         typedef unordered_map<StateSet, State> StateSetMap;
 
@@ -129,6 +131,63 @@ namespace atl::detail {
                 }
             }
             return std::make_pair(Transition(), false);
+        }
+
+        virtual void 
+        clear_out_transitions(State s) {
+            transition_map_.erase(s);
+            Base::clear_out_transitions(s);
+        }
+                        
+        virtual void 
+        clear_in_transitions(State s) {
+            InTransitionIter first, last;
+            StateSet del_states;
+            vector<Symbol> del_symbols;
+            vector<SymbolProperty> del_props;
+            tie(first, last) = this -> in_transitions(s);
+            for (; first != last; first++) {
+                del_states.insert(this -> source(*first));
+            }
+            for (auto del_state : del_states) {
+                auto& map = transition_map_.at(del_state);
+                del_symbols.clear();
+                if constexpr (std::is_same<SymbolProperty, no_type>::value) {
+                    for (auto& [symbol, states] : map) {
+                        if (states.count(s) > 0) {
+                            states.erase(s);
+                            if (states.size() == 0) {
+                                del_symbols.push_back(symbol);
+                            }
+                        }
+                    }
+                } else {
+                    for (auto& [symbol, prop_map] : map) {
+                        del_props.clear();
+                        for (auto& [prop, states] : prop_map) {
+                            if (states.count(s) > 0) {
+                                states.erase(s);
+                                if (states.size() == 0) {
+                                    del_props.push_back(prop);
+                                }
+                            }
+                        }
+                        for (auto& prop : del_props) {
+                            prop_map.erase(prop);
+                        }
+                        if (prop_map.size() == 0) {
+                            del_symbols.push_back(symbol);
+                        }
+                    }
+                }
+                for (auto& symbol : del_symbols) {
+                    map.erase(symbol);
+                }
+                if (map.size() == 0) {
+                    transition_map_.erase(del_state);
+                }
+            }
+            Base::clear_in_transitions(s);
         }
 
         void

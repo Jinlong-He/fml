@@ -206,7 +206,26 @@ namespace atl {
             add_transition(State s, State t) {
                 return boost::add_edge(s, t, *graph_);
             }
+
+            virtual void 
+            clear_state(State s) {
+                return boost::clear_vertex(s, *graph_);
+            }
                             
+            virtual void 
+            clear_out_transitions(State s) {
+                return boost::clear_out_edges(s, *graph_);
+            }
+                            
+            virtual void 
+            clear_in_transitions(State s) {
+                return boost::clear_in_edges(s, *graph_);
+            }
+                            
+            virtual void 
+            remove_state(State s) {
+                return boost::remove_vertex(s, *graph_);
+            }
         private:
             typedef scoped_ptr<BoostGraph> BoostGraphPtr;
             BoostGraphPtr graph_;
@@ -316,6 +335,7 @@ namespace atl {
     is_modified(const AUTOMATON& a) {
         return a.flag(0);
     }
+
     template <AUTOMATON_PARAMS>
     inline typename AUTOMATON::State
     add_state(AUTOMATON& a,
@@ -339,6 +359,38 @@ namespace atl {
                    const TP& p) {
         set_modified_flag(a);
         return a.add_transition(s, t, p);
+    }
+
+    template <AUTOMATON_PARAMS>
+    inline typename AUTOMATON::State
+    clear_state(AUTOMATON& a,
+                typename AUTOMATON::State s) {
+        set_modified_flag(a);
+        return a.clear_state(s);
+    }
+
+    template <AUTOMATON_PARAMS>
+    inline typename AUTOMATON::State
+    clear_out_transitions(AUTOMATON& a,
+                         typename AUTOMATON::State s) {
+        set_modified_flag(a);
+        return a.clear_out_transitions(s);
+    }
+
+    template <AUTOMATON_PARAMS>
+    inline typename AUTOMATON::State
+    clear_in_transitions(AUTOMATON& a,
+                         typename AUTOMATON::State s) {
+        set_modified_flag(a);
+        return a.clear_in_transitions(s);
+    }
+
+    template <AUTOMATON_PARAMS>
+    inline typename AUTOMATON::State
+    remove_state(AUTOMATON& a,
+                 typename AUTOMATON::State s) {
+        set_modified_flag(a);
+        return a.remove_state(s);
     }
 
     template <AUTOMATON_PARAMS>

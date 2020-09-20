@@ -494,16 +494,16 @@ namespace atl::detail {
                         StateSet new_eqs;
                         new_eqs.insert(state);
                         set.erase(state);
-                        StateSet delStateSet;
+                        StateSet del_states;
                         for (auto new_state : set) {
                             if (is_equal(a_in, state, new_state, state2_map)) {
                                 new_eqs.insert(new_state);
-                                delStateSet.insert(new_state);
+                                del_states.insert(new_state);
                             }
                         }
                         eqs.push(new_eqs);
-                        for (auto delState : delStateSet) {
-                            set.erase(delState);
+                        for (auto del_state : del_states) {
+                            set.erase(del_state);
                         }
                         State new_map_state = -1;
                         if constexpr (std::is_same<StateProperty, boost::no_property>::value) {
