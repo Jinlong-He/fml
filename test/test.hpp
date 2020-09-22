@@ -72,6 +72,10 @@ namespace test {
     bool test_clear2();
     bool test_clear3();
     bool test_clear4();
+    bool test_clear5();
+    bool test_clear6();
+    bool test_clear7();
+    bool test_clear8();
 
     bool test_minimize1();
     bool test_minimize2();

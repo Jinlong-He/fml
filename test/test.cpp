@@ -22,6 +22,22 @@ BOOST_AUTO_TEST_CASE(test_clear4) {
     BOOST_CHECK_EQUAL(test::test_clear4(), true);
 }
 
+BOOST_AUTO_TEST_CASE(test_clear5) {
+    BOOST_CHECK_EQUAL(test::test_clear5(), true);
+}
+
+BOOST_AUTO_TEST_CASE(test_clear6) {
+    BOOST_CHECK_EQUAL(test::test_clear6(), true);
+}
+
+BOOST_AUTO_TEST_CASE(test_clear7) {
+    BOOST_CHECK_EQUAL(test::test_clear7(), true);
+}
+
+BOOST_AUTO_TEST_CASE(test_clear8) {
+    BOOST_CHECK_EQUAL(test::test_clear8(), true);
+}
+
 BOOST_AUTO_TEST_CASE(test_minimize1) {
     BOOST_CHECK_EQUAL(test::test_minimize1(), true);
 }

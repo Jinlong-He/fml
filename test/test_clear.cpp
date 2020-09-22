@@ -86,4 +86,97 @@ namespace test {
         clear_in_transitions(result, 1);
         return (transition_map(result) == transition_map(expect));
     }
+
+    bool test_clear5() {
+        nondeterministic_finite_automaton<> result, expect;
+        add_initial_state(result);
+        add_state(result);
+        add_final_state(result);
+        add_transition(result, 0, 1, 'a');
+        add_transition(result, 0, 1, 'b');
+        add_transition(result, 1, 1, 'a');
+        add_transition(result, 1, 2, 'a');
+        auto t = add_transition(result, 2, 1, 'b');
+
+        add_initial_state(expect);
+        add_state(expect);
+        add_final_state(expect);
+        add_transition(expect, 1, 1, 'a');
+        add_transition(expect, 1, 2, 'a');
+
+        remove_transition(result, 0, 1);
+        remove_transition(result, t.first);
+        return (transition_map(result) == transition_map(expect));
+    }
+
+    bool test_clear6() {
+        deterministic_finite_automaton<> result, expect;
+        add_initial_state(result);
+        add_state(result);
+        add_final_state(result);
+        add_transition(result, 0, 1, 'a');
+        add_transition(result, 0, 1, 'b');
+        add_transition(result, 1, 1, 'a');
+        add_transition(result, 1, 2, 'b');
+        add_transition(result, 2, 1, 'b');
+
+        add_initial_state(expect);
+        add_state(expect);
+        add_final_state(expect);
+        add_transition(expect, 1, 1, 'a');
+        add_transition(expect, 2, 1, 'b');
+
+        remove_transition(result, 0, 1);
+        remove_transition(result, 1, 2);
+        return (transition_map(result) == transition_map(expect));
+    }
+
+    bool test_clear7() {
+        deterministic_finite_automaton<char, 0, char> result, expect;
+        add_initial_state(result);
+        add_state(result);
+        add_final_state(result);
+        add_transition(result, 0, 1, 'a', '1');
+        add_transition(result, 0, 1, 'b', '1');
+        add_transition(result, 1, 1, 'a', '1');
+        add_transition(result, 1, 2, 'b', '1');
+        add_transition(result, 2, 1, 'a', '1');
+        add_transition(result, 2, 0, 'b', '1');
+
+        add_initial_state(expect);
+        add_state(expect);
+        add_final_state(expect);
+        add_transition(expect, 1, 1, 'a', '1');
+        add_transition(expect, 1, 2, 'b', '1');
+        add_transition(expect, 2, 1, 'a', '1');
+        add_transition(expect, 2, 0, 'b', '1');
+
+        remove_transition(result, 0, 1);
+        return (transition_map(result) == transition_map(expect));
+    }
+
+    bool test_clear8() {
+        deterministic_finite_automaton<char, 0, char> result, expect;
+        add_initial_state(result);
+        add_state(result);
+        add_final_state(result);
+        add_transition(result, 0, 1, 'a', '1');
+        add_transition(result, 0, 1, 'b', '1');
+        add_transition(result, 1, 1, 'a', '1');
+        add_transition(result, 1, 2, 'b', '1');
+        add_transition(result, 2, 1, 'a', '1');
+        auto t = add_transition(result, 2, 0, 'b', '1');
+
+        add_initial_state(expect);
+        add_state(expect);
+        add_final_state(expect);
+        add_transition(expect, 0, 1, 'a', '1');
+        add_transition(expect, 0, 1, 'b', '1');
+        add_transition(expect, 1, 2, 'b', '1');
+        add_transition(expect, 2, 1, 'a', '1');
+
+        remove_transition(result, 1, 1);
+        remove_transition(result, t.first);
+        return (transition_map(result) == transition_map(expect));
+    }
 }
