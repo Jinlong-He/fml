@@ -140,6 +140,37 @@ namespace atl::detail {
         }
 
         virtual void
+        remove_transition(Transition t) {
+            auto source = this -> source(t);
+            auto target = this -> target(t);
+            auto& transition_property = atl::get_property(*this, t);
+            auto& map = transition_map_.at(source);
+            if constexpr (std::is_same<SymbolProperty, no_type>::value) {
+                auto& states = map.at(transition_property);
+                states.erase(target);
+                if (states.size() == 0) {
+                    map.erase(transition_property);
+                }
+            } else {
+                auto& symbol = transition_property.default_property;
+                auto& prop = transition_property.extended_property;
+                auto& prop_map = map.at(symbol);
+                auto& states = prop_map.at(prop);
+                states.erase(target);
+                if (states.size() == 0) {
+                    prop_map.erase(prop);
+                }
+                if (prop_map.size() == 0) {
+                    map.erase(symbol);
+                }
+            }
+            if (map.size() == 0) {
+                transition_map_.erase(source);
+            }
+            Base::remove_transition(t);
+        }
+
+        virtual void
         remove_transition(State s, State t) {
             if (transition_map_.count(s) == 0) return;
             auto& map = transition_map_.at(s);
