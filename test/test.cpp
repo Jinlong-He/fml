@@ -6,6 +6,22 @@ using namespace boost;
 
 BOOST_AUTO_TEST_SUITE(test_fa)
 
+BOOST_AUTO_TEST_CASE(test_clear1) {
+    BOOST_CHECK_EQUAL(test::test_clear1(), true);
+}
+
+BOOST_AUTO_TEST_CASE(test_clear2) {
+    BOOST_CHECK_EQUAL(test::test_clear2(), true);
+}
+
+BOOST_AUTO_TEST_CASE(test_clear3) {
+    BOOST_CHECK_EQUAL(test::test_clear3(), true);
+}
+
+BOOST_AUTO_TEST_CASE(test_clear4) {
+    BOOST_CHECK_EQUAL(test::test_clear4(), true);
+}
+
 BOOST_AUTO_TEST_CASE(test_minimize1) {
     BOOST_CHECK_EQUAL(test::test_minimize1(), true);
 }

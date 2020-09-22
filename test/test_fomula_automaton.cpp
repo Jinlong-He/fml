@@ -17,7 +17,7 @@ namespace test {
         add_transition(foa, a, int_value(1), a>1);
         add_transition(foa, a, int_value(1), atomic_proposition("TRUE"));
         add_transition(foa, b, int_value(2), c>1);
-        //translate_nuxmv(foa, cout);
+        translate_nuxmv(foa, cout);
         return true;
     }
 }

@@ -1,3 +1,4 @@
+ADD_LIBRARY (test_clear test_clear.cpp)
 ADD_LIBRARY (test_minimize test_minimize.cpp)
 ADD_LIBRARY (test_bre test_basic_regular_expression.cpp)
 ADD_LIBRARY (test_intersect test_intersect.cpp)
@@ -14,6 +15,7 @@ ADD_LIBRARY (test_ctl test_ctl.cpp)
 ADD_EXECUTABLE (main main.cpp)
 TARGET_LINK_LIBRARIES (main
   PRIVATE
+      test_clear
       test_minimize
       test_bre
       test_intersect
@@ -36,6 +38,7 @@ ADD_EXECUTABLE (test_fml test.cpp)
 
 TARGET_LINK_LIBRARIES (test_fml
   PRIVATE
+      test_clear
       test_minimize
       test_bre
       test_intersect

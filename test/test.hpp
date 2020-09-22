@@ -68,6 +68,11 @@ namespace boost {
 namespace test {
     //test finite automaton
 
+    bool test_clear1();
+    bool test_clear2();
+    bool test_clear3();
+    bool test_clear4();
+
     bool test_minimize1();
     bool test_minimize2();
     bool test_minimize3();
