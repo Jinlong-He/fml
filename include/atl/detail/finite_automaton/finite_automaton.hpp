@@ -154,9 +154,17 @@ namespace atl::detail {
                         
         virtual void 
         clear_in_transitions(State s) {
-            Base::clear_in_transitions(s);
+            InTransitionIter first, last;
+            StateSet del_states;
+            tie(first, last) = this -> in_transitions(s);
+            for (; first != last; first++) {
+                del_states.insert(this -> source(*first));
+            }
+            for (auto del_state : del_states) {
+                remove_transition(del_state, s);
+            }
         }
-                        
+
         virtual void 
         remove_state(State s) {
             state_set_.erase(s);
@@ -251,6 +259,16 @@ namespace atl::detail {
                 if (c == epsilon()) this -> set_flag(4, 1);
                 return Base::add_transition(s, t, transition_property(c, p));
             }
+        }
+
+        virtual void
+        remove_transition(Transition t) {
+            Base::remove_transition(t);
+        }
+
+        virtual void
+        remove_transition(State s, State t) {
+            Base::remove_transition(s, t);
         }
 
     private:

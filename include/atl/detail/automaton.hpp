@@ -196,17 +196,6 @@ namespace atl {
                 return boost::add_vertex(*graph_);
             }
 
-            virtual pair<Transition, bool>
-            add_transition(State s, State t,
-                           const TransitionProperty& p) {
-                return boost::add_edge(s, t, p, *graph_);
-            }
-
-            virtual pair<Transition, bool>
-            add_transition(State s, State t) {
-                return boost::add_edge(s, t, *graph_);
-            }
-
             virtual void 
             clear_state(State s) {
                 return boost::clear_vertex(s, *graph_);
@@ -225,6 +214,27 @@ namespace atl {
             virtual void 
             remove_state(State s) {
                 return boost::remove_vertex(s, *graph_);
+            }
+
+            virtual pair<Transition, bool>
+            add_transition(State s, State t,
+                           const TransitionProperty& p) {
+                return boost::add_edge(s, t, p, *graph_);
+            }
+
+            virtual pair<Transition, bool>
+            add_transition(State s, State t) {
+                return boost::add_edge(s, t, *graph_);
+            }
+
+            virtual void
+            remove_transition(Transition t) {
+                return boost::remove_edge(t, *graph_);
+            }
+
+            virtual void
+            remove_transition(State s, State t) {
+                return boost::remove_edge(s, t, *graph_);
             }
         private:
             typedef scoped_ptr<BoostGraph> BoostGraphPtr;
@@ -352,6 +362,38 @@ namespace atl {
     }
 
     template <AUTOMATON_PARAMS>
+    inline void
+    clear_state(AUTOMATON& a,
+                typename AUTOMATON::State s) {
+        set_modified_flag(a);
+        return a.clear_state(s);
+    }
+
+    template <AUTOMATON_PARAMS>
+    inline void
+    clear_out_transitions(AUTOMATON& a,
+                         typename AUTOMATON::State s) {
+        set_modified_flag(a);
+        return a.clear_out_transitions(s);
+    }
+
+    template <AUTOMATON_PARAMS>
+    inline void
+    clear_in_transitions(AUTOMATON& a,
+                         typename AUTOMATON::State s) {
+        set_modified_flag(a);
+        return a.clear_in_transitions(s);
+    }
+
+    template <AUTOMATON_PARAMS>
+    inline void
+    remove_state(AUTOMATON& a,
+                 typename AUTOMATON::State s) {
+        set_modified_flag(a);
+        return a.remove_state(s);
+    }
+
+    template <AUTOMATON_PARAMS>
     inline pair<typename AUTOMATON::Transition, bool>
     add_transition(AUTOMATON& a,
                    typename AUTOMATON::State s,
@@ -362,35 +404,18 @@ namespace atl {
     }
 
     template <AUTOMATON_PARAMS>
-    inline typename AUTOMATON::State
-    clear_state(AUTOMATON& a,
-                typename AUTOMATON::State s) {
-        set_modified_flag(a);
-        return a.clear_state(s);
+    inline void
+    remove_transition(AUTOMATON& a,
+                      typename AUTOMATON::Transition t) {
+        return a.remove_transition(t);
     }
 
     template <AUTOMATON_PARAMS>
-    inline typename AUTOMATON::State
-    clear_out_transitions(AUTOMATON& a,
-                         typename AUTOMATON::State s) {
-        set_modified_flag(a);
-        return a.clear_out_transitions(s);
-    }
-
-    template <AUTOMATON_PARAMS>
-    inline typename AUTOMATON::State
-    clear_in_transitions(AUTOMATON& a,
-                         typename AUTOMATON::State s) {
-        set_modified_flag(a);
-        return a.clear_in_transitions(s);
-    }
-
-    template <AUTOMATON_PARAMS>
-    inline typename AUTOMATON::State
-    remove_state(AUTOMATON& a,
-                 typename AUTOMATON::State s) {
-        set_modified_flag(a);
-        return a.remove_state(s);
+    inline void
+    remove_transition(AUTOMATON& a,
+                      typename AUTOMATON::State s,
+                      typename AUTOMATON::State t) {
+        return a.remove_transition(s, t);
     }
 
     template <AUTOMATON_PARAMS>
