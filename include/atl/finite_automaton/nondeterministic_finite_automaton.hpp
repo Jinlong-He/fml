@@ -36,7 +36,10 @@ namespace atl {
                                                  SymbolProperty,
                                                  StateProperty,
                                                  AutomatonProperty> fa_type;
-            typedef Base nfa_type;
+            typedef nondeterministic_finite_automaton<Symbol, epsilon_,
+                                                      SymbolProperty,
+                                                      StateProperty,
+                                                      AutomatonProperty> nfa_type;
             typedef detail::deterministic_finite_automaton_gen<Symbol, epsilon_,
                                                                SymbolProperty,
                                                                StateProperty,
