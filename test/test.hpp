@@ -109,6 +109,11 @@ namespace test {
     bool test_concat3();
     bool test_concat4();
 
+    bool test_subset1();
+    bool test_subset2();
+    bool test_subset3();
+    bool test_subset4();
+
     bool test_composite1();
 
     bool test_poststar();
