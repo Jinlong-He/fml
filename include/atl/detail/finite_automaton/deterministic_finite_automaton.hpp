@@ -191,41 +191,6 @@ namespace atl::detail {
             }
             Base::remove_transition(s, t);
         }
-
-        void
-        get_targets_in_map(State s, const Symbol& c, StateSet& set) const {
-            auto transition_map_iter = transition_map_.find(s);
-            if (transition_map_iter != transition_map_.end()) {
-                const auto& map = transition_map_iter -> second;
-                auto map_iter = map.find(c);
-                if (map_iter != map.end()) {
-                    if constexpr (std::is_same<SymbolProperty, no_type>::value) {
-                        set.insert(map_iter -> second);
-                    } else {
-                        for (auto& map_pair : map_iter -> second) {
-                            set.insert(map_pair.second);
-                        }
-                    }
-                }
-            }
-        }
-
-        void
-        get_targets_in_map(State s, const Symbol& c, const SymbolProperty& p, StateSet& set) const {
-            if constexpr (std::is_same<SymbolProperty, no_type>::value) {
-                auto transition_map_iter = transition_map_.find(s);
-                if (transition_map_iter != transition_map_.end()) {
-                    const auto& map = transition_map_iter -> second;
-                    auto map_iter = map.find(c);
-                    if (map_iter != map.end()) {
-                        auto iter = map_iter -> second.find(p);
-                        if (iter != map_iter -> second.end()) {
-                            set.insert(iter -> second);
-                        }
-                    }
-                }
-            }
-        }
     private:
         TransitionMap transition_map_;
     };
@@ -247,7 +212,22 @@ namespace atl {
                        typename DFA::State s, 
                        typename DFA::symbol_type const& c, 
                        typename DFA::StateSet& set) {
-        dfa.get_targets_in_map(s, c, set);
+        const auto& transition_map_ = transition_map(dfa);
+        auto transition_map_iter = transition_map_.find(s);
+        if (transition_map_iter != transition_map_.end()) {
+            const auto& map = transition_map_iter -> second;
+            auto map_iter = map.find(c);
+            if (map_iter != map.end()) {
+                if constexpr (std::is_same<typename DFA::symbol_property_type, 
+                                           no_type>::value) {
+                    set.insert(map_iter -> second);
+                } else {
+                    for (auto& map_pair : map_iter -> second) {
+                        set.insert(map_pair.second);
+                    }
+                }
+            }
+        }
     }
 
     template <DFA_PARAMS>
@@ -257,7 +237,21 @@ namespace atl {
                        typename DFA::symbol_type const& c, 
                        typename DFA::symbol_property_type const& p, 
                        typename DFA::StateSet& set) {
-        dfa.get_targets_in_map(s, c, p, set);
+        if constexpr (std::is_same<typename DFA::symbol_property_type, 
+                                   no_type>::value) {
+            const auto& transition_map_ = transition_map(dfa);
+            auto transition_map_iter = transition_map_.find(s);
+            if (transition_map_iter != transition_map_.end()) {
+                const auto& map = transition_map_iter -> second;
+                auto map_iter = map.find(c);
+                if (map_iter != map.end()) {
+                    auto iter = map_iter -> second.find(p);
+                    if (iter != map_iter -> second.end()) {
+                        set.insert(iter -> second);
+                    }
+                }
+            }
+        }
     }
 }
 

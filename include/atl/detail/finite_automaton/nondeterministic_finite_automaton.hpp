@@ -213,41 +213,6 @@ namespace atl::detail {
             Base::remove_transition(s, t);
         }
 
-        void
-        get_targets_in_map(State s, const Symbol& c, StateSet& set) const {
-            auto transition_map_iter = transition_map_.find(s);
-            if (transition_map_iter != transition_map_.end()) {
-                const auto& map = transition_map_iter -> second;
-                auto map_iter = map.find(c);
-                if (map_iter != map.end()) {
-                    if constexpr (std::is_same<SymbolProperty, no_type>::value) {
-                        set.insert(map_iter -> second.begin(), map_iter -> second.end());
-                    } else {
-                        for (auto& map_pair : map_iter -> second) {
-                            set.insert(map_pair.second.begin(), map_pair.second.end());
-                        }
-                    }
-                }
-            }
-        }
-
-        void
-        get_targets_in_map(State s, const Symbol& c, const SymbolProperty& p, StateSet& set) const {
-            if constexpr (!std::is_same<SymbolProperty, no_type>::value) {
-                auto transition_map_iter = transition_map_.find(s);
-                if (transition_map_iter != transition_map_.end()) {
-                    const auto& map = transition_map_iter -> second;
-                    auto map_iter = map.find(c);
-                    if (map_iter != map.end()) {
-                        auto iter = map_iter -> second.find(p);
-                        if (iter != map_iter -> second.end()) {
-                            set.insert(iter -> second.begin(), iter -> second.end());
-                        }
-                    }
-                }
-            }
-        }
-
     private:
         TransitionMap transition_map_;
     };
@@ -256,6 +221,12 @@ namespace atl::detail {
 namespace atl {
     #define NFA_PARAMS typename NFA_SYMBOL, long NFA_EPSILON, typename NFA_SYMBOL_PROP, typename NFA_STATE_PROP, typename NFA_AUT_PROP
     #define NFA detail::nondeterministic_finite_automaton_gen<NFA_SYMBOL, NFA_EPSILON, NFA_SYMBOL_PROP, NFA_STATE_PROP,NFA_AUT_PROP>
+
+    template <NFA_PARAMS>
+    inline typename NFA::TransitionMap const&
+    transition_map(const NFA& nfa) {
+        return nfa.transition_map();
+    }
 
     template <NFA_PARAMS>
     inline pair<typename NFA::Transition, bool>
@@ -273,7 +244,22 @@ namespace atl {
                        typename NFA::State s, 
                        typename NFA::symbol_type const& c, 
                        typename NFA::StateSet& set) {
-        nfa.get_targets_in_map(s, c, set);
+        const auto& transition_map_ = transition_map(nfa);
+        auto transition_map_iter = transition_map_.find(s);
+        if (transition_map_iter != transition_map_.end()) {
+            const auto& map = transition_map_iter -> second;
+            auto map_iter = map.find(c);
+            if (map_iter != map.end()) {
+                if constexpr (std::is_same<typename NFA::symbol_property_type, 
+                                           no_type>::value) {
+                    set.insert(map_iter -> second.begin(), map_iter -> second.end());
+                } else {
+                    for (auto& map_pair : map_iter -> second) {
+                        set.insert(map_pair.second.begin(), map_pair.second.end());
+                    }
+                }
+            }
+        }
     }
 
     template <NFA_PARAMS>
@@ -283,7 +269,7 @@ namespace atl {
                        typename NFA::symbol_type const& c, 
                        typename NFA::StateSet& targets) {
         for (auto s : set) {
-            nfa.get_targets_in_map(s, c, targets);
+            get_targets_in_map(nfa, s, c, targets);
         }
     }
 
@@ -294,13 +280,21 @@ namespace atl {
                        typename NFA::symbol_type const& c, 
                        typename NFA::symbol_property_type const& p,
                        typename NFA::StateSet& set) {
-        nfa.get_targets_in_map(s, c, p ,set);
-    }
-
-    template <NFA_PARAMS>
-    inline typename NFA::TransitionMap const&
-    transition_map(const NFA& nfa) {
-        return nfa.transition_map();
+        if constexpr (!std::is_same<typename NFA::symbol_property_type, 
+                                    no_type>::value) {
+            const auto& transition_map_ = transition_map(nfa);
+            auto transition_map_iter = transition_map_.find(s);
+            if (transition_map_iter != transition_map_.end()) {
+                const auto& map = transition_map_iter -> second;
+                auto map_iter = map.find(c);
+                if (map_iter != map.end()) {
+                    auto iter = map_iter -> second.find(p);
+                    if (iter != map_iter -> second.end()) {
+                        set.insert(iter -> second.begin(), iter -> second.end());
+                    }
+                }
+            }
+        }
     }
 };
 
