@@ -331,6 +331,38 @@ Adds a final state to the deterministic finite automaton with the property `p` a
 
 ---
 ```
+void
+clear_state(deterministic_finite_automaton& dfa,
+            State s)
+```
+Removes all transitions to and from state `s`. The state sill appears in the automaton.
+
+---
+```
+void
+clear_out_transitions(deterministic_finite_automaton& dfa,
+                      State s)
+```
+Removes all out-transitions from state `s`. The state sill appears in the automaton.
+
+---
+```
+void
+clear_in_transitions(deterministic_finite_automaton& dfa,
+                     State s)
+```
+Removes all in-transitions to state `s`. The state sill appears in the automaton.
+
+---
+```
+void
+remove_state(deterministic_finite_automaton& dfa,
+             State s)
+```
+Removes state `s` from the state set of the automaton `dfa`. It is assumed that there are no transitions to or from state `s` when it is removed. One way to make sure of this is to invoke `clear_state()` beforehand.
+
+---
+```
 std::pair<Transition, bool>
 add_transition(deterministic_finite_automaton& dfa,
                State s, State t,
@@ -347,6 +379,23 @@ add_transition(deterministic_finite_automaton& dfa,
                const SymbolProperty& p)
 ```
 Adds transition `(s,c,t)` to the deterministic finite automaton and attaches `p` as the property. Also see the previous `add_transition()` non-menber function for more details.
+
+---
+```
+void
+remove_transition(deterministic_finite_automaton& dfa,
+                  Transition t)
+```
+Removes the transition `t` from the deterministic finite automaton `dfa`.
+
+---
+```
+void
+remove_transition(deterministic_finite_automaton& dfa,
+                  State s,
+                  State t)
+```
+Removes the all transitions from state `s` to state `t` of deterinistic finite automaton `dfa`.
 
 ---
 ```
@@ -443,7 +492,7 @@ Sets `p` as the property of transition `t` in deterministic finite automaton `df
 ---
 ```
 void
-reachable_closure(const DFA& dfa,
+reachable_closure(const deterministic_finite_automaton& dfa,
                   const StateSet& states_in,
                   StateSet& states_out,
                   detail::Direction direction = detail::forward)
@@ -453,7 +502,7 @@ Sets `states_out` as the reachable closure from the state set `states_in` in det
 ---
 ```
 void
-reachable_closure(const DFA& dfa,
+reachable_closure(const deterministic_finite_automaton& dfa,
                   StateSet& states_out)
 ```
 Sets `states_out` as the reachable closure in deterministic finite automaton `dfa`.
@@ -461,26 +510,26 @@ Sets `states_out` as the reachable closure in deterministic finite automaton `df
 ---
 ```
 void
-minimize(const DFA& a_in,
-         DFA& a_out)
+minimize(const deterministic_finite_automaton& a_in,
+         deterministic_finite_automaton& a_out)
 ```
 Minimizes deterministic finite automaton `a_in` to `a_out`.
 
 ---
 ```
 void
-intersect_fa(const DFA& a_lhs,
-             const DFA& a_rhs,
-             DFA& a_out)
+intersect_fa(const deterministic_finite_automaton& a_lhs,
+             const deterministic_finite_automaton& a_rhs,
+             deterministic_finite_automaton& a_out)
 ```
 Intersects deterministic finite automaton `a_lhs` and deterministic finite automaton `a_rhs` to `a_out`.
 
 ---
 ```
 void
-intersect_fa(const DFA& a_lhs,
-             const DFA& a_rhs,
-             DFA& a_out,
+intersect_fa(const deterministic_finite_automaton& a_lhs,
+             const deterministic_finite_automaton& a_rhs,
+             deterministic_finite_automaton& a_out,
              SymbolPropertyMerge symbol_property_merge)
 ```
 Intersects deterministic finite automaton `a_lhs` and deterministic finite automaton `a_rhs` with merging symbol property by `symbol_property_merge` to `a_out`. 
@@ -489,9 +538,9 @@ If `SymbolProperty` is not `no_type`, and `(s1,c{p1},t1)` in `a_lhs` and `(s2,c{
 ---
 ```
 void
-intersect_fa(const DFA& a_lhs,
-             const DFA& a_rhs,
-             DFA& a_out,
+intersect_fa(const deterministic_finite_automaton& a_lhs,
+             const deterministic_finite_automaton& a_rhs,
+             deterministic_finite_automaton& a_out,
              SymbolPropertyMerge symbol_property_merge,
              StatePropertyMerge state_property_merge)
 ```
@@ -502,14 +551,120 @@ If `SymbolProperty` is not `no_type`, and `(s1{sp1},c{p1},t1{tp1})` in `a_lhs` a
 ---
 ```
 void
-intersect_fa(const DFA& a_lhs,
-             const DFA& a_rhs,
-             DFA& a_out,
+intersect_fa(const deterministic_finite_automaton& a_lhs,
+             const deterministic_finite_automaton& a_rhs,
+             deterministic_finite_automaton& a_out,
              SymbolPropertyMerge symbol_property_merge,
              StatePropertyMerge state_property_merge,
              AutomatonPropertyMerge automaton_property_merge)
 ```
 Intersects deterministic finite automaton `a_lhs` and deterministic finite automaton `a_rhs` with merging symbol property by `symbol_property_merge` and merging state property bt `state_property_merge` and merging automaton property by `automaton_property_merge` to `a_out`. 
 Also see `intersect_fa()` for more details.
+
+---
+```
+void
+union_fa(const deterministic_finite_automaton& a_lhs,
+         const deterministic_finite_automaton& a_rhs,
+         deterministic_finite_automaton& a_out)
+```
+Unions deterministic finite automaton `a_lhs` and deterministic finite automaton `a_rhs` to `a_out`.
+
+---
+```
+void
+union_fa(const deterministic_finite_automaton& a_lhs,
+         const deterministic_finite_automaton& a_rhs,
+         deterministic_finite_automaton& a_out,
+         SymbolPropertyMerge symbol_property_merge)
+```
+Unions deterministic finite automaton `a_lhs` and deterministic finite automaton `a_rhs` with merging symbol property by `symbol_property_merge` to `a_out`. 
+`symbol_property_merge` is used to merge symbol property in the procedure of determinizing the result of union.
+
+---
+```
+void
+union_fa(const deterministic_finite_automaton& a_lhs,
+         const deterministic_finite_automaton& a_rhs,
+         deterministic_finite_automaton& a_out,
+         SymbolPropertyMerge symbol_property_merge,
+         StatePropertyMerge state_property_merge)
+```
+Unions deterministic finite automaton `a_lhs` and deterministic finite automaton `a_rhs` with merging symbol property by `symbol_property_merge` and merging state property bt `state_property_merge` to `a_out`. 
+`symbol_property_merge` and `state_property_merge` is used in the procedure of determinizing the result of union.
+
+---
+```
+void
+union_fa(const deterministic_finite_automaton& a_lhs,
+         const deterministic_finite_automaton& a_rhs,
+         deterministic_finite_automaton& a_out,
+         SymbolPropertyMerge symbol_property_merge,
+         StatePropertyMerge state_property_merge,
+         AutomatonPropertyMerge automaton_property_merge)
+```
+Unions deterministic finite automaton `a_lhs` and deterministic finite automaton `a_rhs` with merging symbol property by `symbol_property_merge` and merging state property bt `state_property_merge` and merging automaton property by `automaton_property_merge` to `a_out`. 
+Also see `union_fa()` for more details.
+
+---
+```
+void
+concat_fa(const deterministic_finite_automaton& a_lhs,
+          const deterministic_finite_automaton& a_rhs,
+          deterministic_finite_automaton& a_out)
+```
+Concats deterministic finite automaton `a_lhs` and deterministic finite automaton `a_rhs` to `a_out`.
+
+---
+```
+void
+concat_fa(const deterministic_finite_automaton& a_lhs,
+          const deterministic_finite_automaton& a_rhs,
+          deterministic_finite_automaton& a_out,
+          SymbolPropertyMerge symbol_property_merge)
+```
+Concats deterministic finite automaton `a_lhs` and deterministic finite automaton `a_rhs` with merging symbol property by `symbol_property_merge` to `a_out`. 
+`symbol_property_merge` is used to merge symbol property in the procedure of determinizing the result of concat.
+
+---
+```
+void
+concat_fa(const deterministic_finite_automaton& a_lhs,
+          const deterministic_finite_automaton& a_rhs,
+          deterministic_finite_automaton& a_out,
+          SymbolPropertyMerge symbol_property_merge,
+          StatePropertyMerge state_property_merge)
+```
+Concats deterministic finite automaton `a_lhs` and deterministic finite automaton `a_rhs` with merging symbol property by `symbol_property_merge` and merging state property bt `state_property_merge` to `a_out`. 
+`symbol_property_merge` and `state_property_merge` is used in the procedure of determinizing the result of concat.
+
+---
+```
+void
+concat_fa(const deterministic_finite_automaton& a_lhs,
+          const deterministic_finite_automaton& a_rhs,
+          deterministic_finite_automaton& a_out,
+          SymbolPropertyMerge symbol_property_merge,
+          StatePropertyMerge state_property_merge,
+          AutomatonPropertyMerge automaton_property_merge)
+```
+Concats deterministic finite automaton `a_lhs` and deterministic finite automaton `a_rhs` with merging symbol property by `symbol_property_merge` and merging state property bt `state_property_merge` and merging automaton property by `automaton_property_merge` to `a_out`. 
+Also see `concat_fa()` for more details.
+
+---
+```
+bool
+accept(const deterministic_finite_automaton& dfa,
+       const vector<Symbol>& word)
+```
+Returns whether deterministic finite automaton `dfa` accepts `word`.
+
+---
+```
+bool
+accept(const deterministic_finite_automaton& dfa,
+       const string& word)
+```
+Returns whether deterministic finite automaton `dfa` accepts `word`.
 
 ---
