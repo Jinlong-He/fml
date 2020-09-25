@@ -146,7 +146,7 @@ namespace atl {
     inline void
     get_targets(const NFA& nfa, 
                 typename NFA::State s, 
-                typename NFA::symbol_type const& c, 
+                const NFA_SYMBOL& c, 
                 typename NFA::StateSet& targets) {
         typename NFA::StateSet closure({s});
         epsilon_closure(nfa, closure, closure);
@@ -158,7 +158,7 @@ namespace atl {
     inline void
     get_targets(const NFA& nfa, 
                 typename NFA::StateSet const& states, 
-                typename NFA::symbol_type const& c, 
+                const NFA_SYMBOL& c, 
                 typename NFA::StateSet& targets) {
         typename NFA::StateSet closure(states);
         epsilon_closure(nfa, closure, closure);

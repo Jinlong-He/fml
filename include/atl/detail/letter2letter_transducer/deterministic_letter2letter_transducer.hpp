@@ -127,40 +127,6 @@ namespace atl::detail {
             return std::make_pair(Transition(), false);
         }
 
-        //void
-        //get_targets_in_map(State s, const Symbol& c, StateSet& set) const {
-        //    auto transition_map_iter = l2ltransition_map_.find(s);
-        //    if (transition_map_iter != l2ltransition_map_.end()) {
-        //        const auto& map = transition_map_iter -> second;
-        //        auto map_iter = map.find(c);
-        //        if (map_iter != map.end()) {
-        //            if constexpr (std::is_same<SymbolProperty, no_type>::value) {
-        //                set.insert(map_iter -> second);
-        //            } else {
-        //                for (auto& map_pair : map_iter -> second) {
-        //                    set.insert(map_pair.second);
-        //                }
-        //            }
-        //        }
-        //    }
-        //}
-
-        //void
-        //get_targets_in_map(State s, const Symbol& c, const SymbolProperty& p, StateSet& set) const {
-        //    if constexpr (std::is_same<SymbolProperty, no_type>::value) {
-        //        auto transition_map_iter = transition_map_.find(s);
-        //        if (transition_map_iter != transition_map_.end()) {
-        //            const auto& map = transition_map_iter -> second;
-        //            auto map_iter = map.find(c);
-        //            if (map_iter != map.end()) {
-        //                auto iter = map_iter -> second.find(p);
-        //                if (iter != map_iter -> second.end()) {
-        //                    set.insert(iter -> second);
-        //                }
-        //            }
-        //        }
-        //    }
-        //}
     private:
         L2LTransitionMap l2ltransition_map_;
     };
@@ -171,7 +137,7 @@ namespace atl {
     #define DL2LT detail::deterministic_letter2letter_transducer_gen<DL2LT_SYMBOL, DL2LT_EPSILON, DL2LT_LABEL_PROP, DL2LT_STATE_PROP,DL2LT_AUT_PROP>
 
     template <DL2LT_PARAMS>
-    inline typename DL2LT::symbol_type
+    inline DL2LT_SYMBOL
     epsilon_symbol(const DL2LT& dl2lt) {
         return dl2lt.epsilon_symbol();
     }
@@ -187,8 +153,8 @@ namespace atl {
     add_transition(DL2LT& dl2lt,
                    typename DL2LT::State s,
                    typename DL2LT::State t,
-                   typename DL2LT::symbol_type const& upper,
-                   typename DL2LT::symbol_type const& lower) {
+                   const DL2LT_SYMBOL& upper,
+                   const DL2LT_SYMBOL& lower) {
         typename DL2LT::label_type l(upper, lower);
         typedef typename DL2LT::label_property_type LabelProperty;
         if constexpr (std::is_same<LabelProperty, no_type>::value) {
@@ -203,11 +169,40 @@ namespace atl {
     add_transition(DL2LT& dl2lt,
                    typename DL2LT::State s,
                    typename DL2LT::State t,
-                   typename DL2LT::symbol_type const& upper,
-                   typename DL2LT::symbol_type const& lower,
+                   const DL2LT_SYMBOL& upper,
+                   const DL2LT_SYMBOL& lower,
                    typename DL2LT::label_property_type const& p) {
         typename DL2LT::label_type l(upper, lower);
         return dl2lt.add_transition(s, t, l, p);
+    }
+
+    template <DL2LT_PARAMS>
+    inline void
+    get_targetmaps_in_map(const DL2LT& dl2lt,
+                          typename DL2LT::State s, 
+                          const DL2LT_SYMBOL& c, 
+                          unordered_map<typename DL2LT::State, 
+                                        unordered_set<DL2LT_SYMBOL> >& map) {
+        const auto& l2ltransition_map_ = l2ltransition_map(dl2lt);
+        auto transition_map_iter = l2ltransition_map_.find(s);
+        if (transition_map_iter != l2ltransition_map_.end()) {
+            const auto& map = transition_map_iter -> second;
+            auto map_iter = map.find(c);
+            if (map_iter != map.end()) {
+                if constexpr (std::is_same<typename DL2LT::label_property_type, 
+                                           no_type>::value) {
+                    for (const auto& [lower, state] : map_iter -> second) {
+                        map[state].insert(lower);
+                    }
+                } else {
+                    for (auto& [lower, prop_map] : map_iter -> second) {
+                        for (auto& [prop, state] : prop_map) {
+                            map[state].insert(lower);
+                        }
+                    }
+                }
+            }
+        }
     }
 };
 

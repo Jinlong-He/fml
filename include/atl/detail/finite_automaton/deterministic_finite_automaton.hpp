@@ -210,7 +210,7 @@ namespace atl {
     inline void
     get_targets_in_map(const DFA& dfa, 
                        typename DFA::State s, 
-                       typename DFA::symbol_type const& c, 
+                       const DFA_SYMBOL& c, 
                        typename DFA::StateSet& set) {
         const auto& transition_map_ = transition_map(dfa);
         auto transition_map_iter = transition_map_.find(s);
@@ -234,7 +234,7 @@ namespace atl {
     inline void
     get_targets_in_map(const DFA& dfa, 
                        typename DFA::State s, 
-                       typename DFA::symbol_type const& c, 
+                       const DFA_SYMBOL& c, 
                        typename DFA::symbol_property_type const& p, 
                        typename DFA::StateSet& set) {
         if constexpr (std::is_same<typename DFA::symbol_property_type, 

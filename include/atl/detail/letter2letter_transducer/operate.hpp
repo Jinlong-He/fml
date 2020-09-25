@@ -275,10 +275,12 @@ namespace atl::detail {
         template <DL2LT_PARAMS>
         static void
         apply(const DL2LT& dl2lt,
-              const std::basic_string<typename DL2LT::symbol_type>& word_in,
-              std::basic_string<typename DL2LT::symbol_type>& word_out,
-              std::basic_string<typename DL2LT::label_property_type>& props,
-              typename DL2LT::StateSet& state_set) {
+              const std::vector<DL2LT_SYMBOL>& word_in,
+              std::vector<std::vector<DL2LT_SYMBOL> >& words_out) {
+            unordered_map<typename DL2LT::State,
+                          unordered_set<DL2LT_SYMBOL> > map;
+            for (auto upper : word_in) {
+            }
         }
     };
 }

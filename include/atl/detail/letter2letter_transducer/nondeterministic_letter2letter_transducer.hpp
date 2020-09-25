@@ -176,8 +176,8 @@ namespace atl {
     add_transition(NL2LT& nl2lt,
                    typename NL2LT::State s,
                    typename NL2LT::State t,
-                   typename NL2LT::symbol_type upper,
-                   typename NL2LT::symbol_type lower) {
+                   const NL2LT_SYMBOL& upper,
+                   const NL2LT_SYMBOL& lower) {
         typename NL2LT::label_type l(upper, lower);
         return nl2lt.add_transition(s, t, l);
     }
@@ -187,11 +187,44 @@ namespace atl {
     add_transition(NL2LT& nl2lt,
                    typename NL2LT::State s,
                    typename NL2LT::State t,
-                   typename NL2LT::symbol_type upper,
-                   typename NL2LT::symbol_type lower,
+                   const NL2LT_SYMBOL& upper,
+                   const NL2LT_SYMBOL& lower,
                    typename NL2LT::label_property_type p) {
         typename NL2LT::label_type l(upper, lower);
         return nl2lt.add_transition(s, t, l, p);
+    }
+
+    template <NL2LT_PARAMS>
+    inline void
+    get_targetmaps_in_map(const NL2LT& dl2lt,
+                          typename NL2LT::State s, 
+                          const NL2LT_SYMBOL& c, 
+                          unordered_map<typename NL2LT::State, 
+                                        unordered_set<NL2LT_SYMBOL> >& map) {
+        const auto& l2ltransition_map_ = l2ltransition_map(dl2lt);
+        auto transition_map_iter = l2ltransition_map_.find(s);
+        if (transition_map_iter != l2ltransition_map_.end()) {
+            const auto& map = transition_map_iter -> second;
+            auto map_iter = map.find(c);
+            if (map_iter != map.end()) {
+                if constexpr (std::is_same<typename NL2LT::label_property_type, 
+                                           no_type>::value) {
+                    for (const auto& [lower, states] : map_iter -> second) {
+                        for (auto state : states) {
+                            map[state].insert(lower);
+                        }
+                    }
+                } else {
+                    for (const auto& [lower, prop_map] : map_iter -> second) {
+                        for (const auto& [prop, states] : prop_map) {
+                            for (auto state : states) {
+                                map[state].insert(lower);
+                            }
+                        }
+                    }
+                }
+            }
+        }
     }
 }
 

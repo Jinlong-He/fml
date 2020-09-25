@@ -349,7 +349,7 @@ namespace atl {
     }
 
     template <FA_PARAMS>
-    inline typename FA::symbol_type
+    inline FA_SYMBOL
     epsilon(const FA& fa) {
         return fa.epsilon();
     }
@@ -363,7 +363,7 @@ namespace atl {
     template <FA_PARAMS>
     inline void
     add_alphabet(FA& fa,
-                 typename FA::symbol_type const& c) {
+                 const FA_SYMBOL& c) {
         fa.add_alphabet(c);
     }
 
@@ -406,7 +406,7 @@ namespace atl {
     add_transition(FA& fa,
                    typename FA::State s,
                    typename FA::State t,
-                   typename FA::symbol_type const& c,
+                   const FA_SYMBOL& c,
                    typename FA::symbol_property_type const& p) {
         return fa.add_transition(s, t, c, p);
     }

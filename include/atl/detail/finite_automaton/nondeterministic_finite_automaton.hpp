@@ -242,7 +242,7 @@ namespace atl {
     inline void
     get_targets_in_map(const NFA& nfa, 
                        typename NFA::State s, 
-                       typename NFA::symbol_type const& c, 
+                       const NFA_SYMBOL& c, 
                        typename NFA::StateSet& set) {
         const auto& transition_map_ = transition_map(nfa);
         auto transition_map_iter = transition_map_.find(s);
@@ -266,7 +266,7 @@ namespace atl {
     inline void
     get_targets_in_map(const NFA& nfa, 
                        typename NFA::StateSet const& set, 
-                       typename NFA::symbol_type const& c, 
+                       const NFA_SYMBOL& c, 
                        typename NFA::StateSet& targets) {
         for (auto s : set) {
             get_targets_in_map(nfa, s, c, targets);
@@ -277,7 +277,7 @@ namespace atl {
     inline void
     get_targets_in_map(const NFA& nfa,
                        typename NFA::State s, 
-                       typename NFA::symbol_type const& c, 
+                       const NFA_SYMBOL& c, 
                        typename NFA::symbol_property_type const& p,
                        typename NFA::StateSet& set) {
         if constexpr (!std::is_same<typename NFA::symbol_property_type, 

@@ -24,7 +24,7 @@ namespace atl::detail {
         template <DFA_PARAMS>
         static bool 
         apply(const DFA& dfa,
-              const std::vector<typename DFA::symbol_type>& word) {
+              const std::vector<DFA_SYMBOL>& word) {
             typedef typename DFA::StateSet StateSet;
             StateSet work({initial_state(dfa)}), new_work;
             for (const auto& symbol : word) {
@@ -46,7 +46,7 @@ namespace atl::detail {
         template <NFA_PARAMS>
         static bool 
         apply(const NFA& nfa,
-              const std::vector<typename NFA::symbol_type>& word) {
+              const std::vector<NFA_SYMBOL>& word) {
             typedef typename NFA::StateSet StateSet;
             StateSet work({initial_state(nfa)}), new_work;
             for (const auto& symbol : word) {
@@ -69,7 +69,7 @@ namespace atl {
     template <DFA_PARAMS>
     inline bool
     accept(const DFA& dfa,
-           const std::vector<typename DFA::symbol_type>& word) {
+           const std::vector<DFA_SYMBOL>& word) {
         return detail::accept_impl::apply(dfa, word);
     }
 
@@ -83,7 +83,7 @@ namespace atl {
     template <NFA_PARAMS>
     inline bool
     accept(const NFA& nfa,
-           const std::vector<typename NFA::symbol_type>& word) {
+           const std::vector<NFA_SYMBOL>& word) {
         return detail::accept_impl::apply(nfa, word);
     }
 
