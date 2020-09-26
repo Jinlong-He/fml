@@ -164,7 +164,7 @@ namespace atl::detail {
             if constexpr (std::is_same<SymbolProperty, no_type>::value) {
                 for (auto& [symbol, state] : map) {
                     if (state == t) {
-                        del_symbols.push_back(symbol);
+                        del_symbols.emplace_back(symbol);
                     }
                 }
             } else {
@@ -172,14 +172,14 @@ namespace atl::detail {
                     del_props.clear();
                     for (auto& [prop, state] : prop_map) {
                         if (state == t) {
-                            del_props.push_back(prop);
+                            del_props.emplace_back(prop);
                         }
                     }
                     for (auto& prop : del_props) {
                         prop_map.erase(prop);
                     }
                     if (prop_map.size() == 0) {
-                        del_symbols.push_back(symbol);
+                        del_symbols.emplace_back(symbol);
                     }
                 }
             }

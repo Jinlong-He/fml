@@ -100,7 +100,7 @@ namespace atl::detail {
                         state_out = add_state(a_out);
                     } else {
                         std::vector<StateProperty> props;
-                        for (auto s : closure) props.push_back(atl::get_property(a_in, s));
+                        for (auto s : closure) props.emplace_back(atl::get_property(a_in, s));
                         state_out = add_state(a_out, state_property_merge(props.begin(), props.end()));
                     }
                     if (has_final_state(a_in, closure)) set_final_state(a_out, state_out);
@@ -190,7 +190,7 @@ namespace atl::detail {
                 } else {
                     std::vector<StateProperty> props;
                     for (auto s : state_set)
-                        props.push_back(atl::get_property(nfa, s));
+                        props.emplace_back(atl::get_property(nfa, s));
                     target = add_state(dfa, state_property_merge(props.begin(), props.end()));
                 }
                 set_map[state_set] = target;
@@ -259,7 +259,7 @@ namespace atl::detail {
                 } else {
                     std::vector<StateProperty> props;
                     for (const auto& s : state_set) 
-                        props.push_back(atl::get_property(a_in, s));
+                        props.emplace_back(atl::get_property(a_in, s));
                     initial_state = add_initial_state(a_out, state_property_merge(props.begin(), props.end()));
                 }
                 typename NFA::StateSetMap state_set_map({{state_set, initial_state}});
@@ -359,7 +359,7 @@ namespace atl::detail {
                 }
                 if (is_final_state(a_in, target)) set_final_state(a_out, new_target);
                 state2_map[target] = new_target;
-                work.push_back(target);
+                work.emplace_back(target);
             } else {
                 new_target = state2_map.at(target);
             }

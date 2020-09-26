@@ -181,7 +181,7 @@ namespace atl::detail {
                     if (states.count(t) > 0) {
                         states.erase(t);
                         if (states.size() == 0) {
-                            del_symbols.push_back(symbol);
+                            del_symbols.emplace_back(symbol);
                         }
                     }
                 }
@@ -192,7 +192,7 @@ namespace atl::detail {
                         if (states.count(t) > 0) {
                             states.erase(t);
                             if (states.size() == 0) {
-                                del_props.push_back(prop);
+                                del_props.emplace_back(prop);
                             }
                         }
                     }
@@ -200,7 +200,7 @@ namespace atl::detail {
                         prop_map.erase(prop);
                     }
                     if (prop_map.size() == 0) {
-                        del_symbols.push_back(symbol);
+                        del_symbols.emplace_back(symbol);
                     }
                 }
             }

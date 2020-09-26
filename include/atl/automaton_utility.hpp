@@ -199,7 +199,7 @@ namespace atl {
                     int pos = str.find(")");
                     vector<char> stack;
                     for (auto c : util::split(str.substr(3, pos - 3), " ")) {
-                        stack.push_back(c[0]);
+                        stack.emplace_back(c[0]);
                     }
                     add_transition(pds, source_num, stoi(str.substr(pos + 2, str.length() - pos + 1)), str[0], stack);
                 }

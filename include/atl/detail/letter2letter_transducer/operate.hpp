@@ -207,13 +207,15 @@ namespace atl::detail {
             if (final_state_set(a_out).size() == 0) clear(a_out);
         }
     };
+}
 
+namespace atl {
     template <DL2LT_PARAMS>
     inline void
     composite_l2lt(const DL2LT& a_lhs,
                  const DL2LT& a_rhs,
                  DL2LT& a_out) {
-        composite_impl::apply(a_lhs, a_rhs, a_out, 
+        detail::composite_impl::apply(a_lhs, a_rhs, a_out, 
                               intersect_merge<typename DL2LT::symbol_property_type>(),
                               intersect_merge<typename DL2LT::state_property_type>(),
                               intersect_merge<typename DL2LT::automaton_property_type>());
@@ -227,10 +229,10 @@ namespace atl::detail {
                    DL2LT& a_out,
                    Merge merge) {
         if constexpr (std::is_same<typename DL2LT::symbol_property_type, no_type>::value) {
-            composite_impl::apply(a_lhs, a_rhs, a_out, merge, merge,
+            detail::composite_impl::apply(a_lhs, a_rhs, a_out, merge, merge,
                                   intersect_merge<typename DL2LT::automaton_property_type>());
         } else {
-            composite_impl::apply(a_lhs, a_rhs, a_out, merge,
+            detail::composite_impl::apply(a_lhs, a_rhs, a_out, merge,
                                   intersect_merge<typename DL2LT::state_property_type>(),
                                   intersect_merge<typename DL2LT::automaton_property_type>());
         }
@@ -246,9 +248,9 @@ namespace atl::detail {
                    Merge1 merge1,
                    Merge2 merge2) {
         if constexpr (std::is_same<typename DL2LT::symbol_property_type, no_type>::value) {
-            composite_impl::apply(a_lhs, a_rhs, a_out, merge1, merge1, merge2);
+            detail::composite_impl::apply(a_lhs, a_rhs, a_out, merge1, merge1, merge2);
         } else {
-            composite_impl::apply(a_lhs, a_rhs, a_out, merge1, merge2,
+            detail::composite_impl::apply(a_lhs, a_rhs, a_out, merge1, merge2,
                                   intersect_merge<typename DL2LT::automaton_property_type>());
         }
     }
@@ -265,24 +267,78 @@ namespace atl::detail {
                    Merge2 merge2,
                    Merge3 merge3) {
         if constexpr (std::is_same<typename DL2LT::symbol_property_type, no_type>::value) {
-            composite_impl::apply(a_lhs, a_rhs, a_out, merge1, merge1, merge2);
+            detail::composite_impl::apply(a_lhs, a_rhs, a_out, merge1, merge1, merge2);
         } else {
-            composite_impl::apply(a_lhs, a_rhs, a_out, merge1, merge2, merge3);
+            detail::composite_impl::apply(a_lhs, a_rhs, a_out, merge1, merge2, merge3);
         }
     }
+}
 
+namespace atl::detail {
     struct translate_impl {
+        template <DL2LT_PARAMS>
+        static void
+        do_translate(const DL2LT& dl2lt,
+                     typename DL2LT::State state,
+                     const std::vector<DL2LT_SYMBOL>& uppers, ID index,
+                     const std::vector<std::vector<DL2LT_SYMBOL> >& words_in,
+                     unordered_map<typename DL2LT::State,
+                                   std::vector<DL2LT_SYMBOL> >& words_out) {
+            unordered_map<typename DL2LT::State, unordered_set<DL2LT_SYMBOL> > map;
+            get_targetmaps_in_map(dl2lt, state, uppers[index], map);
+            auto words = words_in;
+            for (auto& [target, lowers] : map) {
+                for (auto lower : lowers) {
+                    for (const auto& word : words_in) {
+                        std::vector<DL2LT_SYMBOL> new_word = word;
+                        new_word.emplace_back(lower);
+                        words.emplace_back(new_word);
+                        if (index == uppers.size() - 1) {
+                            words_out[state].emplace_back(new_word);
+                            return;
+                        }
+                        do_translate(dl2lt, target, uppers, index + 1, words, words_out);
+                    }
+                }
+            }
+        }
+
         template <DL2LT_PARAMS>
         static void
         apply(const DL2LT& dl2lt,
               const std::vector<DL2LT_SYMBOL>& word_in,
-              std::vector<std::vector<DL2LT_SYMBOL> >& words_out) {
-            unordered_map<typename DL2LT::State,
-                          unordered_set<DL2LT_SYMBOL> > map;
-            for (auto upper : word_in) {
-            }
+                     unordered_map<typename DL2LT::State,
+                                   std::vector<DL2LT_SYMBOL> >& words_out) {
+            do_translate(dl2lt, initial_state(dl2lt), word_in, 0, words_out);
         }
     };
+}
+
+namespace atl {
+    template <DL2LT_PARAMS>
+    inline void
+    translate(const DL2LT& dl2lt,
+              const std::vector<DL2LT_SYMBOL>& word_in,
+              std::vector<std::vector<DL2LT_SYMBOL> >& words_out) {
+        unordered_map<typename DL2LT::State, std::vector<DL2LT_SYMBOL> > map;
+        detail::translate_impl::apply(dl2lt, word_in, map);
+        for (auto& [state, words] : map) {
+            words_out.emplace_back(words);
+        }
+    }
+
+    template <DL2LT_PARAMS>
+    inline void
+    translate(const DL2LT& dl2lt,
+              const std::string& word_in,
+              std::vector<std::string>& words_out) {
+        unordered_map<typename DL2LT::State, std::vector<DL2LT_SYMBOL> > map;
+        std::vector<DL2LT_SYMBOL> word(word_in.begin(), word_in.end());
+        detail::translate_impl::apply(dl2lt, word, map);
+        for (auto& [state, words] : map) {
+            words_out.emplace_back(words);
+        }
+    }
 }
 
 #endif /* atl_detail_letter2letter_transducer_operate_hpp */

@@ -97,23 +97,23 @@ namespace atl {
                 for (size_t i = 0; i < re.size(); i++) {
                     if (operator_map_.count(re[i]) > 0) {
                         if (flag & ((operator_map_.at(re[i]) == '(') | (operator_map_.at(re[i]) == '\\' ))) {
-                            original_expression_.push_back(concat_optaror_);
+                            original_expression_.emplace_back(concat_optaror_);
                         }
                         flag = true;
                         if ((operator_map_.at(re[i]) == '|') | (operator_map_.at(re[i]) == '(')) {
                             flag = false;
                         }
                         if (operator_map_.at(re[i]) == '\\') {
-                            original_expression_.push_back(RegularSymbol<Symbol>(re[++i]));
+                            original_expression_.emplace_back(RegularSymbol<Symbol>(re[++i]));
                         } else {
-                            original_expression_.push_back(RegularSymbol<Symbol>(re[i],
+                            original_expression_.emplace_back(RegularSymbol<Symbol>(re[i],
                                                            operator_map_.at(Symbol(re[i]))));
                         }
                     } else {
                         if (flag) {
-                            original_expression_.push_back(concat_optaror_);
+                            original_expression_.emplace_back(concat_optaror_);
                         }
-                        original_expression_.push_back(RegularSymbol<Symbol>(re[i]));
+                        original_expression_.emplace_back(RegularSymbol<Symbol>(re[i]));
                         flag = true;
                     }
                 }
@@ -124,13 +124,13 @@ namespace atl {
                 std::stack<RegularSymbol<Symbol> > operator_stack;
                 for (size_t i = 0; i < original_expression_.size(); i++) {
                     if (original_expression_[i].opt == 0) {
-                        postfix_expression_.push_back(original_expression_[i]);
+                        postfix_expression_.emplace_back(original_expression_[i]);
                     } else {
                         if (original_expression_[i].opt == '(') {
                             operator_stack.push(original_expression_[i]);
                         } else if (original_expression_[i].opt == ')') {
                             while ((!operator_stack.empty()) && (operator_stack.top().opt != '(')) {
-                                postfix_expression_.push_back(operator_stack.top());
+                                postfix_expression_.emplace_back(operator_stack.top());
                                 operator_stack.pop();
                             }
                             operator_stack.pop();
@@ -138,7 +138,7 @@ namespace atl {
                             while ((!operator_stack.empty()) &&
                                    ((operator_stack.top().opt != '(') &&
                                    (original_expression_[i].priority <= operator_stack.top().priority))) {
-                                postfix_expression_.push_back(operator_stack.top());
+                                postfix_expression_.emplace_back(operator_stack.top());
                                 operator_stack.pop();
                             }
                             operator_stack.push(original_expression_[i]);
@@ -146,7 +146,7 @@ namespace atl {
                     }
                 }
                 while (!operator_stack.empty()) {
-                    postfix_expression_.push_back(operator_stack.top());
+                    postfix_expression_.emplace_back(operator_stack.top());
                     operator_stack.pop();
                 }
             }

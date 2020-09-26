@@ -70,7 +70,7 @@ namespace util {
         char *p = strtok(strs, d);  
         while(p) {  
             string s = p;
-            res.push_back(s);
+            res.emplace_back(s);
             p = strtok(NULL, d);  
         }  
         return res;  
