@@ -38,9 +38,6 @@ namespace atl {
                                              StateProperty,
                                              AutomatonProperty> fa_type;
 
-        typedef typename Base::dfa_type dfa_type;
-        typedef typename Base::nfa_type nfa_type;
-
         typedef detail::deterministic_letter2letter_transducer_gen<Symbol, epsilon_,
                                                                    LabelProperty,
                                                                    StateProperty,

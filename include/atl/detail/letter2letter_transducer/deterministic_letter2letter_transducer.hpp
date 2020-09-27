@@ -16,7 +16,14 @@
 #include <atl/detail/letter2letter_transducer/letter2letter_transducer.hpp>
 
 using boost::unordered_map;
-
+namespace atl {
+    template <class Symbol,
+              long epsilon_,
+              class LabelProperty,
+              class StateProperty, 
+              class AutomatonProperty>
+    class nondeterministic_letter2letter_transducer;
+}
 namespace atl::detail {
     template <class Symbol, 
               long epsilon_,
@@ -35,6 +42,11 @@ namespace atl::detail {
                                                    StateProperty,
                                                    AutomatonProperty> Base;
 
+        typedef nondeterministic_letter2letter_transducer<Symbol, epsilon_,
+                                                          LabelProperty,
+                                                          StateProperty,
+                                                          AutomatonProperty> nl2lt_type;
+
         typedef Symbol symbol_type;
         typedef L2LTLabel<Symbol> label_type;
         typedef LabelProperty label_property_type;
@@ -52,6 +64,13 @@ namespace atl::detail {
 
         typedef pair<State, State> StatePair;
         typedef unordered_map<StatePair, State> StatePairMap;
+
+        typedef typename std::conditional<std::is_same<LabelProperty, no_type>::value,
+                              unordered_map<label_type, unordered_set<StatePair> >,
+                              unordered_map<label_type, 
+                              unordered_map<LabelProperty, 
+                                            unordered_set<StatePair>> > >::type 
+            Label2StatePairsMap;
 
         typedef typename std::conditional<std::is_same<LabelProperty, no_type>::value,
                               std::map<Symbol, std::map<Symbol, State> >,

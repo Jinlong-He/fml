@@ -22,7 +22,7 @@ namespace atl::detail {
         get_composite_map(const DL2LT& a_lhs,
                           const DL2LT& a_rhs,
                           typename DL2LT::State old_state_rhs,
-                          typename DL2LT::Symbol2StatePairMap& map,
+                          typename DL2LT::Label2StatePairsMap& map,
                           typename DL2LT::Label2StateMap const& map_lhs,
                           typename DL2LT::Label2StateMap const& map_rhs,
                           Merge merge) {
@@ -33,14 +33,13 @@ namespace atl::detail {
                 if constexpr (std::is_same<LabelProperty, no_type>::value) {
                     for (const auto& [symbol, state_lhs] : map_lhs1) {
                         if (symbol == epsilon_symbol(a_lhs)) {
-                            map[Label(upper, epsilon_symbol(a_lhs))] = 
-                                StatePair(state_lhs, old_state_rhs);
+                            map[Label(upper, epsilon_symbol(a_lhs))].insert(StatePair(state_lhs, old_state_rhs));
                         }
                         auto iter_rhs = map_rhs.find(symbol);
                         if (iter_rhs != map_rhs.end()) {
                             const auto& map_rhs1 = iter_rhs -> second;
                             for (const auto& [lower, state_rhs] : map_rhs1) {
-                                map[Label(upper, lower)] = StatePair(state_lhs, state_rhs);
+                                map[Label(upper, lower)].insert(StatePair(state_lhs, state_rhs));
                             }
                         }
                     }
@@ -48,8 +47,7 @@ namespace atl::detail {
                     for (const auto& [symbol, prop_map_lhs] : map_lhs1) {
                         if (symbol == epsilon_symbol(a_lhs)) {
                             for (const auto& [p_lhs, state_lhs] : prop_map_lhs) {
-                                map[Label(upper, epsilon_symbol(a_lhs))][merge(p_lhs, LabelProperty())] =
-                                    StatePair(state_lhs, old_state_rhs);
+                                map[Label(upper, epsilon_symbol(a_lhs))][merge(p_lhs, LabelProperty())].insert(StatePair(state_lhs, old_state_rhs));
                             }
                         }
                         auto iter_rhs = map_rhs.find(symbol);
@@ -58,8 +56,7 @@ namespace atl::detail {
                             for (const auto& [p_lhs, state_lhs] : prop_map_lhs) {
                                 for (const auto& [lower, prop_map_rhs] : map_rhs1) {
                                     for (const auto& [p_rhs, state_rhs] : prop_map_rhs) {
-                                        map[Label(upper, lower)][merge(p_lhs, p_rhs)] =
-                                            StatePair(state_lhs, state_rhs);
+                                        map[Label(upper, lower)][merge(p_lhs, p_rhs)].insert(StatePair(state_lhs, state_rhs));
                                     }
                                 }
                             }
@@ -76,7 +73,7 @@ namespace atl::detail {
                           const DL2LT& a_rhs,
                           typename DL2LT::State state_lhs,
                           typename DL2LT::State state_rhs,
-                          typename DL2LT::Symbol2StatePairMap& map,
+                          typename DL2LT::Label2StatePairsMap& map,
                           Merge merge) {
             const auto& transition_map_lhs = a_lhs.l2ltransition_map();
             const auto& transition_map_rhs = a_rhs.l2ltransition_map();
@@ -90,17 +87,17 @@ namespace atl::detail {
         }
 
         template <DL2LT_PARAMS,
-                  typename StateMerge,
+                  typename StatePropertyMerge,
                   typename SymbolPropertyMerge>
         static void
         add_composite_transition(const DL2LT& a_lhs,
                                  const DL2LT& a_rhs,
-                                 DL2LT& a_out,
+                                 typename DL2LT::nl2lt_type& a_out,
                                  typename DL2LT::State source,
                                  typename DL2LT::StatePair const& state_pair,
                                  typename DL2LT::StatePairMap& pair_map,
                                  typename DL2LT::transition_property_type const& t,
-                                 StateMerge state_merge,
+                                 StatePropertyMerge state_property_merge,
                                  SymbolPropertyMerge symbol_property_merge) {
             typedef typename DL2LT::State State;
             typedef typename DL2LT::state_property_type StateProperty;
@@ -114,51 +111,53 @@ namespace atl::detail {
                 if constexpr (std::is_same<StateProperty, boost::no_property>::value) {
                     target = add_state(a_out);
                 } else {
-                    target = add_state(a_out, state_merge(atl::get_property(a_lhs, new_state_lhs), 
+                    target = add_state(a_out, state_property_merge(atl::get_property(a_lhs, new_state_lhs), 
                                                           atl::get_property(a_rhs, new_state_rhs)));
                 }
                 pair_map[state_pair] = target;
                 do_composite(a_lhs, a_rhs, a_out, 
                              new_state_lhs, new_state_rhs, target,
-                             pair_map, state_merge, symbol_property_merge);
+                             pair_map, state_property_merge, symbol_property_merge);
             }
             add_transition(a_out, source, target, t);
         }
 
         template <DL2LT_PARAMS,
-                  typename StateMerge,
+                  typename StatePropertyMerge,
                   typename SymbolPropertyMerge>
         static void 
         do_composite(const DL2LT& a_lhs,
                      const DL2LT& a_rhs,
-                     DL2LT& a_out,
+                     typename DL2LT::nl2lt_type& a_out,
                      typename DL2LT::State state_lhs,
                      typename DL2LT::State state_rhs,
                      typename DL2LT::State state_out,
                      typename DL2LT::StatePairMap& pair_map,
-                     StateMerge state_merge,
+                     StatePropertyMerge state_property_merge,
                      SymbolPropertyMerge symbol_property_merge) {
             typedef typename DL2LT::symbol_property_type SymbolProperty;
             typedef typename DL2LT::transition_property_type TransitionProperty;
             if (is_final_state(a_lhs, state_lhs) && is_final_state(a_rhs, state_rhs)) 
                 set_final_state(a_out, state_out);
-            typename DL2LT::Symbol2StatePairMap map;
+            typename DL2LT::Label2StatePairsMap map;
             get_composite_map(a_lhs, a_rhs, state_lhs, state_rhs, map, symbol_property_merge);
             for (auto& map_pair : map) {
                 auto& symbol = map_pair.first;
                 if constexpr (std::is_same<SymbolProperty, no_type>::value) {
-                    auto& state_pair = map_pair.second;
-                    add_composite_transition(a_lhs, a_rhs, a_out,
-                                             state_out, state_pair, pair_map, symbol,
-                                             state_merge, symbol_property_merge);
+                    for (auto& state_pair : map_pair.second) {
+                        add_composite_transition(a_lhs, a_rhs, a_out,
+                                                 state_out, state_pair, pair_map, symbol,
+                                                 state_property_merge, symbol_property_merge);
+                    }
                 } else {
                     for (auto& map_pair1 : map_pair.second) {
                         auto& symbol_property = map_pair1.first;
-                        auto& state_pair = map_pair1.second;
+                        for (auto& state_pair : map_pair1.second) {
                         add_composite_transition(a_lhs, a_rhs, a_out,
-                                                 state_out, state_pair, pair_map,
-                                                 TransitionProperty(symbol, symbol_property),
-                                                 state_merge, symbol_property_merge);
+                                                     state_out, state_pair, pair_map,
+                                                     TransitionProperty(symbol, symbol_property),
+                                                     state_property_merge, symbol_property_merge);
+                        }
                     }
                 }
             }
@@ -166,22 +165,22 @@ namespace atl::detail {
 
         template <DL2LT_PARAMS,
                   typename SymbolPropertyMerge,
-                  typename StateMerge,
-                  typename FAMerge>
+                  typename StatePropertyMerge,
+                  typename AutomatonPropertyMerge>
         static void 
         apply(const DL2LT& a_lhs,
               const DL2LT& a_rhs,
-              DL2LT& a_out,
+              typename DL2LT::nl2lt_type& a_out,
               SymbolPropertyMerge symbol_property_merge,
-              StateMerge state_merge,
-              FAMerge fa_merge) {
+              StatePropertyMerge state_property_merge,
+              AutomatonPropertyMerge automaton_property_merge) {
             typedef typename DL2LT::State State;
             typedef typename DL2LT::StatePair StatePair;
             typedef typename DL2LT::StatePairMap StatePairMap;
             typedef typename DL2LT::state_property_type StateProperty;
             typedef typename DL2LT::automaton_property_type AutomatonProperty;
             if constexpr (!std::is_same<AutomatonProperty, boost::no_property>::value) {
-                atl::set_property(a_out, fa_merge(atl::get_property(a_lhs), 
+                atl::set_property(a_out, automaton_property_merge(atl::get_property(a_lhs), 
                                                   atl::get_property(a_rhs)));
             }
             typename DL2LT::SymbolSet alphabet_;
@@ -195,7 +194,7 @@ namespace atl::detail {
                   initial_state_out = add_initial_state(a_out);
             } else {
                   initial_state_out = add_initial_state(a_out, 
-                                      state_merge(atl::get_property(a_lhs, initial_state_lhs),
+                                      state_property_merge(atl::get_property(a_lhs, initial_state_lhs),
                                                   atl::get_property(a_rhs, initial_state_rhs)));
             }
 
@@ -203,7 +202,7 @@ namespace atl::detail {
                                     initial_state_out}}); 
             do_composite(a_lhs, a_rhs, a_out, 
                          initial_state_lhs, initial_state_rhs, 
-                         a_out.initial_state(), pair_map, state_merge, symbol_property_merge);
+                         a_out.initial_state(), pair_map, state_property_merge, symbol_property_merge);
             if (final_state_set(a_out).size() == 0) clear(a_out);
         }
     };
@@ -213,64 +212,65 @@ namespace atl {
     template <DL2LT_PARAMS>
     inline void
     composite_l2lt(const DL2LT& a_lhs,
-                 const DL2LT& a_rhs,
-                 DL2LT& a_out) {
-        detail::composite_impl::apply(a_lhs, a_rhs, a_out, 
+                   const DL2LT& a_rhs,
+                   DL2LT& a_out) {
+        typename DL2LT::nl2lt_type nl2lt;
+        detail::composite_impl::apply(a_lhs, a_rhs, nl2lt, 
                               intersect_merge<typename DL2LT::symbol_property_type>(),
                               intersect_merge<typename DL2LT::state_property_type>(),
                               intersect_merge<typename DL2LT::automaton_property_type>());
+        minimize(nl2lt, a_out);
     }
 
     template <DL2LT_PARAMS,
-              typename Merge>
+              typename LabelPropertyMerge>
     inline void
     composite_l2lt(const DL2LT& a_lhs,
                    const DL2LT& a_rhs,
                    DL2LT& a_out,
-                   Merge merge) {
-        if constexpr (std::is_same<typename DL2LT::symbol_property_type, no_type>::value) {
-            detail::composite_impl::apply(a_lhs, a_rhs, a_out, merge, merge,
-                                  intersect_merge<typename DL2LT::automaton_property_type>());
-        } else {
-            detail::composite_impl::apply(a_lhs, a_rhs, a_out, merge,
-                                  intersect_merge<typename DL2LT::state_property_type>(),
-                                  intersect_merge<typename DL2LT::automaton_property_type>());
-        }
+                   LabelPropertyMerge label_property_merge) {
+        typename DL2LT::nl2lt_type nl2lt;
+        detail::composite_impl::apply(a_lhs, a_rhs, nl2lt, 
+                                      label_property_merge, 
+                                      intersect_merge<typename DL2LT::state_property_type>(),
+                                      intersect_merge<typename DL2LT::automaton_property_type>());
+        minimize(nl2lt, a_out);
     }
 
     template <DL2LT_PARAMS,
-              typename Merge1,
-              typename Merge2>
+              typename LabelPropertyMerge,
+              typename StatePropertyMerge>
     inline void
     composite_l2lt(const DL2LT& a_lhs,
                    const DL2LT& a_rhs,
                    DL2LT& a_out,
-                   Merge1 merge1,
-                   Merge2 merge2) {
-        if constexpr (std::is_same<typename DL2LT::symbol_property_type, no_type>::value) {
-            detail::composite_impl::apply(a_lhs, a_rhs, a_out, merge1, merge1, merge2);
-        } else {
-            detail::composite_impl::apply(a_lhs, a_rhs, a_out, merge1, merge2,
-                                  intersect_merge<typename DL2LT::automaton_property_type>());
-        }
+                   LabelPropertyMerge label_property_merge,
+                   StatePropertyMerge state_property_merge) {
+        typename DL2LT::nl2lt_type nl2lt;
+        detail::composite_impl::apply(a_lhs, a_rhs, nl2lt, 
+                                      label_property_merge, 
+                                      state_property_merge,
+                                      intersect_merge<typename DL2LT::automaton_property_type>());
+        minimize(nl2lt, a_out);
     }
 
     template <DL2LT_PARAMS,
-              typename Merge1,
-              typename Merge2,
-              typename Merge3>
+              typename LabelPropertyMerge,
+              typename StatePropertyMerge,
+              typename AutomatonPropertyMerge>
     inline void
     composite_l2lt(const DL2LT& a_lhs,
                    const DL2LT& a_rhs,
                    DL2LT& a_out,
-                   Merge1 merge1,
-                   Merge2 merge2,
-                   Merge3 merge3) {
-        if constexpr (std::is_same<typename DL2LT::symbol_property_type, no_type>::value) {
-            detail::composite_impl::apply(a_lhs, a_rhs, a_out, merge1, merge1, merge2);
-        } else {
-            detail::composite_impl::apply(a_lhs, a_rhs, a_out, merge1, merge2, merge3);
-        }
+                   LabelPropertyMerge label_property_merge,
+                   StatePropertyMerge state_property_merge,
+                   AutomatonPropertyMerge automaton_property_merge) {
+        typename DL2LT::nl2lt_type nl2lt;
+        detail::composite_impl::apply(a_lhs, a_rhs, nl2lt, 
+                                      label_property_merge, 
+                                      state_property_merge,
+                                      automaton_property_merge);
+        minimize(nl2lt, a_out);
     }
 }
 
