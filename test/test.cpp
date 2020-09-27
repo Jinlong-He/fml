@@ -158,6 +158,10 @@ BOOST_AUTO_TEST_CASE(test_composite2) {
     BOOST_CHECK_EQUAL(test::test_composite2(), true);
 }
 
+BOOST_AUTO_TEST_CASE(test_composite3) {
+    BOOST_CHECK_EQUAL(test::test_composite3(), true);
+}
+
 BOOST_AUTO_TEST_CASE(test_poststar) {
     BOOST_CHECK_EQUAL(test::test_poststar(), true);
 }

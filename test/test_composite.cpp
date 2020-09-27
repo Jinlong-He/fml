@@ -53,7 +53,7 @@ namespace test {
         add_transition(rhs, 0, 0, 'b', 'c');
         add_transition(rhs, 0, 0, 'c', 'b');
 
-        deterministic_letter2letter_transducer<> result, expect, test;
+        deterministic_letter2letter_transducer<> result, expect;
         result = (lhs * rhs);
         add_initial_state(expect);
         add_state(expect);
@@ -64,6 +64,40 @@ namespace test {
         std::vector<string> result_words1, expect_words1({"cccbb"}),
                             result_words2, expect_words2({"bbbc", "bbbb"}),
                             result_words3, expect_words3({"cbbc"});
+        translate(expect, "aaaab", result_words1);
+        translate(lhs, "aaaa", result_words2);
+        translate(rhs, "bccb", result_words3);
+        return (result == expect) && 
+               (result_words1 == expect_words1) && 
+               (result_words2 == expect_words2) &&
+               (result_words3 == expect_words3);
+    }
+
+    bool test_composite3() {
+        nondeterministic_letter2letter_transducer<> lhs, rhs;
+        add_initial_state(lhs);
+        add_state(lhs);
+        add_final_state(lhs);
+        add_transition(lhs, 0, 0, 'a', 'b');
+        add_transition(lhs, 0, 1, 'a', 'c');
+        add_transition(lhs, 1, 2, 'b', 'c');
+
+        add_initial_state(rhs);
+        set_final_state(rhs, 0);
+        add_transition(rhs, 0, 0, 'b', 'a');
+        add_transition(rhs, 0, 0, 'c', 'a');
+
+        deterministic_letter2letter_transducer<> result, expect;
+        result = (lhs * rhs);
+        add_initial_state(expect);
+        add_state(expect);
+        add_final_state(expect);
+        add_transition(expect, 0, 1, 'a', 'a');
+        add_transition(expect, 1, 1, 'a', 'a');
+        add_transition(expect, 1, 2, 'b', 'a');
+        std::vector<string> result_words1, expect_words1({"aaaaa"}),
+                            result_words2, expect_words2({"bbbc", "bbbb"}),
+                            result_words3, expect_words3({"aaaa"});
         translate(expect, "aaaab", result_words1);
         translate(lhs, "aaaa", result_words2);
         translate(rhs, "bccb", result_words3);
