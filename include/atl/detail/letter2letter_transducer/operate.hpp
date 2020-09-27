@@ -290,15 +290,48 @@ namespace atl::detail {
             for (auto& [target, lowers] : map) {
                 for (auto lower : lowers) {
                     for (const auto& word : words_in) {
+                        words.clear();
                         std::vector<DL2LT_SYMBOL> new_word = word;
                         new_word.emplace_back(lower);
                         words.emplace_back(new_word);
-                        if (index == uppers.size() - 1) {
-                            words_out[state].emplace_back(new_word);
-                            continue;
-                        }
-                        do_translate(dl2lt, target, uppers, index + 1, words, words_out);
                     }
+                    if (index == uppers.size() - 1) {
+                        for (auto& new_word : words) {
+                            words_out[state].emplace_back(new_word);
+                        }
+                        continue;
+                    }
+                    do_translate(dl2lt, target, uppers, index + 1, words, words_out);
+                }
+            }
+        }
+
+        template <NL2LT_PARAMS>
+        static void
+        do_translate(const NL2LT& nl2lt,
+                     typename NL2LT::State state,
+                     const std::vector<NL2LT_SYMBOL>& uppers, ID index,
+                     const std::vector<std::vector<NL2LT_SYMBOL> >& words_in,
+                     unordered_map<typename NL2LT::State,
+                                   std::vector<std::vector<NL2LT_SYMBOL > > >& words_out) {
+            unordered_map<typename NL2LT::State, unordered_set<NL2LT_SYMBOL> > map;
+            get_target_maps_in_map(nl2lt, state, uppers[index], map);
+            std::vector<std::vector<NL2LT_SYMBOL> > words;
+            for (auto& [target, lowers] : map) {
+                for (auto lower : lowers) {
+                    words.clear();
+                    for (const auto& word : words_in) {
+                        std::vector<NL2LT_SYMBOL> new_word = word;
+                        new_word.emplace_back(lower);
+                        words.emplace_back(new_word);
+                    }
+                    if (index == uppers.size() - 1) {
+                        for (auto& new_word : words) {
+                            words_out[state].emplace_back(new_word);
+                        }
+                        continue;
+                    }
+                    do_translate(nl2lt, target, uppers, index + 1, words, words_out);
                 }
             }
         }
@@ -311,6 +344,17 @@ namespace atl::detail {
                             std::vector<std::vector<DL2LT_SYMBOL> > >& words_out) {
             do_translate(dl2lt, initial_state(dl2lt), word_in, 0,
                          std::vector<std::vector<DL2LT_SYMBOL> >({std::vector<DL2LT_SYMBOL>()}),
+                         words_out);
+        }
+
+        template <NL2LT_PARAMS>
+        static void
+        apply(const NL2LT& nl2lt,
+              const std::vector<NL2LT_SYMBOL>& word_in,
+              unordered_map<typename NL2LT::State,
+                            std::vector<std::vector<NL2LT_SYMBOL> > >& words_out) {
+            do_translate(nl2lt, initial_state(nl2lt), word_in, 0,
+                         std::vector<std::vector<NL2LT_SYMBOL> >({std::vector<NL2LT_SYMBOL>()}),
                          words_out);
         }
     };
@@ -341,6 +385,37 @@ namespace atl {
                       std::vector<std::vector<DL2LT_SYMBOL> > > map;
         std::vector<DL2LT_SYMBOL> word(word_in.begin(), word_in.end());
         detail::translate_impl::apply(dl2lt, word, map);
+        for (auto& [state, words] : map) {
+            for (auto& w : words) {
+                words_out.emplace_back(std::string(w.begin(), w.end()));
+            }
+        }
+    }
+
+    template <NL2LT_PARAMS>
+    inline void
+    translate(const NL2LT& nl2lt,
+              const std::vector<NL2LT_SYMBOL>& word_in,
+              std::vector<std::vector<NL2LT_SYMBOL> >& words_out) {
+        unordered_map<typename NL2LT::State, 
+                      std::vector<std::vector<NL2LT_SYMBOL> > > map;
+        detail::translate_impl::apply(nl2lt, word_in, map);
+        for (auto& [state, words] : map) {
+            for (auto& word : words) {
+                words_out.emplace_back(word);
+            }
+        }
+    }
+
+    template <NL2LT_PARAMS>
+    inline void
+    translate(const NL2LT& nl2lt,
+              const std::string& word_in,
+              std::vector<std::string>& words_out) {
+        unordered_map<typename NL2LT::State, 
+                      std::vector<std::vector<NL2LT_SYMBOL> > > map;
+        std::vector<NL2LT_SYMBOL> word(word_in.begin(), word_in.end());
+        detail::translate_impl::apply(nl2lt, word, map);
         for (auto& [state, words] : map) {
             for (auto& w : words) {
                 words_out.emplace_back(std::string(w.begin(), w.end()));

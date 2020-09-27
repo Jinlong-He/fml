@@ -122,40 +122,6 @@ namespace atl::detail {
             return std::make_pair(Transition(), false);
         }
 
-        //void
-        //get_targets_in_map(State s, const Symbol& c, StateSet& set) const {
-        //    auto transition_map_iter = l2ltransition_map_.find(s);
-        //    if (transition_map_iter != l2ltransition_map_.end()) {
-        //        const auto& map = transition_map_iter -> second;
-        //        auto map_iter = map.find(c);
-        //        if (map_iter != map.end()) {
-        //            if constexpr (std::is_same<SymbolProperty, no_type>::value) {
-        //                set.insert(map_iter -> second);
-        //            } else {
-        //                for (auto& map_pair : map_iter -> second) {
-        //                    set.insert(map_pair.second);
-        //                }
-        //            }
-        //        }
-        //    }
-        //}
-
-        //void
-        //get_targets_in_map(State s, const Symbol& c, const SymbolProperty& p, StateSet& set) const {
-        //    if constexpr (std::is_same<SymbolProperty, no_type>::value) {
-        //        auto transition_map_iter = transition_map_.find(s);
-        //        if (transition_map_iter != transition_map_.end()) {
-        //            const auto& map = transition_map_iter -> second;
-        //            auto map_iter = map.find(c);
-        //            if (map_iter != map.end()) {
-        //                auto iter = map_iter -> second.find(p);
-        //                if (iter != map_iter -> second.end()) {
-        //                    set.insert(iter -> second);
-        //                }
-        //            }
-        //        }
-        //    }
-        //}
     private:
         L2LTransitionMap l2ltransition_map_;
     };
@@ -196,11 +162,11 @@ namespace atl {
 
     template <NL2LT_PARAMS>
     inline void
-    get_targetmaps_in_map(const NL2LT& dl2lt,
+    get_target_maps_in_map(const NL2LT& dl2lt,
                           typename NL2LT::State s, 
                           const NL2LT_SYMBOL& c, 
                           unordered_map<typename NL2LT::State, 
-                                        unordered_set<NL2LT_SYMBOL> >& map) {
+                                        unordered_set<NL2LT_SYMBOL> >& target_map) {
         const auto& l2ltransition_map_ = l2ltransition_map(dl2lt);
         auto transition_map_iter = l2ltransition_map_.find(s);
         if (transition_map_iter != l2ltransition_map_.end()) {
@@ -211,14 +177,14 @@ namespace atl {
                                            no_type>::value) {
                     for (const auto& [lower, states] : map_iter -> second) {
                         for (auto state : states) {
-                            map[state].insert(lower);
+                            target_map[state].insert(lower);
                         }
                     }
                 } else {
                     for (const auto& [lower, prop_map] : map_iter -> second) {
                         for (const auto& [prop, states] : prop_map) {
                             for (auto state : states) {
-                                map[state].insert(lower);
+                                target_map[state].insert(lower);
                             }
                         }
                     }
