@@ -547,7 +547,7 @@ namespace atl::detail {
                 ID count1 = transition_map_lhs.count(state),
                    count2 = transition_map_rhs.count(state);
                 if (count1 != count2) return false;
-                if (count1 == 0) return true;
+                if (count1 == 0) continue;
                 const auto& map_lhs = transition_map_lhs.at(state);
                 const auto& map_rhs = transition_map_rhs.at(state);
                 if (map_lhs.size() != map_rhs.size()) return false;

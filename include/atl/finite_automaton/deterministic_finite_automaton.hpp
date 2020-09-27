@@ -86,6 +86,14 @@ namespace atl {
                 return *this;
             }
 
+            dfa_type& 
+            operator=(const Base& x) {
+                if (&x != this) {
+                    Base::operator=(x);
+                }
+                return *this;
+            }
+
             dfa_type
             operator&(const dfa_type& x) {
                 dfa_type out, dfa_lhs, dfa_rhs;

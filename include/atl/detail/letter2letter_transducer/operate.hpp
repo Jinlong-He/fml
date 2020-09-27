@@ -283,10 +283,10 @@ namespace atl::detail {
                      const std::vector<DL2LT_SYMBOL>& uppers, ID index,
                      const std::vector<std::vector<DL2LT_SYMBOL> >& words_in,
                      unordered_map<typename DL2LT::State,
-                                   std::vector<DL2LT_SYMBOL> >& words_out) {
+                                   std::vector<std::vector<DL2LT_SYMBOL > > >& words_out) {
             unordered_map<typename DL2LT::State, unordered_set<DL2LT_SYMBOL> > map;
-            get_targetmaps_in_map(dl2lt, state, uppers[index], map);
-            auto words = words_in;
+            get_target_maps_in_map(dl2lt, state, uppers[index], map);
+            std::vector<std::vector<DL2LT_SYMBOL> > words;
             for (auto& [target, lowers] : map) {
                 for (auto lower : lowers) {
                     for (const auto& word : words_in) {
@@ -295,7 +295,7 @@ namespace atl::detail {
                         words.emplace_back(new_word);
                         if (index == uppers.size() - 1) {
                             words_out[state].emplace_back(new_word);
-                            return;
+                            continue;
                         }
                         do_translate(dl2lt, target, uppers, index + 1, words, words_out);
                     }
@@ -307,9 +307,11 @@ namespace atl::detail {
         static void
         apply(const DL2LT& dl2lt,
               const std::vector<DL2LT_SYMBOL>& word_in,
-                     unordered_map<typename DL2LT::State,
-                                   std::vector<DL2LT_SYMBOL> >& words_out) {
-            do_translate(dl2lt, initial_state(dl2lt), word_in, 0, words_out);
+              unordered_map<typename DL2LT::State,
+                            std::vector<std::vector<DL2LT_SYMBOL> > >& words_out) {
+            do_translate(dl2lt, initial_state(dl2lt), word_in, 0,
+                         std::vector<std::vector<DL2LT_SYMBOL> >({std::vector<DL2LT_SYMBOL>()}),
+                         words_out);
         }
     };
 }
@@ -320,10 +322,13 @@ namespace atl {
     translate(const DL2LT& dl2lt,
               const std::vector<DL2LT_SYMBOL>& word_in,
               std::vector<std::vector<DL2LT_SYMBOL> >& words_out) {
-        unordered_map<typename DL2LT::State, std::vector<DL2LT_SYMBOL> > map;
+        unordered_map<typename DL2LT::State, 
+                      std::vector<std::vector<DL2LT_SYMBOL> > > map;
         detail::translate_impl::apply(dl2lt, word_in, map);
         for (auto& [state, words] : map) {
-            words_out.emplace_back(words);
+            for (auto& word : words) {
+                words_out.emplace_back(word);
+            }
         }
     }
 
@@ -332,11 +337,14 @@ namespace atl {
     translate(const DL2LT& dl2lt,
               const std::string& word_in,
               std::vector<std::string>& words_out) {
-        unordered_map<typename DL2LT::State, std::vector<DL2LT_SYMBOL> > map;
+        unordered_map<typename DL2LT::State, 
+                      std::vector<std::vector<DL2LT_SYMBOL> > > map;
         std::vector<DL2LT_SYMBOL> word(word_in.begin(), word_in.end());
         detail::translate_impl::apply(dl2lt, word, map);
         for (auto& [state, words] : map) {
-            words_out.emplace_back(words);
+            for (auto& w : words) {
+                words_out.emplace_back(std::string(w.begin(), w.end()));
+            }
         }
     }
 }

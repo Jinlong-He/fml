@@ -74,8 +74,16 @@ namespace atl {
 
             ~nondeterministic_finite_automaton() {}
 
-            nondeterministic_finite_automaton& 
+            nfa_type& 
             operator=(const nfa_type& x) {
+                if (&x != this) {
+                    Base::operator=(x);
+                }
+                return *this;
+            }
+
+            nfa_type& 
+            operator=(const Base& x) {
                 if (&x != this) {
                     Base::operator=(x);
                 }

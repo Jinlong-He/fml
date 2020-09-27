@@ -45,7 +45,10 @@ namespace atl {
                                                                       LabelProperty,
                                                                       StateProperty,
                                                                       AutomatonProperty> nl2lt_type;
-        typedef Base dl2lt_type;
+        typedef deterministic_letter2letter_transducer<Symbol, epsilon_,
+                                                       LabelProperty,
+                                                       StateProperty,
+                                                       AutomatonProperty> dl2lt_type;
 
         typedef typename Base::state_property_type state_property_type;
         typedef typename Base::automaton_property_type automaton_property_type;
@@ -73,10 +76,21 @@ namespace atl {
         deterministic_letter2letter_transducer(const deterministic_letter2letter_transducer& x)
             : Base(x) {}
 
+        deterministic_letter2letter_transducer(const Base& x)
+            : Base(x) {}
+
         ~deterministic_letter2letter_transducer() {}
 
         dl2lt_type& 
         operator=(const dl2lt_type& x) {
+            if (&x != this) {
+                Base::operator=(x);
+            }
+            return *this;
+        }
+
+        dl2lt_type& 
+        operator=(const Base& x) {
             if (&x != this) {
                 Base::operator=(x);
             }
@@ -93,7 +107,7 @@ namespace atl {
         }
 
         dl2lt_type
-        operator&(const nfa_type& x) {
+        operator&(const nl2lt_type& x) {
             dl2lt_type out, dfa_lhs, dfa_rhs;
             minimize(*this, dfa_lhs);
             minimize(x, dfa_rhs);
@@ -111,7 +125,7 @@ namespace atl {
         }
 
         dl2lt_type
-        operator|(const nfa_type& x) {
+        operator|(const nl2lt_type& x) {
             dl2lt_type out, dfa_lhs, dfa_rhs;
             minimize(*this, dfa_lhs);
             minimize(x, dfa_rhs);
@@ -130,7 +144,7 @@ namespace atl {
         }
 
         dl2lt_type
-        operator-(const nfa_type& x) {
+        operator-(const nl2lt_type& x) {
             dl2lt_type out, dfa_lhs, dfa_rhs, dfa;
             minimize(*this, dfa_lhs);
             minimize(x, dfa_rhs);
@@ -149,7 +163,7 @@ namespace atl {
         }
 
         dl2lt_type
-        operator+(const nfa_type& x) {
+        operator+(const nl2lt_type& x) {
             dl2lt_type out, dfa_lhs, dfa_rhs;
             minimize(*this, dfa_lhs);
             minimize(x, dfa_rhs);
@@ -174,7 +188,7 @@ namespace atl {
         }
 
         bool
-        operator==(const nfa_type& x) {
+        operator==(const nl2lt_type& x) {
             dl2lt_type dfa_lhs, dfa_rhs;
             minimize(*this, dfa_lhs);
             minimize(x, dfa_rhs);

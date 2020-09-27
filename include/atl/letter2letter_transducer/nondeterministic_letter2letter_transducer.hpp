@@ -45,7 +45,10 @@ namespace atl {
                                                                    LabelProperty,
                                                                    StateProperty,
                                                                    AutomatonProperty> dl2lt_type;
-        typedef Base nl2lt_type;
+        typedef nondeterministic_letter2letter_transducer<Symbol, epsilon_,
+                                                          LabelProperty,
+                                                          StateProperty,
+                                                          AutomatonProperty> nl2lt_type;
 
         typedef typename Base::state_property_type state_property_type;
         typedef typename Base::automaton_property_type automaton_property_type;
@@ -72,6 +75,9 @@ namespace atl {
         nondeterministic_letter2letter_transducer(const nondeterministic_letter2letter_transducer& x)
             : Base(x) {}
 
+        nondeterministic_letter2letter_transducer(const Base& x)
+            : Base(x) {}
+
         ~nondeterministic_letter2letter_transducer() {}
 
         nl2lt_type& 
@@ -82,45 +88,53 @@ namespace atl {
             return *this;
         }
 
-        nl2lt_type
+        nl2lt_type& 
+        operator=(const Base& x) {
+            if (&x != this) {
+                Base::operator=(x);
+            }
+            return *this;
+        }
+
+        dl2lt_type
         operator&(const nl2lt_type& x) {
-            nl2lt_type out, dfa_lhs, dfa_rhs;
+            dl2lt_type out, dfa_lhs, dfa_rhs;
             minimize(*this, dfa_lhs);
             minimize(x, dfa_rhs);
             intersect_fa(dfa_lhs, dfa_rhs, out);
             return out;
         }
 
-        nl2lt_type
-        operator&(const nfa_type& x) {
-            nl2lt_type out, dfa_lhs, dfa_rhs;
+        dl2lt_type
+        operator&(const dl2lt_type& x) {
+            dl2lt_type out, dfa_lhs, dfa_rhs;
             minimize(*this, dfa_lhs);
             minimize(x, dfa_rhs);
             intersect_fa(dfa_lhs, dfa_rhs, out);
             return out;
         }
         
-        nl2lt_type
+        dl2lt_type
         operator|(const nl2lt_type& x) {
-            nl2lt_type out, dfa_lhs, dfa_rhs;
+            dl2lt_type out, dfa_lhs, dfa_rhs;
             minimize(*this, dfa_lhs);
             minimize(x, dfa_rhs);
             union_fa(dfa_lhs, dfa_rhs, out);
             return out;
         }
 
-        nl2lt_type
-        operator|(const nfa_type& x) {
-            nl2lt_type out, dfa_lhs, dfa_rhs;
+        dl2lt_type
+        operator|(const dl2lt_type& x) {
+            dl2lt_type out, dfa_lhs, dfa_rhs;
             minimize(*this, dfa_lhs);
             minimize(x, dfa_rhs);
             union_fa(dfa_lhs, dfa_rhs, out);
             return out;
         }
 
-        nl2lt_type
+        dl2lt_type
         operator-(const nl2lt_type& x) {
-            nl2lt_type out, dfa_lhs, dfa_rhs, dfa;
+            dl2lt_type out, dfa_lhs, dfa_rhs, dfa;
             minimize(*this, dfa_lhs);
             minimize(x, dfa_rhs);
             complement_fa(dfa_rhs, dfa);
@@ -128,9 +142,9 @@ namespace atl {
             return out;
         }
 
-        nl2lt_type 
-        operator-(const nfa_type& x) {
-            nl2lt_type out, dfa_lhs, dfa_rhs, dfa;
+        dl2lt_type 
+        operator-(const dl2lt_type& x) {
+            dl2lt_type out, dfa_lhs, dfa_rhs, dfa;
             minimize(*this, dfa_lhs);
             minimize(x, dfa_rhs);
             complement_fa(dfa_rhs, dfa);
@@ -138,27 +152,27 @@ namespace atl {
             return out;
         }
         
-        nl2lt_type 
+        dl2lt_type 
         operator+(const nl2lt_type& x) {
-            nl2lt_type out, dfa_lhs, dfa_rhs;
+            dl2lt_type out, dfa_lhs, dfa_rhs;
             minimize(*this, dfa_lhs);
             minimize(x, dfa_rhs);
             concat_fa(dfa_lhs, dfa_rhs, out);
             return out;
         }
 
-        nl2lt_type
-        operator+(const nfa_type& x) {
-            nl2lt_type out, dfa_lhs, dfa_rhs;
+        dl2lt_type
+        operator+(const dl2lt_type& x) {
+            dl2lt_type out, dfa_lhs, dfa_rhs;
             minimize(*this, dfa_lhs);
             minimize(x, dfa_rhs);
             concat_fa(dfa_lhs, dfa_rhs, out);
             return out;
         }
 
-        nl2lt_type 
+        dl2lt_type 
         operator!() {
-            nl2lt_type dfa, out;
+            dl2lt_type dfa, out;
             minimize(*this, dfa);
             complement_fa(dfa, out);
             return out;
@@ -166,15 +180,15 @@ namespace atl {
 
         bool
         operator==(const nl2lt_type& x) {
-            nl2lt_type dfa_lhs, dfa_rhs;
+            dl2lt_type dfa_lhs, dfa_rhs;
             minimize(*this, dfa_lhs);
             minimize(x, dfa_rhs);
             return equal_fa(dfa_lhs, dfa_rhs);
         }
 
         bool
-        operator==(const nfa_type& x) {
-            nl2lt_type dfa_lhs, dfa_rhs;
+        operator==(const dl2lt_type& x) {
+            dl2lt_type dfa_lhs, dfa_rhs;
             minimize(*this, dfa_lhs);
             minimize(x, dfa_rhs);
             return equal_fa(dfa_lhs, dfa_rhs);

@@ -178,11 +178,11 @@ namespace atl {
 
     template <DL2LT_PARAMS>
     inline void
-    get_targetmaps_in_map(const DL2LT& dl2lt,
+    get_target_maps_in_map(const DL2LT& dl2lt,
                           typename DL2LT::State s, 
                           const DL2LT_SYMBOL& c, 
                           unordered_map<typename DL2LT::State, 
-                                        unordered_set<DL2LT_SYMBOL> >& map) {
+                                        unordered_set<DL2LT_SYMBOL> >& target_map) {
         const auto& l2ltransition_map_ = l2ltransition_map(dl2lt);
         auto transition_map_iter = l2ltransition_map_.find(s);
         if (transition_map_iter != l2ltransition_map_.end()) {
@@ -192,12 +192,12 @@ namespace atl {
                 if constexpr (std::is_same<typename DL2LT::label_property_type, 
                                            no_type>::value) {
                     for (const auto& [lower, state] : map_iter -> second) {
-                        map[state].insert(lower);
+                        target_map[state].insert(lower);
                     }
                 } else {
-                    for (auto& [lower, prop_map] : map_iter -> second) {
-                        for (auto& [prop, state] : prop_map) {
-                            map[state].insert(lower);
+                    for (const auto& [lower, prop_map] : map_iter -> second) {
+                        for (const auto& [prop, state] : prop_map) {
+                            target_map[state].insert(lower);
                         }
                     }
                 }
