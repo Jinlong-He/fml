@@ -115,6 +115,9 @@ namespace test {
     bool test_subset4();
 
     bool test_composite1();
+    bool test_composite2();
+    bool test_composite3();
+    bool test_composite4();
 
     bool test_poststar();
     bool test_prestar();
