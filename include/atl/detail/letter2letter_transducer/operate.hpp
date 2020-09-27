@@ -17,7 +17,7 @@
 namespace atl::detail {
     struct composite_impl {
         template <DL2LT_PARAMS,
-                  typename Merge>
+                  typename SymbolPropertyMerge>
         static void 
         get_composite_map(const DL2LT& a_lhs,
                           const DL2LT& a_rhs,
@@ -25,7 +25,7 @@ namespace atl::detail {
                           typename DL2LT::Label2StatePairsMap& map,
                           typename DL2LT::Label2StateMap const& map_lhs,
                           typename DL2LT::Label2StateMap const& map_rhs,
-                          Merge merge) {
+                          SymbolPropertyMerge symbol_property_merge) {
             typedef typename DL2LT::StatePair StatePair;
             typedef typename DL2LT::label_type Label;
             typedef typename DL2LT::label_property_type LabelProperty;
@@ -47,7 +47,8 @@ namespace atl::detail {
                     for (const auto& [symbol, prop_map_lhs] : map_lhs1) {
                         if (symbol == epsilon_symbol(a_lhs)) {
                             for (const auto& [p_lhs, state_lhs] : prop_map_lhs) {
-                                map[Label(upper, epsilon_symbol(a_lhs))][merge(p_lhs, LabelProperty())].insert(StatePair(state_lhs, old_state_rhs));
+                                map[Label(upper, epsilon_symbol(a_lhs))]
+                                   [symbol_property_merge(p_lhs, LabelProperty())].insert(StatePair(state_lhs, old_state_rhs));
                             }
                         }
                         auto iter_rhs = map_rhs.find(symbol);
@@ -56,7 +57,8 @@ namespace atl::detail {
                             for (const auto& [p_lhs, state_lhs] : prop_map_lhs) {
                                 for (const auto& [lower, prop_map_rhs] : map_rhs1) {
                                     for (const auto& [p_rhs, state_rhs] : prop_map_rhs) {
-                                        map[Label(upper, lower)][merge(p_lhs, p_rhs)].insert(StatePair(state_lhs, state_rhs));
+                                        map[Label(upper, lower)]
+                                           [symbol_property_merge(p_lhs, p_rhs)].insert(StatePair(state_lhs, state_rhs));
                                     }
                                 }
                             }
@@ -67,14 +69,14 @@ namespace atl::detail {
         }
 
         template <DL2LT_PARAMS,
-                  typename Merge>
+                  typename SymbolPropertyMerge>
         static void 
         get_composite_map(const DL2LT& a_lhs,
                           const DL2LT& a_rhs,
                           typename DL2LT::State state_lhs,
                           typename DL2LT::State state_rhs,
                           typename DL2LT::Label2StatePairsMap& map,
-                          Merge merge) {
+                          SymbolPropertyMerge symbol_property_merge) {
             const auto& transition_map_lhs = a_lhs.l2ltransition_map();
             const auto& transition_map_rhs = a_rhs.l2ltransition_map();
             auto iter_lhs = transition_map_lhs.find(state_lhs);
@@ -82,7 +84,8 @@ namespace atl::detail {
             if (iter_lhs != transition_map_lhs.end() && iter_rhs != transition_map_rhs.end()) {
                 const auto& map_lhs = iter_lhs -> second;
                 const auto& map_rhs = iter_rhs -> second;
-                get_composite_map(a_lhs, a_rhs, state_rhs, map, map_lhs, map_rhs, merge);
+                get_composite_map(a_lhs, a_rhs, state_rhs, map, map_lhs, map_rhs, 
+                                  symbol_property_merge);
             }
         }
 
