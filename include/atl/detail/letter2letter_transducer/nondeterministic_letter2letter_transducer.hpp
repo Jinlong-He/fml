@@ -17,6 +17,15 @@
 
 using boost::unordered_map;
 
+namespace atl {
+    template <class Symbol,
+              long epsilon_,
+              class LabelProperty,
+              class StateProperty, 
+              class AutomatonProperty>
+    class deterministic_letter2letter_transducer;
+}
+
 namespace atl::detail {
     template <class Symbol, 
               long epsilon_,
@@ -24,16 +33,21 @@ namespace atl::detail {
               class StateProperty, 
               class AutomatonProperty>
     class nondeterministic_letter2letter_transducer_gen
-        : public letter2letter_transducer_gen,
+        : public letter2letter_transducer_gen<Symbol>,
           public nondeterministic_finite_automaton_gen<L2LTLabel<Symbol>, epsilon_,
                                                        LabelProperty,
                                                        StateProperty,
                                                        AutomatonProperty> {
     public:
+        typedef letter2letter_transducer_gen<Symbol> l2lt_type;
         typedef nondeterministic_finite_automaton_gen<L2LTLabel<Symbol>, epsilon_,
                                                       LabelProperty,
                                                       StateProperty,
                                                       AutomatonProperty> Base;
+        typedef deterministic_letter2letter_transducer<Symbol, epsilon_,
+                                                       LabelProperty,
+                                                       StateProperty,
+                                                       AutomatonProperty> dl2lt_type;
 
         typedef Symbol symbol_type;
         typedef L2LTLabel<Symbol> label_type;
@@ -45,9 +59,10 @@ namespace atl::detail {
 
         typedef typename Base::State State;
         typedef typename Base::StateSet StateSet;
-        typedef typename Base::SymbolSet SymbolSet;
+        typedef typename Base::SymbolSet LabelSet;
         typedef typename Base::Transition Transition;
         typedef typename Base::Symbol2StateSetMap Symbol2StateSetMap;
+        typedef typename l2lt_type::SymbolSet SymbolSet;
 
         typedef pair<State, State> StatePair;
         typedef unordered_map<StatePair, State> StatePairMap;
@@ -62,16 +77,28 @@ namespace atl::detail {
 
     public:
         nondeterministic_letter2letter_transducer_gen()
-            : Base() {}
+            : l2lt_type(),
+              Base() {}
 
         nondeterministic_letter2letter_transducer_gen(const SymbolSet& alphabet)
-            : Base(alphabet) {}
+            : l2lt_type(alphabet),
+              Base() {
+                  LabelSet label_set;
+                  util::set_product(alphabet, label_set);
+                  Base::set_alphabet(label_set);
+              }
 
         nondeterministic_letter2letter_transducer_gen(const std::initializer_list<Symbol>& alphabet)
-            : Base(alphabet) {}
+            : l2lt_type(alphabet),
+              Base() {
+                  LabelSet label_set;
+                  util::set_product(alphabet, label_set);
+                  Base::set_alphabet(label_set);
+            }
 
         nondeterministic_letter2letter_transducer_gen(const nondeterministic_letter2letter_transducer_gen& x)
-            : Base(x),
+            : l2lt_type(x),
+              Base(x),
               l2ltransition_map_(x.l2ltransition_map_) {}
 
         ~nondeterministic_letter2letter_transducer_gen() {}
@@ -79,6 +106,7 @@ namespace atl::detail {
         nondeterministic_letter2letter_transducer_gen& 
         operator=(const nondeterministic_letter2letter_transducer_gen& x) {
             if (&x != this) {
+                l2lt_type::operator=(x);
                 Base::operator=(x);
                 l2ltransition_map_ = x.l2ltransition_map_;
             }
@@ -122,6 +150,22 @@ namespace atl::detail {
             return std::make_pair(Transition(), false);
         }
 
+        virtual void
+        set_symbol_set(const SymbolSet& symbol_set) {
+            l2lt_type::set_symbol_set(symbol_set);
+            LabelSet label_set;
+            util::set_product(symbol_set, label_set);
+            Base::set_alphabet(label_set);
+        }
+
+        virtual void
+        set_alphabet(const LabelSet& alphabet) {
+            Base::set_alphabet(alphabet);
+            for (const auto& label : alphabet) {
+                this -> add_symbol(label.upper_symbol);
+                this -> add_symbol(label.lower_symbol);
+            }
+        }
     private:
         L2LTransitionMap l2ltransition_map_;
     };
@@ -163,10 +207,10 @@ namespace atl {
     template <NL2LT_PARAMS>
     inline void
     get_target_maps_in_map(const NL2LT& dl2lt,
-                          typename NL2LT::State s, 
-                          const NL2LT_SYMBOL& c, 
-                          unordered_map<typename NL2LT::State, 
-                                        unordered_set<NL2LT_SYMBOL> >& target_map) {
+                           typename NL2LT::State s, 
+                           const NL2LT_SYMBOL& c, 
+                           unordered_map<typename NL2LT::State, 
+                                         unordered_set<NL2LT_SYMBOL> >& target_map) {
         const auto& l2ltransition_map_ = l2ltransition_map(dl2lt);
         auto transition_map_iter = l2ltransition_map_.find(s);
         if (transition_map_iter != l2ltransition_map_.end()) {

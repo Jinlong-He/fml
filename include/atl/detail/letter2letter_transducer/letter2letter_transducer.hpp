@@ -54,7 +54,45 @@ namespace atl::detail {
         }
     };
 
+    template <class Symbol>
     class letter2letter_transducer_gen {
+    public:
+        typedef unordered_set<Symbol> SymbolSet;
+    public:
+        letter2letter_transducer_gen()
+            : symbol_set_() {}
+
+        letter2letter_transducer_gen(const SymbolSet& symbol_set)
+            : symbol_set_(symbol_set) {}
+
+        letter2letter_transducer_gen(const std::initializer_list<Symbol>& symbol_set)
+            : symbol_set_(symbol_set) {}
+
+        letter2letter_transducer_gen(const letter2letter_transducer_gen& x)
+            : symbol_set_(x.symbol_set_) {}
+
+        const SymbolSet& symbol_set() const {
+            return symbol_set_;
+        }
+
+        letter2letter_transducer_gen& 
+        operator=(const letter2letter_transducer_gen& x) {
+            if (&x != this) {
+                symbol_set_ = x.symbol_set_;
+            }
+            return *this;
+        }
+
+        virtual void set_symbol_set(const SymbolSet& symbol_set) {
+            symbol_set_ = symbol_set;
+        }
+
+        void add_symbol(const Symbol& c) {
+            symbol_set_.insert(c);
+        }
+
+    protected:
+        SymbolSet symbol_set_;
     };
 };
 
@@ -65,6 +103,24 @@ namespace boost {
             return boost::hash<pair<Symbol, Symbol> >()(pair(l.upper_symbol, l.lower_symbol));
         }
     };
+};
+
+namespace atl {
+    #define L2LT_PARAMS typename L2LT_SYMBOL
+    #define L2LT detail::letter2letter_transducer_gen<L2LT_SYMBOL>
+
+    template<L2LT_PARAMS>
+    typename L2LT::SymbolSet const&
+    symbol_set(const L2LT& t) {
+        return t.symbol_set();
+    }
+
+    template<L2LT_PARAMS>
+    void
+    set_symbol_set(L2LT& t,
+                   typename L2LT::SymbolSet const& symbol_set) {
+        return t.set_symbol_set(symbol_set);
+    }
 };
 
 #endif /* atl_detail_letter2letter_transducer_hpp */

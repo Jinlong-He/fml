@@ -12,6 +12,7 @@
 
 #include <atl/detail/letter2letter_transducer/deterministic_letter2letter_transducer.hpp>
 #include <atl/detail/letter2letter_transducer/nondeterministic_letter2letter_transducer.hpp>
+#include <atl/detail/finite_automaton/copy.hpp>
 #include <atl/detail/finite_automaton/merge.hpp>
 
 namespace atl::detail {
@@ -186,9 +187,9 @@ namespace atl::detail {
                 atl::set_property(a_out, automaton_property_merge(atl::get_property(a_lhs), 
                                                   atl::get_property(a_rhs)));
             }
-            typename DL2LT::SymbolSet alphabet_;
-            util::set_intersection(alphabet(a_lhs), alphabet(a_rhs), alphabet_);
-            set_alphabet(a_out, alphabet_);
+            typename DL2LT::SymbolSet symbol_set_;
+            util::set_intersection(symbol_set(a_lhs), symbol_set(a_rhs), symbol_set_);
+            set_symbol_set(a_out, symbol_set_);
             
             State initial_state_lhs = initial_state(a_lhs),
                   initial_state_rhs = initial_state(a_rhs),
@@ -300,7 +301,7 @@ namespace atl::detail {
                     }
                     if (index == uppers.size() - 1) {
                         for (auto& new_word : words) {
-                            words_out[state].emplace_back(new_word);
+                            words_out[target].emplace_back(new_word);
                         }
                         continue;
                     }
@@ -330,7 +331,7 @@ namespace atl::detail {
                     }
                     if (index == uppers.size() - 1) {
                         for (auto& new_word : words) {
-                            words_out[state].emplace_back(new_word);
+                            words_out[target].emplace_back(new_word);
                         }
                         continue;
                     }
@@ -424,6 +425,146 @@ namespace atl {
                 words_out.emplace_back(std::string(w.begin(), w.end()));
             }
         }
+    }
+
+    template <DL2LT_PARAMS>
+    inline bool 
+    accept(const DL2LT& dl2lt,
+           const std::vector<DL2LT_SYMBOL>& word_in) {
+        unordered_map<typename DL2LT::State, 
+                      std::vector<std::vector<DL2LT_SYMBOL> > > map;
+        detail::translate_impl::apply(dl2lt, word_in, map);
+        typename DL2LT::StateSet states;
+        for (auto& [state, words] : map) {
+            states.insert(state);
+        }
+        if (has_final_state(dl2lt, states)) return true;
+        return false;
+    }
+
+    template <DL2LT_PARAMS>
+    inline bool 
+    accept(const DL2LT& dl2lt,
+           const std::string& word_in) {
+        unordered_map<typename DL2LT::State, 
+                      std::vector<std::vector<DL2LT_SYMBOL> > > map;
+        std::vector<DL2LT_SYMBOL> word(word_in.begin(), word_in.end());
+        detail::translate_impl::apply(dl2lt, word, map);
+        typename DL2LT::StateSet states;
+        for (auto& [state, words] : map) {
+            states.insert(state);
+        }
+        if (has_final_state(dl2lt, states)) return true;
+        return false;
+    }
+
+    template <NL2LT_PARAMS>
+    inline bool 
+    accept(const NL2LT& nl2lt,
+           const std::vector<NL2LT_SYMBOL>& word_in) {
+        unordered_map<typename NL2LT::State, 
+                      std::vector<std::vector<NL2LT_SYMBOL> > > map;
+        detail::translate_impl::apply(nl2lt, word_in, map);
+        typename NL2LT::StateSet states;
+        for (auto& [state, words] : map) {
+            states.insert(state);
+        }
+        if (has_final_state(nl2lt, states)) return true;
+        return false;
+    }
+
+    template <NL2LT_PARAMS>
+    inline bool 
+    accept(const NL2LT& nl2lt,
+           const std::string& word_in) {
+        unordered_map<typename NL2LT::State, 
+                      std::vector<std::vector<NL2LT_SYMBOL> > > map;
+        std::vector<NL2LT_SYMBOL> word(word_in.begin(), word_in.end());
+        detail::translate_impl::apply(nl2lt, word, map);
+        typename NL2LT::StateSet states;
+        for (auto& [state, words] : map) {
+            states.insert(state);
+        }
+        if (has_final_state(nl2lt, states)) return true;
+        return false;
+    }
+
+    template <DL2LT_PARAMS>
+    inline void 
+    left_quotient(const DL2LT& a_in,
+                  const std::vector<DL2LT_SYMBOL>& word_in,
+                  DL2LT& a_out) {
+        unordered_map<typename DL2LT::State, 
+                      std::vector<std::vector<DL2LT_SYMBOL> > > map;
+        detail::translate_impl::apply(a_in, word_in, map);
+        typename DL2LT::StateSet states;
+        typename DL2LT::nl2lt_type nl2lt;
+        typename DL2LT::State2Map state2_map;
+        copy_fa(a_in, nl2lt, state2_map);
+        auto initial_state = add_initial_state(nl2lt);
+        for (auto& [state, words] : map) {
+            add_epsilon_transition(nl2lt, initial_state, state2_map.at(state));
+        }
+        minimize(nl2lt, a_out);
+    }
+
+    template <DL2LT_PARAMS>
+    inline void 
+    left_quotient(const DL2LT& a_in,
+                  const std::string& word_in,
+                  DL2LT& a_out) {
+        unordered_map<typename DL2LT::State, 
+                      std::vector<std::vector<DL2LT_SYMBOL> > > map;
+        std::vector<DL2LT_SYMBOL> word(word_in.begin(), word_in.end());
+        detail::translate_impl::apply(a_in, word, map);
+        typename DL2LT::StateSet states;
+        typename DL2LT::nl2lt_type nl2lt;
+        typename DL2LT::State2Map state2_map;
+        copy_fa(a_in, nl2lt, state2_map);
+        auto initial_state = add_initial_state(nl2lt);
+        for (auto& [state, words] : map) {
+            add_epsilon_transition(nl2lt, initial_state, state2_map.at(state));
+        }
+        minimize(nl2lt, a_out);
+    }
+
+    template <NL2LT_PARAMS>
+    inline void 
+    left_quotient(const NL2LT& a_in,
+                  const std::vector<NL2LT_SYMBOL>& word_in,
+                  typename NL2LT::dl2lt_type& a_out) {
+        unordered_map<typename NL2LT::State, 
+                      std::vector<std::vector<NL2LT_SYMBOL> > > map;
+        detail::translate_impl::apply(a_in, word_in, map);
+        typename NL2LT::StateSet states;
+        typename NL2LT::State2Map state2_map;
+        typename NL2LT nl2lt;
+        copy_fa(a_in, nl2lt, state2_map);
+        auto initial_state = add_initial_state(nl2lt);
+        for (auto& [state, words] : map) {
+            add_epsilon_transition(nl2lt, initial_state, state2_map.at(state));
+        }
+        minimize(nl2lt, a_out);
+    }
+
+    template <NL2LT_PARAMS>
+    inline void 
+    left_quotient(const NL2LT& a_in,
+                  const std::string& word_in,
+                  typename NL2LT::dl2lt_type& a_out) {
+        unordered_map<typename NL2LT::State, 
+                      std::vector<std::vector<NL2LT_SYMBOL> > > map;
+        std::vector<NL2LT_SYMBOL> word(word_in.begin(), word_in.end());
+        detail::translate_impl::apply(a_in, word, map);
+        typename NL2LT::StateSet states;
+        typename NL2LT::State2Map state2_map;
+        typename NL2LT nl2lt;
+        copy_fa(a_in, nl2lt, state2_map);
+        auto initial_state = add_initial_state(nl2lt);
+        for (auto& [state, words] : map) {
+            add_epsilon_transition(nl2lt, initial_state, state2_map.at(state));
+        }
+        minimize(nl2lt, a_out);
     }
 }
 

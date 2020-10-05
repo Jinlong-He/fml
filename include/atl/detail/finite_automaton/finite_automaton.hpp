@@ -216,12 +216,12 @@ namespace atl::detail {
             return alphabet_;
         }
 
-        void
+        virtual void
         set_alphabet(const SymbolSet& alphabet) {
             alphabet_ = alphabet;
         }
 
-        void 
+        virtual void 
         add_alphabet(const Symbol& c) {
             alphabet_.insert(c);
         }

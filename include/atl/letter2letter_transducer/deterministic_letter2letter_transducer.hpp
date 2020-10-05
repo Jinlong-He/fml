@@ -208,6 +208,7 @@ namespace atl {
             minimize(x, dl2lt_rhs);
             composite_l2lt(dl2lt_lhs, dl2lt_rhs, out);
         }
+
     private:
     };
 }

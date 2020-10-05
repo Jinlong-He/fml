@@ -59,6 +59,15 @@ namespace util {
         set_intersection(lhs, rhs, set);
     }
 
+    template <class SetIn, class SetOut, class Pair = typename SetOut::value_type>
+    static inline void set_product(const SetIn& set_in, SetOut& set_out) {
+        for (const auto& i : set_in) {
+            for (const auto& j : set_in) {
+                set_out.insert(Pair(i,j));
+            }
+        }
+    }
+
     static inline vector<string> 
     split(const string& str, const string& delim) {  
         vector<string> res;  
