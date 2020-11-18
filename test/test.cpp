@@ -130,6 +130,10 @@ BOOST_AUTO_TEST_CASE(test_union5) {
     BOOST_CHECK_EQUAL(test::test_union5(), true);
 }
 
+BOOST_AUTO_TEST_CASE(test_union6) {
+    BOOST_CHECK_EQUAL(test::test_union6(), true);
+}
+
 BOOST_AUTO_TEST_CASE(test_concat1) {
     BOOST_CHECK_EQUAL(test::test_concat1(), true);
 }
@@ -160,6 +164,18 @@ BOOST_AUTO_TEST_CASE(test_composite2) {
 
 BOOST_AUTO_TEST_CASE(test_composite3) {
     BOOST_CHECK_EQUAL(test::test_composite3(), true);
+}
+
+BOOST_AUTO_TEST_CASE(test_composite4) {
+    BOOST_CHECK_EQUAL(test::test_composite4(), true);
+}
+
+BOOST_AUTO_TEST_CASE(test_left_quotient1) {
+    BOOST_CHECK_EQUAL(test::test_left_quotient1(), true);
+}
+
+BOOST_AUTO_TEST_CASE(test_left_quotient2) {
+    BOOST_CHECK_EQUAL(test::test_left_quotient2(), true);
 }
 
 BOOST_AUTO_TEST_CASE(test_poststar) {

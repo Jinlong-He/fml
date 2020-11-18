@@ -500,6 +500,7 @@ namespace atl {
         typename DL2LT::StateSet states;
         typename DL2LT::nl2lt_type nl2lt;
         typename DL2LT::State2Map state2_map;
+        a_out.clear();
         copy_fa(a_in, nl2lt, state2_map);
         auto initial_state = add_initial_state(nl2lt);
         for (auto& [state, words] : map) {
@@ -517,6 +518,7 @@ namespace atl {
                       std::vector<std::vector<DL2LT_SYMBOL> > > map;
         std::vector<DL2LT_SYMBOL> word(word_in.begin(), word_in.end());
         detail::translate_impl::apply(a_in, word, map);
+        a_out.clear();
         typename DL2LT::StateSet states;
         typename DL2LT::nl2lt_type nl2lt;
         typename DL2LT::State2Map state2_map;
@@ -539,6 +541,7 @@ namespace atl {
         typename NL2LT::StateSet states;
         typename NL2LT::State2Map state2_map;
         typename NL2LT nl2lt;
+        a_out.clear();
         copy_fa(a_in, nl2lt, state2_map);
         auto initial_state = add_initial_state(nl2lt);
         for (auto& [state, words] : map) {
@@ -559,6 +562,7 @@ namespace atl {
         typename NL2LT::StateSet states;
         typename NL2LT::State2Map state2_map;
         typename NL2LT nl2lt;
+        a_out.clear();
         copy_fa(a_in, nl2lt, state2_map);
         auto initial_state = add_initial_state(nl2lt);
         for (auto& [state, words] : map) {
@@ -566,6 +570,46 @@ namespace atl {
         }
         minimize(nl2lt, a_out);
     }
+}
+
+namespace atl::detail {
+    struct inverse_impl {
+        template <DL2LT_PARAMS>
+        static void 
+        do_incerse(const DL2LT& a_in,
+                   DL2LT& a_out,
+                   typename DL2LT::State2Map const& state2_map) {
+            typedef typename DL2LT::label_property_type LabelProperty;
+            typedef typename DL2LT::label_type Label;
+            typename DL2LT::OutTransitionIter t_it, t_end;
+            for (const auto& [state, source] : state2_map) {
+                for (tie(t_it, t_end) = out_transitions(a_in, state); t_it != t_end; t_it++) {
+                    auto target = atl::target(a_in, *t_it);
+                    if (state2_map.count(target) > 0) {
+                        auto new_target = state2_map.at(target);
+                        const auto& t = atl::get_property(a_in, *t_it);
+                        if constexpr (std::is_same<LabelProperty, no_type>::value) {
+                            add_transition(a_out, source, new_target, 
+                                           Label(t.lower_symbol, t.upper_symbol));
+                        } else {
+                            add_transition(a_out, source, new_target, 
+                                           Label(t.default_property.lower_symbol, 
+                                                 t.default_property.upper_symbol),
+                                           t.extended_property);
+                        }
+                    }
+                }
+            }
+        }
+
+        template <DL2LT_PARAMS>
+        static void 
+        apply(const DL2LT& a_in,
+              DL2LT& a_out) {
+            typename DL2LT::nl2lt_type nl2lt;
+            copy_states(a_in, nl2lt);
+        }
+    };
 }
 
 #endif /* atl_detail_letter2letter_transducer_operate_hpp */

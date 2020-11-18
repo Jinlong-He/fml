@@ -103,6 +103,7 @@ namespace test {
     bool test_union3();
     bool test_union4();
     bool test_union5();
+    bool test_union6();
 
     bool test_concat1();
     bool test_concat2();
@@ -118,6 +119,11 @@ namespace test {
     bool test_composite2();
     bool test_composite3();
     bool test_composite4();
+
+    bool test_left_quotient1();
+    bool test_left_quotient2();
+    bool test_left_quotient3();
+    bool test_left_quotient4();
 
     bool test_poststar();
     bool test_prestar();

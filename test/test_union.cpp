@@ -1,5 +1,7 @@
 #include <atl/finite_automaton/nondeterministic_finite_automaton.hpp>
 #include <atl/finite_automaton/deterministic_finite_automaton.hpp>
+#include <atl/letter2letter_transducer/deterministic_letter2letter_transducer.hpp>
+#include <atl/letter2letter_transducer/nondeterministic_letter2letter_transducer.hpp>
 #include "test.hpp"
 using namespace atl;
 
@@ -162,5 +164,37 @@ namespace test {
         add_transition(nfa, 2, 2, char('b'));
         add_transition(nfa, 0, 3, char('a'));
         return (nfa == (empty | nfa)) && (nfa == (nfa | empty));
+    }
+
+    //test union for nondeterministic_finite_automaton<char> & 
+    //                   nondeterministic_finite_automaton<char>
+    bool test_union6() {
+        deterministic_letter2letter_transducer<> lhs({'a', 'b'}), rhs({'a', 'b'});
+        add_initial_state(lhs);
+        add_state(lhs);
+        add_final_state(lhs);
+        add_final_state(lhs);
+        add_transition(lhs, 0, 0, char('a'), char('a'));
+        add_transition(lhs, 0, 1, char('a'), char('a'));
+        add_transition(lhs, 1, 2, char('b'), char('b'));
+        add_transition(lhs, 0, 3, char('b'), char('b'));
+
+        add_initial_state(rhs);
+        add_state(rhs);
+        add_final_state(rhs);
+        add_transition(rhs, 0, 1, char('b'), char('b'));
+        add_transition(rhs, 1, 2, char('a'), char('a'));
+        deterministic_letter2letter_transducer<> result = (lhs | rhs), expect({'a', 'b'});
+
+        add_initial_state(expect);
+        add_state(expect);
+        add_final_state(expect);
+        add_final_state(expect);
+        add_transition(expect, 0, 1, char('a'), char('a'));
+        add_transition(expect, 0, 2, char('b'), char('b'));
+        add_transition(expect, 1, 1, char('a'), char('a'));
+        add_transition(expect, 1, 3, char('b'), char('b'));
+        add_transition(expect, 2, 3, char('a'), char('a'));
+        return (result == expect);
     }
 }
