@@ -459,7 +459,7 @@ namespace atl::detail{
             copy_fa_impl::copy_transitions(a_lhs, nfa, state2_map_lhs);
             state_lhs = initial_state(nfa);
             auto final_state_set_ = final_state_set(nfa);
-            clear_finale_state_set(nfa);
+            clear_final_state_set(nfa);
             copy_fa_impl::copy_states(a_rhs, nfa, state2_map_rhs, StateSet());
             copy_fa_impl::copy_transitions(a_rhs, nfa, state2_map_rhs);
             state_rhs = initial_state(nfa);

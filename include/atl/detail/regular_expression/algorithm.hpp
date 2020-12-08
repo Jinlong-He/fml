@@ -93,14 +93,14 @@ namespace atl::detail {
                 for (auto state : final_state_set(*a_lhs)) {
                     add_transition(*a_lhs, state, f_state, c_rhs.regular_symbol.symbol);
                 }
-                clear_finale_state_set(*a_lhs);
+                clear_final_state_set(*a_lhs);
                 set_final_state(*a_lhs, f_state);
             } else {
                 typedef typename nondeterministic_finite_automaton<Symbol>::StateSet StateSet;
                 auto i_state = initial_state(*a_lhs);
                 auto final_state_set_ = final_state_set(*a_lhs);
                 typename nondeterministic_finite_automaton<Symbol>::State2Map state2_map;
-                clear_finale_state_set(*a_lhs);
+                clear_final_state_set(*a_lhs);
                 copy_fa_impl::copy_states(*a_rhs, *a_lhs, state2_map, StateSet());
                 copy_fa_impl::copy_transitions(*a_rhs, *a_lhs, state2_map);
                 for (auto state : final_state_set_) {
@@ -152,7 +152,7 @@ namespace atl::detail {
                 for (auto state : final_state_set(*a)) {
                     add_transition(*a, state, f_state, epsilon(*a));
                 }
-                clear_finale_state_set(*a);
+                clear_final_state_set(*a);
                 set_final_state(*a, f_state);
                 set_initial_state(*a, i_state);
             }

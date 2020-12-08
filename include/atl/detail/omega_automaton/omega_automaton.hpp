@@ -1,5 +1,5 @@
 //
-//  finite_automaton.hpp
+//  omega_automaton.hpp
 //  ATL 
 //
 //  Licensed under the MIT License <http://opensource.org/licenses/MIT>.
@@ -7,8 +7,8 @@
 //  Copyright (c) 2020 Jinlong He.
 //
 
-#ifndef atl_detail_finite_automaton_hpp 
-#define atl_detail_finite_automaton_hpp
+#ifndef atl_detail_omega_automaton_hpp 
+#define atl_detail_omega_automaton_hpp
 
 #include <boost/unordered_set.hpp>
 #include <boost/unordered_map.hpp>
@@ -20,25 +20,13 @@ using boost::unordered_map;
 using boost::unordered_set;
 
 namespace atl::detail {
-    template <class Symbol, 
-              long epsilon_,
-              class SymbolProperty,
-              class StateProperty, 
-              class AutomatonProperty> class nondeterministic_finite_automaton_gen;
-
-    template <class Symbol, 
-              long epsilon_,
-              class SymbolProperty,
-              class StateProperty, 
-              class AutomatonProperty> class deterministic_finite_automaton_gen;
-
 
     template <class Symbol, 
               long epsilon_,
               class SymbolProperty,
               class StateProperty, 
               class AutomatonProperty>
-    class finite_automaton_gen 
+    class omega_automaton_gen 
         : public automaton_gen<
                  typename std::conditional<std::is_same<SymbolProperty, no_type>::value,
                                Symbol, Property<Symbol, SymbolProperty> >::type,
@@ -64,18 +52,6 @@ namespace atl::detail {
                               state_property_type, 
                               automaton_property_type> Base;
 
-        typedef deterministic_finite_automaton_gen<Symbol, 
-                                                   epsilon_,
-                                                   SymbolProperty,
-                                                   StateProperty,
-                                                   AutomatonProperty> dfa_type;
-
-        typedef nondeterministic_finite_automaton_gen<Symbol, 
-                                                      epsilon_,
-                                                      SymbolProperty,
-                                                      StateProperty,
-                                                      AutomatonProperty> nfa_type;
-
         typedef typename Base::State State;
         typedef typename Base::Transition Transition;
         typedef typename Base::InTransitionIter InTransitionIter;
@@ -87,31 +63,29 @@ namespace atl::detail {
         typedef unordered_map<State, State> State2Map;
 
     public:
-        finite_automaton_gen(const SymbolSet alphabet = SymbolSet())
+        omega_automaton_gen(const SymbolSet alphabet = SymbolSet())
             : Base(),
               initial_state_(-1),
               alphabet_(alphabet) {}
 
-        finite_automaton_gen(const std::initializer_list<Symbol> alphabet)
+        omega_automaton_gen(const std::initializer_list<Symbol> alphabet)
             : Base(),
               initial_state_(-1),
               alphabet_(alphabet) {}
 
-        finite_automaton_gen(const finite_automaton_gen& x)
+        omega_automaton_gen(const omega_automaton_gen& x)
             : Base(x),
               initial_state_(x.initial_state_),
-              final_state_set_(x.final_state_set_),
               state_set_(x.state_set_),
               alphabet_(x.alphabet_) {}
 
-        ~finite_automaton_gen() {}
+        ~omega_automaton_gen() {}
 
-        finite_automaton_gen& 
-        operator=(const finite_automaton_gen& x) {
+        omega_automaton_gen& 
+        operator=(const omega_automaton_gen& x) {
             if (&x != this) {
                 Base::operator=(x);
                 initial_state_ = x.initial_state_;
-                final_state_set_ = x.final_state_set_;
                 state_set_ = x.state_set_;
                 alphabet_ = x.alphabet_;
             }
@@ -121,7 +95,6 @@ namespace atl::detail {
         virtual void clear() {
             Base::clear();
             initial_state_ = -1;
-            final_state_set_.clear();
             state_set_.clear();
             alphabet_.clear();
         }
@@ -196,21 +169,6 @@ namespace atl::detail {
             return state_set_;
         }
 
-        const StateSet&
-        final_state_set() const {
-            return final_state_set_;
-        }
-
-        void
-        set_final_state_set(const StateSet& final_state_set) {
-            final_state_set_ = final_state_set;
-        }
-
-        void
-        clear_final_state_set() {
-            final_state_set_.clear();
-        }
-
         const SymbolSet&
         alphabet() const {
             return alphabet_;
@@ -226,16 +184,6 @@ namespace atl::detail {
             alphabet_.insert(c);
         }
 
-        void 
-        set_final_state(State state) {
-            final_state_set_.insert(state);
-        }
-
-        void 
-        remove_final_state(State state) {
-            final_state_set_.erase(state);
-        }
-        
         using Base::add_transition;
         virtual pair<Transition, bool>
         add_transition(State s, State t,
@@ -273,218 +221,151 @@ namespace atl::detail {
 
     private:
         State initial_state_;
-        StateSet final_state_set_;
         StateSet state_set_;
         SymbolSet alphabet_;
     };
 };
 
 namespace atl {
-    #define FA_PARAMS typename FA_SYMBOL, long FA_EPSILON, typename FA_SYMBOL_PROP, typename FA_STATE_PROP, typename FA_AUT_PROP
-    #define FA detail::finite_automaton_gen<FA_SYMBOL, FA_EPSILON, FA_SYMBOL_PROP, FA_STATE_PROP,FA_AUT_PROP>
+    #define OA_PARAMS typename OA_SYMBOL, long OA_EPSILON, typename OA_SYMBOL_PROP, typename OA_STATE_PROP, typename OA_AUT_PROP
+    #define OA detail::omega_automaton_gen<OA_SYMBOL, OA_EPSILON, OA_SYMBOL_PROP, OA_STATE_PROP,OA_AUT_PROP>
 
-    template <FA_PARAMS>
-    inline typename FA::SymbolSet const&
-    alphabet(const FA& fa) {
-        return fa.alphabet();
+    template <OA_PARAMS>
+    inline typename OA::SymbolSet const&
+    alphabet(const OA& oa) {
+        return oa.alphabet();
     }
 
-    template <FA_PARAMS>
+    template <OA_PARAMS>
     inline void
-    set_alphabet(FA& fa,
-                 typename FA::SymbolSet const& set) {
-        fa.set_alphabet(set);
+    set_alphabet(OA& oa,
+                 typename OA::SymbolSet const& set) {
+        oa.set_alphabet(set);
     }
 
-    template <FA_PARAMS>
-    inline typename FA::State
-    initial_state(const FA& fa) {
-        return fa.initial_state();
+    template <OA_PARAMS>
+    inline typename OA::State
+    initial_state(const OA& oa) {
+        return oa.initial_state();
     }
 
-    template <FA_PARAMS>
+    template <OA_PARAMS>
     inline void
-    set_initial_state(FA& fa, 
-                      typename FA::State state) {
-        fa.set_initial_state(state);
+    set_initial_state(OA& oa, 
+                      typename OA::State state) {
+        oa.set_initial_state(state);
     }
 
-    template <FA_PARAMS>
-    inline typename FA::StateSet const&
-    state_set(const FA& fa) {
-        return fa.state_set();
+    template <OA_PARAMS>
+    inline typename OA::StateSet const&
+    state_set(const OA& oa) {
+        return oa.state_set();
     }
 
-    template <FA_PARAMS>
-    inline typename FA::StateSet const&
-    final_state_set(const FA& fa) {
-        return fa.final_state_set();
+    template <OA_PARAMS>
+    inline OA_SYMBOL
+    epsilon(const OA& oa) {
+        return oa.epsilon();
     }
 
-    template <FA_PARAMS>
-    inline void  
-    set_final_state_set(FA& fa, 
-                        typename FA::StateSet const& set) {
-        fa.set_final_state_set(set);
+    template <OA_PARAMS>
+    inline typename OA::transition_property_type
+    epsilon_transition(const OA& oa) {
+        return oa.epsilon_transition();
     }
 
-    template <FA_PARAMS>
-    inline void  
-    set_final_state(FA& fa, 
-                    typename FA::State state) {
-        fa.set_final_state(state);
+    template <OA_PARAMS>
+    inline void
+    add_alphabet(OA& oa,
+                 const OA_SYMBOL& c) {
+        oa.add_alphabet(c);
+    }
+
+    template <OA_PARAMS>
+    inline typename OA::State
+    add_initial_state(OA& oa,
+                      typename OA::state_property_type const& p) {
+        typename OA::State s = add_state(oa, p);
+        oa.set_initial_state(s);
+        return s;
+    }
+
+    template <OA_PARAMS>
+    inline typename OA::State
+    add_initial_state(OA& oa) {
+        typename OA::State s = add_state(oa);
+        oa.set_initial_state(s);
+        return s;
+    }
+
+    template <OA_PARAMS>
+    inline pair<typename OA::Transition, bool>
+    add_transition(OA& oa,
+                   typename OA::State s,
+                   typename OA::State t,
+                   const OA_SYMBOL& c,
+                   typename OA::symbol_property_type const& p) {
+        return oa.add_transition(s, t, c, p);
     }
     
-    template <FA_PARAMS>
-    inline void  
-    remove_final_state(FA& fa, 
-                       typename FA::State state) {
-        fa.remove_final_state(state);
-    }
-
-    template <FA_PARAMS>
-    inline void  
-    clear_final_state_set(FA& fa) {
-        fa.clear_final_state_set();
-    }
-
-    template <FA_PARAMS>
-    inline FA_SYMBOL
-    epsilon(const FA& fa) {
-        return fa.epsilon();
-    }
-
-    template <FA_PARAMS>
-    inline typename FA::transition_property_type
-    epsilon_transition(const FA& fa) {
-        return fa.epsilon_transition();
-    }
-
-    template <FA_PARAMS>
-    inline void
-    add_alphabet(FA& fa,
-                 const FA_SYMBOL& c) {
-        fa.add_alphabet(c);
-    }
-
-    template <FA_PARAMS>
-    inline typename FA::State
-    add_initial_state(FA& fa,
-                      typename FA::state_property_type const& p) {
-        typename FA::State s = add_state(fa, p);
-        fa.set_initial_state(s);
-        return s;
-    }
-
-    template <FA_PARAMS>
-    inline typename FA::State
-    add_initial_state(FA& fa) {
-        typename FA::State s = add_state(fa);
-        fa.set_initial_state(s);
-        return s;
-    }
-
-    template <FA_PARAMS>
-    inline typename FA::State
-    add_final_state(FA& fa,
-                    typename FA::state_property_type const& p) {
-        typename FA::State s = add_state(fa, p);
-        fa.set_final_state(s);
-        return s;
-    }
-
-    template <FA_PARAMS>
-    inline typename FA::State
-    add_final_state(FA& fa) {
-        typename FA::State s = add_state(fa);
-        fa.set_final_state(s);
-        return s;
-    }
-
-    template <FA_PARAMS>
-    inline pair<typename FA::Transition, bool>
-    add_transition(FA& fa,
-                   typename FA::State s,
-                   typename FA::State t,
-                   const FA_SYMBOL& c,
-                   typename FA::symbol_property_type const& p) {
-        return fa.add_transition(s, t, c, p);
-    }
-    
-    template <FA_PARAMS>
+    template <OA_PARAMS>
     inline bool
-    is_initial_state(const FA& fa,
-                     typename FA::State s) {
-        return (s == initial_state(fa));
+    is_initial_state(const OA& oa,
+                     typename OA::State s) {
+        return (s == initial_state(oa));
     }
 
-    template <FA_PARAMS>
-    inline bool
-    is_final_state(const FA& fa,
-                   typename FA::State s) {
-        return fa.final_state_set().count(s);
-    }
-
-    template <FA_PARAMS>
-    inline bool
-    has_final_state(const FA& fa,
-                   typename FA::StateSet const& set) {
-        typename FA::StateSet res;
-        util::set_intersection(fa.final_state_set(), set, res);
-        return res.size();
-    }
-
-    template <FA_PARAMS>
+    template <OA_PARAMS>
     inline void 
-    set_forward_reachable_flag(FA& a, bool b = true) {
+    set_forward_reachable_flag(OA& a, bool b = true) {
         a.set_flag(1, b);
         a.set_flag(0, 0);
     }
 
-    template <FA_PARAMS>
+    template <OA_PARAMS>
     inline bool
-    is_forward_reachable(const FA& a) {
+    is_forward_reachable(const OA& a) {
         return (a.flag(1) & !a.flag(0));
     }
 
-    template <FA_PARAMS>
+    template <OA_PARAMS>
     inline void 
-    set_minimal_flag(FA& a, bool b = true) {
+    set_minimal_flag(OA& a, bool b = true) {
         a.set_flag(2, b);
         a.set_flag(1, 1);
         a.set_flag(0, 0);
     }
 
-    template <FA_PARAMS>
+    template <OA_PARAMS>
     inline bool
-    is_minimal(const FA& a) {
+    is_minimal(const OA& a) {
         return (a.flag(2) & !a.flag(0));
     }
 
-    template <FA_PARAMS>
+    template <OA_PARAMS>
     inline void 
-    set_undeterministic_flag(FA& a, bool b = true) {
+    set_undeterministic_flag(OA& a, bool b = true) {
         a.set_flag(3, b);
     }
 
-    template <FA_PARAMS>
+    template <OA_PARAMS>
     inline bool
-    is_undeterministic(const FA& a) {
+    is_undeterministic(const OA& a) {
         return (a.flag(3) | a.flag(4));
     }
 
-    template <FA_PARAMS>
+    template <OA_PARAMS>
     inline void 
-    set_epsilon_flag(FA& a, bool b = true) {
+    set_epsilon_flag(OA& a, bool b = true) {
         a.set_flag(4, b);
     }
 
-    template <FA_PARAMS>
+    template <OA_PARAMS>
     inline bool
-    has_epsilon_transition(const FA& a) {
+    has_epsilon_transition(const OA& a) {
         return a.flag(4);
     }
 
 };
 
-#endif /* atl_detail_finite_automaton_hpp */
+#endif /* atl_detail_omega_automaton_hpp */
