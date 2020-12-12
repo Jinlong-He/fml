@@ -11,6 +11,7 @@
 #define ll_item_hpp
 
 #include <string>
+#include <memory>
 using std::string;
 
 namespace ll {
