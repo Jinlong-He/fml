@@ -197,7 +197,7 @@ namespace atl {
                 dfa_type dfa_lhs, dfa_rhs;
                 minimize(*this, dfa_lhs);
                 minimize(x, dfa_rhs);
-                return is_empty(dfa_lhs - dfa_rhs);
+                return is_empty(dfa_rhs - dfa_lhs);
             }
 
             bool
@@ -205,7 +205,7 @@ namespace atl {
                 dfa_type dfa_lhs, dfa_rhs;
                 minimize(*this, dfa_lhs);
                 minimize(x, dfa_rhs);
-                return is_empty(dfa_lhs - dfa_rhs);
+                return is_empty(dfa_rhs - dfa_lhs);
             }
         private:
         };

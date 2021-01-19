@@ -192,6 +192,22 @@ namespace atl {
             return equal_fa(dfa_lhs, dfa_rhs);
         }
 
+        bool
+        operator<=(const dl2lt_type& x) {
+            dl2lt_type dl2lt_lhs, dl2lt_rhs;
+            minimize(*this, dl2lt_lhs);
+            minimize(x, dl2lt_rhs);
+            return is_empty(dl2lt_lhs - dl2lt_rhs);
+        }
+
+        bool
+        operator<=(const nl2lt_type& x) {
+            dl2lt_type dl2lt_lhs, dl2lt_rhs;
+            minimize(*this, dl2lt_lhs);
+            minimize(x, dl2lt_rhs);
+            return is_empty(dl2lt_lhs - dl2lt_rhs);
+        }
+
         dl2lt_type
         operator*(const dl2lt_type& x) {
             dl2lt_type out, dl2lt_lhs, dl2lt_rhs, dl2lt;
