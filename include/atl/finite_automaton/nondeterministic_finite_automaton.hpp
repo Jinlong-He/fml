@@ -14,6 +14,7 @@
 #include <atl/detail/finite_automaton/algorithm.hpp>
 #include <atl/detail/finite_automaton/operate.hpp>
 #include <atl/detail/finite_automaton/cast.hpp>
+#include <atl/finite_automaton/deterministic_finite_automaton.hpp>
 
 namespace atl {
     template <class Symbol = char, 
@@ -44,6 +45,10 @@ namespace atl {
                                                                SymbolProperty,
                                                                StateProperty,
                                                                AutomatonProperty> dfa_type;
+            typedef deterministic_finite_automaton<Symbol, epsilon_,
+                                                   SymbolProperty,
+                                                   StateProperty,
+                                                   AutomatonProperty> dfa;
 
             typedef typename Base::state_property_type state_property_type;
             typedef typename Base::automaton_property_type automaton_property_type;
@@ -90,7 +95,7 @@ namespace atl {
                 return *this;
             }
 
-            dfa_type
+            dfa 
             operator&(const dfa_type& x) {
                 dfa_type out, dfa_lhs, dfa_rhs;
                 minimize(*this, dfa_lhs);
@@ -99,7 +104,7 @@ namespace atl {
                 return out;
             }
 
-            dfa_type
+            dfa 
             operator&(const nfa_type& x) {
                 dfa_type out, dfa_lhs, dfa_rhs;
                 minimize(*this, dfa_lhs);
@@ -108,7 +113,7 @@ namespace atl {
                 return out;
             }
 
-            dfa_type
+            dfa
             operator|(const dfa_type& x) {
                 dfa_type out, dfa_lhs, dfa_rhs;
                 minimize(*this, dfa_lhs);
@@ -117,7 +122,7 @@ namespace atl {
                 return out;
             }
 
-            dfa_type
+            dfa
             operator|(const nfa_type& x) {
                 dfa_type out, dfa_lhs, dfa_rhs;
                 minimize(*this, dfa_lhs);
@@ -126,7 +131,7 @@ namespace atl {
                 return out;
             }
 
-            dfa_type
+            dfa
             operator-(const dfa_type& x) {
                 dfa_type out, dfa_lhs, dfa_rhs, dfa;
                 minimize(*this, dfa_lhs);
@@ -136,7 +141,7 @@ namespace atl {
                 return out;
             }
 
-            dfa_type
+            dfa
             operator-(const nfa_type& x) {
                 dfa_type out, dfa_lhs, dfa_rhs, dfa;
                 minimize(*this, dfa_lhs);
@@ -146,7 +151,7 @@ namespace atl {
                 return out;
             }
 
-            dfa_type
+            dfa
             operator+(const dfa_type& x) {
                 dfa_type out, dfa_lhs, dfa_rhs;
                 minimize(*this, dfa_lhs);
@@ -155,7 +160,7 @@ namespace atl {
                 return out;
             }
 
-            dfa_type
+            dfa
             operator+(const nfa_type& x) {
                 dfa_type out, dfa_lhs, dfa_rhs;
                 minimize(*this, dfa_lhs);
@@ -164,7 +169,7 @@ namespace atl {
                 return out;
             }
 
-            dfa_type
+            dfa
             operator!() {
                 dfa_type dfa, out;
                 minimize(*this, dfa);

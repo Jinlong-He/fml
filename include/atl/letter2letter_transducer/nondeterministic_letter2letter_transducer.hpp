@@ -14,6 +14,7 @@
 #include <atl/detail/letter2letter_transducer/deterministic_letter2letter_transducer.hpp>
 #include <atl/detail/letter2letter_transducer/operate.hpp>
 #include <atl/detail/finite_automaton/operate.hpp>
+#include <atl/letter2letter_transducer/deterministic_letter2letter_transducer.hpp>
 
 namespace atl {
     template <class Symbol = char, 
@@ -38,14 +39,17 @@ namespace atl {
                                              StateProperty,
                                              AutomatonProperty> fa_type;
 
-        typedef detail::deterministic_letter2letter_transducer_gen<Symbol, epsilon_,
-                                                                   LabelProperty,
+        typedef detail::deterministic_letter2letter_transducer_gen<Symbol, epsilon_, LabelProperty,
                                                                    StateProperty,
                                                                    AutomatonProperty> dl2lt_type;
         typedef nondeterministic_letter2letter_transducer<Symbol, epsilon_,
                                                           LabelProperty,
                                                           StateProperty,
                                                           AutomatonProperty> nl2lt_type;
+        typedef deterministic_letter2letter_transducer<Symbol, epsilon_, 
+                                                       LabelProperty,
+                                                       StateProperty,
+                                                       AutomatonProperty> dl2lt;
 
         typedef typename Base::state_property_type state_property_type;
         typedef typename Base::automaton_property_type automaton_property_type;
@@ -93,7 +97,7 @@ namespace atl {
             return *this;
         }
 
-        dl2lt_type
+        dl2lt
         operator&(const nl2lt_type& x) {
             dl2lt_type out, dfa_lhs, dfa_rhs;
             minimize(*this, dfa_lhs);
@@ -102,7 +106,7 @@ namespace atl {
             return out;
         }
 
-        dl2lt_type
+        dl2lt
         operator&(const dl2lt_type& x) {
             dl2lt_type out, dfa_lhs, dfa_rhs;
             minimize(*this, dfa_lhs);
@@ -111,7 +115,7 @@ namespace atl {
             return out;
         }
         
-        dl2lt_type
+        dl2lt
         operator|(const nl2lt_type& x) {
             dl2lt_type out, dfa_lhs, dfa_rhs;
             minimize(*this, dfa_lhs);
@@ -120,7 +124,7 @@ namespace atl {
             return out;
         }
 
-        dl2lt_type
+        dl2lt
         operator|(const dl2lt_type& x) {
             dl2lt_type out, dfa_lhs, dfa_rhs;
             minimize(*this, dfa_lhs);
@@ -129,7 +133,7 @@ namespace atl {
             return out;
         }
 
-        dl2lt_type
+        dl2lt
         operator-(const nl2lt_type& x) {
             dl2lt_type out, dfa_lhs, dfa_rhs, dfa;
             minimize(*this, dfa_lhs);
@@ -139,7 +143,7 @@ namespace atl {
             return out;
         }
 
-        dl2lt_type 
+        dl2lt 
         operator-(const dl2lt_type& x) {
             dl2lt_type out, dfa_lhs, dfa_rhs, dfa;
             minimize(*this, dfa_lhs);
@@ -149,7 +153,7 @@ namespace atl {
             return out;
         }
         
-        dl2lt_type 
+        dl2lt 
         operator+(const nl2lt_type& x) {
             dl2lt_type out, dfa_lhs, dfa_rhs;
             minimize(*this, dfa_lhs);
@@ -158,7 +162,7 @@ namespace atl {
             return out;
         }
 
-        dl2lt_type
+        dl2lt
         operator+(const dl2lt_type& x) {
             dl2lt_type out, dfa_lhs, dfa_rhs;
             minimize(*this, dfa_lhs);
@@ -167,7 +171,7 @@ namespace atl {
             return out;
         }
 
-        dl2lt_type 
+        dl2lt 
         operator!() {
             dl2lt_type dfa, out;
             minimize(*this, dfa);
@@ -207,7 +211,7 @@ namespace atl {
             return is_empty(dl2lt_lhs - dl2lt_rhs);
         }
 
-        dl2lt_type
+        dl2lt
         operator*(const dl2lt_type& x) {
             dl2lt_type out, dl2lt_lhs, dl2lt_rhs, dl2lt;
             minimize(*this, dl2lt_lhs);
@@ -216,7 +220,7 @@ namespace atl {
             return out;
         }
         
-        dl2lt_type
+        dl2lt
         operator*(const nl2lt_type& x) {
             dl2lt_type out, dl2lt_lhs, dl2lt_rhs, dl2lt;
             minimize(*this, dl2lt_lhs);
