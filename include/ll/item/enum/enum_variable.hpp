@@ -45,19 +45,20 @@ namespace ll {
                   this -> set_type(res);
               }
 
-        //template <typename InputIterator>
-        //enum_variable(const string& id, InputIterator first, InputIterator last)
-        //    : variable(),
-        //      enum_item(id) {
-        //          string res = "{";
-        //          while (first != last) {
-        //              range_values_.push_back(EnumValuePtr(new enum_value(*first)));
-        //              res += (*first).to_string() + ",";
-        //              first++;
-        //          }
-        //          res[res.length() - 1] = '}';
-        //          this -> set_type(res);
-        //      }
+        template <typename InputIterator>
+        enum_variable(const string& id, InputIterator first, InputIterator last)
+            : item(id),
+              variable(),
+              enum_item() {
+                  string res = "{";
+                  while (first != last) {
+                      range_values_.push_back(EnumValuePtr(new enum_value(*first)));
+                      res += (*first).identifier() + ",";
+                      first++;
+                  }
+                  res[res.length() - 1] = '}';
+                  this -> set_type(res);
+              }
 
         enum_variable(const enum_variable& v)
             : item(v),
