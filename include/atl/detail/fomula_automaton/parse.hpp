@@ -21,15 +21,18 @@ namespace atl::detail {
         template <FOA_PARAMS>
         static void 
         apply(const FOA& foa,
-              const string& trace_file) {
+              const string& trace_file,
+              unordered_map<string, vector<string> >& trace_table) {
             std::ifstream in(trace_file);
             string line = "";
             vector<string> vars;
             while (getline(in, line)) {
                 vars.clear();
                 boost::split(vars, line, boost::is_any_of("	"));
-                for (auto& var : vars) {
-                    std::cout << var << std::endl;
+                if (vars[0] == "Step") continue;
+                auto& trace = trace_table[vars[0]];
+                for (ID i = 1; i < vars.size(); i++) {
+                    if (vars[i] != "-") trace.emplace_back(vars[i]);
                 }
             }
             in.close();
@@ -41,8 +44,9 @@ namespace atl {
     template <FOA_PARAMS>
     inline void 
     parse_trace_nuxmv(const FOA& foa,
-                      const string& trace_file) {
-        return detail::parse_trace_nuxmv_impl::apply(foa, trace_file);
+                      const string& trace_file,
+                      unordered_map<string, vector<string> >& trace_table) {
+        return detail::parse_trace_nuxmv_impl::apply(foa, trace_file, trace_table);
     }
 }
 

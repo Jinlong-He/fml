@@ -27,7 +27,7 @@ namespace atl::detail {
             translate_nuxmv(foa, out);
             out << "INVARSPEC ! (" + p.to_string() + ")" << endl;
             out.close();
-            string commond = "nuXmv source " + source_file + " out.smv";
+            string commond = "nuXmv -source " + source_file + " out.smv";
             system(commond.c_str());
         }
     };
