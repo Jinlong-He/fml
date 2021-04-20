@@ -12,8 +12,9 @@
 
 #include <vector>
 #include <stack>
-#include <boost/unordered_map.hpp>
-using boost::unordered_map;
+#include <unordered_map>
+#include <string>
+using std::unordered_map;
 
 namespace atl {
     namespace detail {

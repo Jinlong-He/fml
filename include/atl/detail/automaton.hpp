@@ -11,8 +11,8 @@
 #define atl_detail_automaton_hpp
 
 #include <boost/scoped_ptr.hpp>
-#include <boost/unordered_set.hpp>
 #include <boost/graph/adjacency_list.hpp>
+#include <boost/functional/hash.hpp>
 
 using boost::adjacency_list;
 using boost::vecS;
@@ -24,6 +24,37 @@ using boost::graph_bundle_t;
 using boost::tie;
 using std::pair;
 using std::string;
+
+namespace std {
+    template <class K, class C, class A>
+    struct hash<unordered_set<K, C, A> > {
+        size_t operator() (const unordered_set<K, C, A>& v) const {
+            size_t res = 0;
+            for (auto& i : v) {
+                res ^= boost::hash_value(i);
+            }
+            return res;
+        }
+    };
+
+    template <class K, class C, class A>
+    struct hash<set<K, C, A> > {
+        size_t operator() (const set<K, C, A>& v) const {
+            size_t res = 0;
+            for (auto& i : v) {
+                res ^= boost::hash_value(i);
+            }
+            return res;
+        }
+    };
+
+    template <class T1, class T2>
+    struct hash<pair<T1, T2> > {
+        size_t operator() (const pair<T1, T2>& p) const {
+            return boost::hash_value(p);
+        }
+    };
+}
 
 namespace atl {
     typedef std::size_t Flag;

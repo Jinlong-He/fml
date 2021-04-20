@@ -11,11 +11,11 @@
 #define atl_detail_nondeterministic_letter2letter_transducer_hpp
 
 #include <map>
-#include <boost/unordered_map.hpp>
+#include <unordered_map>
 #include <atl/detail/finite_automaton/nondeterministic_finite_automaton.hpp>
 #include <atl/detail/letter2letter_transducer/letter2letter_transducer.hpp>
 
-using boost::unordered_map;
+using std::unordered_map;
 
 namespace atl {
     template <class Symbol,

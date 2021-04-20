@@ -10,17 +10,10 @@
 #ifndef atl_detail_nondeterministic_finite_automaton_hpp 
 #define atl_detail_nondeterministic_finite_automaton_hpp
 
-#include <boost/unordered_map.hpp>
+#include <unordered_map>
 #include <atl/detail/finite_automaton/finite_automaton.hpp>
 
-using boost::unordered_map;
-
-namespace boost {
-    template <class K, class C, class A>
-    std::size_t hash_value(const unordered_set<K, C, A>& v) {
-        return hash_range(v.begin(), v.end());
-    }
-}
+using std::unordered_map;
 
 namespace atl::detail {
     template <class Symbol, 

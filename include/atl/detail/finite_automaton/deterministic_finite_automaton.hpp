@@ -11,10 +11,10 @@
 #define atl_detail_deterministic_finite_automaton_hpp
 
 #include <map>
-#include <boost/unordered_map.hpp>
+#include <unordered_map>
 #include <atl/detail/finite_automaton/finite_automaton.hpp>
 
-using boost::unordered_map;
+using std::unordered_map;
 
 namespace atl::detail {
     template <class Symbol, 

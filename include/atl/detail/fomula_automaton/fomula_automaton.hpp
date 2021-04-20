@@ -10,15 +10,14 @@
 #ifndef atl_detail_fomula_automaton_hpp 
 #define atl_detail_fomula_automaton_hpp
 
-#include <boost/unordered_set.hpp>
-#include <boost/unordered_map.hpp>
+#include <unordered_set>
+#include <unordered_map>
 #include <util/util.hpp>
 #include <atl/detail/automaton.hpp>
 #include <atl/detail/no_type.hpp>
 #include <ll/atomic_proposition.hpp>
 
-using boost::unordered_map;
-using boost::unordered_set;
+using std::unordered_map, std::unordered_set;
 
 namespace atl::detail {
     template <class Fomula>

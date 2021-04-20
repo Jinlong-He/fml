@@ -10,14 +10,13 @@
 #ifndef atl_detail_letter2letter_transducer_hpp 
 #define atl_detail_letter2letter_transducer_hpp
 
-#include <boost/unordered_set.hpp>
-#include <boost/unordered_map.hpp>
+#include <unordered_set>
+#include <unordered_map>
 #include <util/util.hpp>
 #include <atl/detail/automaton.hpp>
 #include <atl/detail/no_type.hpp>
 
-using boost::unordered_map;
-using boost::unordered_set;
+using std::unordered_map, std::unordered_set;
 
 namespace atl::detail {
     template <class Symbol>
@@ -96,7 +95,7 @@ namespace atl::detail {
     };
 };
 
-namespace boost {
+namespace std {
     template<class Symbol>
     struct hash<atl::detail::L2LTLabel<Symbol> > {
         std::size_t operator() (const atl::detail::L2LTLabel<Symbol>& l) const {
