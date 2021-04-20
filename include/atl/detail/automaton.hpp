@@ -48,6 +48,13 @@ namespace std {
         }
     };
 
+    template <class T>
+    struct hash<vector<T> > {
+        size_t operator() (const vector<T>& v) const {
+            return boost::hash_range(v.begin(), v.end());
+        }
+    };
+
     template <class T1, class T2>
     struct hash<pair<T1, T2> > {
         size_t operator() (const pair<T1, T2>& p) const {

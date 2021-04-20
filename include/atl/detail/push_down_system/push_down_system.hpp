@@ -88,12 +88,10 @@ namespace atl {
 
             typedef typename std::conditional<std::is_same<SymbolProperty, no_type>::value,
                                   unordered_map<State, 
-                                            unordered_set<std::vector<Symbol>,
-                                                      boost::hash<std::vector<Symbol> > > >, 
+                                        unordered_set<std::vector<Symbol> > > , 
                                   unordered_map<State, 
                                             unordered_map<std::vector<Symbol>, 
-                                                      unordered_set<SymbolProperty>,
-                                                      boost::hash<std::vector<Symbol> > > > >::type
+                                                      unordered_set<SymbolProperty> > > >::type
                 State2StackMap;
 
             typedef unordered_map<State, unordered_map<Symbol, State2StackMap> > TransitionMap;
