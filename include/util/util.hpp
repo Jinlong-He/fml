@@ -88,38 +88,38 @@ namespace util {
 
     template <class T>
     static inline void
-    shuffle(const vector<T>& datas1, const vector<T>& datas2, 
+    shuffle(const vector<T>& data1, const vector<T>& data2, 
             const vector<vector<T> >& datas, vector<vector<T> >& res) {
-        if (datas1.size() == 0 && datas2.size() == 0) {
+        if (data1.size() == 0 && data2.size() == 0) {
             res = datas;
             return;
         }
         vector<vector<T> > new_res1, new_res2;
-        if (datas1.size() > 0) {
+        if (data1.size() > 0) {
             vector<vector<T> > new_datas;
             for (auto& data : datas) {
                 vector<T> new_data = data;
-                new_data.emplace_back(datas1[0]);
+                new_data.emplace_back(data1[0]);
                 new_datas.emplace_back(new_data);
             }
             if (datas.size() == 0) {
-                new_datas.emplace_back(vector<T>({datas1[0]}));
+                new_datas.emplace_back(vector<T>({data1[0]}));
             }
-            vector<T> new_datas1(datas1.begin() + 1, datas1.end());
-            shuffle(new_datas1, datas2, new_datas, new_res1);
+            vector<T> new_data1(data1.begin() + 1, data1.end());
+            shuffle(new_data1, data2, new_datas, new_res1);
         }
-        if (datas2.size() > 0) {
+        if (data2.size() > 0) {
             vector<vector<T> > new_datas;
             for (auto& data : datas) {
                 vector<T> new_data = data;
-                new_data.emplace_back(datas2[0]);
+                new_data.emplace_back(data2[0]);
                 new_datas.emplace_back(new_data);
             }
             if (datas.size() == 0) {
-                new_datas.emplace_back(vector<T>({datas2[0]}));
+                new_datas.emplace_back(vector<T>({data2[0]}));
             }
-            vector<T> new_datas2(datas2.begin() + 1, datas2.end());
-            shuffle(datas1, new_datas2, new_datas, new_res2);
+            vector<T> new_data2(data2.begin() + 1, data2.end());
+            shuffle(data1, new_data2, new_datas, new_res2);
         }
         res = new_res1;
         res.insert(res.end(), new_res2.begin(), new_res2.end());
@@ -127,8 +127,40 @@ namespace util {
 
     template <class T>
     static inline void
-    shuffle(const vector<T>& datas1, const vector<T>& datas2, vector<vector<T> >& res) {
-        shuffle(datas1, datas2, vector<vector<T> >(), res);
+    shuffle(const vector<T>& data1, const vector<T>& data2, vector<vector<T> >& res) {
+        shuffle(data1, data2, vector<vector<T> >(), res);
+    }
+
+    template<class T>
+    static void combine(const vector<T>& datas, size_t n, size_t m, vector<size_t>& indexes, size_t M,  vector<vector<T> >& coms) {
+        for (auto i = n; i >= m; i--) {
+            indexes[m - 1] = i - 1;
+            if (m > 1) {
+                combine(datas, i - 1, m - 1, indexes, M, coms);
+            } else {
+                vector<T> com;
+                for (int j = M - 1; j >= 0; j--) {
+                    com.emplace_back(datas[indexes[j]]);
+                }
+                coms.emplace_back(com);
+            }
+        }
+    }
+
+    template<class T>
+    static void combine(const vector<T>& datas, size_t m, vector<vector<T> >& coms) {
+        vector<size_t> indexes(m);
+        auto n = datas.size();
+        combine(datas, n, m, indexes, m, coms);
+    }
+
+    template<class T>
+    static void permut(vector<T>& datas, vector<vector<T> >& pers) {
+        sort(datas.begin(), datas.end());
+        do {
+            pers.emplace_back(datas);
+        }
+        while(next_permutation(datas.begin(), datas.end()));
     }
 }
 
