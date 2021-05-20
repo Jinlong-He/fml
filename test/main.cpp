@@ -16,10 +16,13 @@ int main(int argc, char* argv[]) {
     //test_poststar();
     //test_composite1();
     //test_composite2();
-    test_composite3();
+    //test_composite3();
     //test_fomula_automaton();
     //cout << test_clear1() << endl;
     //cout << test_clear2() << endl;
     //cout << test_clear3() << endl;
     //cout << test_clear4() << endl;
+    //test_fomula_automaton();
+    //test_combination();
+    test_product1();
 }

@@ -1,5 +1,7 @@
 #include <atl/finite_automaton/nondeterministic_finite_automaton.hpp>
 #include <atl/finite_automaton/deterministic_finite_automaton.hpp>
+#include <atl/letter2letter_transducer/deterministic_letter2letter_transducer.hpp> 
+#include <atl/letter2letter_transducer/nondeterministic_letter2letter_transducer.hpp>
 #include "test.hpp"
 using namespace atl;
 
@@ -78,8 +80,25 @@ namespace test {
         add_transition(expect, 0, 1, Symbol("a"));
         std::vector<Symbol> word1({Symbol("b"), Symbol("b"), Symbol("b")});
         std::vector<Symbol> word2({Symbol("a")});
-        return (expect <= result) && !(result <= expect) &&
+        return (result <= expect) && !(expect <= result) &&
                !accept(nfa, word1) && accept(nfa, word2) &&
                !accept(expect, word1) && accept(expect, word2);
     }
+
+    bool test_subset3() {
+        nondeterministic_letter2letter_transducer<char> t1({'a','b'});
+        add_initial_state(t1);
+        add_state(t1);
+        add_final_state(t1);
+        add_transition(t1,0,0,'b','b');
+        add_transition(t1,0,1,'a','b');
+        add_transition(t1,1,1,'a','b');
+        add_transition(t1,1,1,'b','b');
+        add_transition(t1,1,2,'b','b');
+        add_transition(t1,2,2,'a','a');
+        add_transition(t1,2,2,'b','b');
+        deterministic_letter2letter_transducer t2 = (t1 * t1);
+        return (t2 <= t1);
+    }
+
 }

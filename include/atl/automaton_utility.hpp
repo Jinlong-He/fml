@@ -14,6 +14,7 @@
 #include <fstream>
 #include <atl/detail/automaton.hpp>
 #include <atl/detail/no_type.hpp>
+#include <atl/detail/algorithm.hpp>
 #include <atl/detail/finite_automaton/nondeterministic_finite_automaton.hpp>
 #include <atl/detail/push_down_system/push_down_system.hpp>
 using std::cout;
@@ -30,6 +31,7 @@ namespace atl {
             os << " {" << atl::get_property(a, state) << "}";
         }
     }
+
     template <typename Automaton>
     inline void
     print_state(const Automaton& a,

@@ -10,40 +10,78 @@
 #ifndef atl_detail_finite_automaton_merge_hpp 
 #define atl_detail_finite_automaton_merge_hpp 
 
+#include <atl/detail/automaton.hpp>
 namespace atl::detail {
     template <class Prop>
     struct intersect_merge_gen {
         Prop operator() (const Prop& lhs, const Prop& rhs) const {
-            return (lhs & rhs);
+            if constexpr (std::is_same<Prop, boost::no_property>::value) {
+                return boost::no_property();
+            } else {
+                return (lhs & rhs);
+            }
         }
 
         template<class InputIterator>
         Prop operator() (InputIterator first, InputIterator last) const {
-            Prop res = *first;
-            while (++first != last) {
-                res = res & (*first);
+            if constexpr (std::is_same<Prop, boost::no_property>::value) {
+                return boost::no_property();
+            } else {
+                Prop res = *first;
+                while (++first != last) {
+                    res = res & (*first);
+                }
+                return res;
             }
-            return res;
         }
     };
 
     template <class Prop>
     struct union_merge_gen {
         Prop operator() (const Prop& lhs, const Prop& rhs) const {
-            return (lhs | rhs);
+            if constexpr (std::is_same<Prop, boost::no_property>::value) {
+                return boost::no_property();
+            } else {
+                return (lhs | rhs);
+            }
         }
 
         template<class InputIterator>
         Prop operator() (InputIterator first, InputIterator last) const {
-            Prop res = *first;
-            while (++first != last) {
-                res = res | (*first);
+            if constexpr (std::is_same<Prop, boost::no_property>::value) {
+                return boost::no_property();
+            } else {
+                Prop res = *first;
+                while (++first != last) {
+                    res = res | (*first);
+                }
+                return res;
             }
-            return res;
         }
     };
 
-    struct no_type_merge_gen {
+    template <class LhsProp, class RhsProp, class ResProp>
+    struct merge_gen {
+        ResProp operator() (const LhsProp& lhs, const RhsProp& rhs) const {
+            if constexpr (std::is_same<LhsProp, boost::no_property>::value &&
+                          std::is_same<RhsProp, boost::no_property>::value) {
+                return boost::no_property();
+            } else {
+                return (lhs & rhs);
+            }
+        }
+    };
+
+    template <class LhsProp, class RhsProp>
+    struct equal_gen {
+        bool operator() (const LhsProp& lhs, const RhsProp& rhs) const {
+            if constexpr (std::is_same<LhsProp, boost::no_property>::value &&
+                          std::is_same<RhsProp, boost::no_property>::value) {
+                return true;
+            } else {
+                return (lhs == rhs);
+            }
+        }
     };
 };
 
@@ -60,9 +98,16 @@ namespace atl {
         return detail::union_merge_gen<Prop>();
     }
 
-    inline detail::no_type_merge_gen
-    no_type_merge() {
-        return detail::no_type_merge_gen();
+    template <class LhsProp, class RhsProp>
+    inline detail::equal_gen<LhsProp, RhsProp>
+    equal() {
+        return detail::equal_gen<LhsProp, RhsProp>();
+    }
+
+    template <class LhsProp, class RhsProp, class ResProp>
+    inline detail::merge_gen<LhsProp, RhsProp, ResProp>
+    merge() {
+        return detail::merge_gen<LhsProp, RhsProp, ResProp>();
     }
 };
 

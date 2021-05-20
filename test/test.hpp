@@ -56,7 +56,7 @@ namespace test {
     };
 }
 
-namespace boost {
+namespace std {
     template<>
     struct hash<test::Symbol> {
         std::size_t operator() (const test::Symbol& c) const{
@@ -138,6 +138,9 @@ namespace test {
 
     void test_basic_regular_expression();
     void test_transducer();
+
+    bool test_combination();
+    bool test_product1();
 }
 
 #endif /* test_hpp */
