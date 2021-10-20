@@ -11,6 +11,8 @@
 #define util_hpp
 #include <iostream> 
 #include <unordered_set>
+#include <set>
+#include <cstring>
 #include <vector>
 using std::vector, std::string;
 using std::cout;
@@ -155,13 +157,37 @@ namespace util {
     }
 
     template<class T>
+    static void combine(const vector<T>& datas, size_t n, size_t m, vector<size_t>& indexes, size_t M,std:: unordered_set<std::set<T> >& coms) {
+        for (auto i = n; i >= m; i--) {
+            indexes[m - 1] = i - 1;
+            if (m > 1) {
+                combine(datas, i - 1, m - 1, indexes, M, coms);
+            } else {
+                std::set<T> com;
+                for (int j = M - 1; j >= 0; j--) {
+                    com.insert(datas[indexes[j]]);
+                }
+                coms.insert(com);
+            }
+        }
+    }
+
+    template<class T>
+    static void combine(const vector<T>& datas, size_t m, std::unordered_set<std::set<T> >& coms) {
+        vector<size_t> indexes(m);
+        auto n = datas.size();
+        combine(datas, n, m, indexes, m, coms);
+    }
+
+    template<class T>
     static void permut(vector<T>& datas, vector<vector<T> >& pers) {
         sort(datas.begin(), datas.end());
         do {
-            pers.emplace_back(datas);
+            pers.push_back(datas);
         }
         while(next_permutation(datas.begin(), datas.end()));
     }
 }
 
 #endif /* util_hpp */
+

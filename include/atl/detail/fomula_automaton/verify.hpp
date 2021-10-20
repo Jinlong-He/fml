@@ -21,13 +21,15 @@ namespace atl::detail {
         static void 
         apply(const FOA& foa,
               const ll::atomic_proposition& p,
-              const string& source_file) {
+              const string& source_file,
+              int timeout) {
             std::ofstream out("out.smv");
             out << "MODULE main" << endl;
             translate_nuxmv(foa, out);
             out << "INVARSPEC ! (" + p.to_string() + ")" << endl;
             out.close();
-            string commond = "nuXmv -source " + source_file + " out.smv";
+            string time_cmd = "timeout " + std::to_string(timeout);
+            string commond = time_cmd + " nuXmv -source " + source_file + " out.smv";
             system(commond.c_str());
         }
     };
@@ -38,9 +40,11 @@ namespace atl {
     inline void 
     verify_invar_nuxmv(const FOA& foa,
                        const ll::atomic_proposition& p,
-                       const string& source_file) {
-        return detail::verify_invar_nuxmv_impl::apply(foa, p, source_file);
+                       const string& source_file,
+                       int timeout = 60) {
+        return detail::verify_invar_nuxmv_impl::apply(foa, p, source_file, timeout);
     }
 }
 
 #endif /* atl_detail_fomula_automaton_verify_hpp */
+

@@ -55,7 +55,12 @@ namespace atl::detail {
             : Base(x),
               state_set_(x.state_set_),
               control_state_set_(x.control_state_set_),
-              input_state_set_(x.input_state_set_) {}
+              input_state_set_(x.input_state_set_),
+              variable_set_(x.variable_set_),
+              input_variable_set_(x.input_variable_set_),
+              control_variable_set_(x.control_variable_set_),
+              item_map_(x.item_map_),
+              init_list_(x.init_list_) {}
 
         fomula_automaton_gen& 
         operator=(const fomula_automaton_gen& x) {
@@ -64,6 +69,11 @@ namespace atl::detail {
                 state_set_ = x.state_set_;
                 control_state_set_ = x.control_state_set_;
                 input_state_set_ = x.input_state_set_;
+                variable_set_ = x.variable_set_;
+                input_variable_set_ = x.input_variable_set_;
+                control_variable_set_ = x.control_variable_set_;
+                item_map_ = x.item_map_;
+                init_list_ = x.init_list_;
             }
             return *this;
         }
@@ -135,6 +145,10 @@ namespace atl::detail {
 
         void set_init_list(const std::list<ll::atomic_proposition>& list) {
             init_list_ = list;
+        }
+
+        void clear_init_list() {
+            init_list_.clear();
         }
 
         const unordered_map<Item const*, State>&
@@ -253,6 +267,19 @@ namespace atl {
     }
 
     template <FOA_PARAMS>
+    inline void
+    add_init_list(FOA& foa,
+                  const ll::atomic_proposition& ap) {
+        foa.add_init_list(ap);
+    }
+
+    template <FOA_PARAMS>
+    inline void
+    clear_init_list(FOA& foa) {
+        foa.clear_init_list();
+    }
+
+    template <FOA_PARAMS>
     inline typename FOA::State
     add_input_state(FOA& foa,
                     typename FOA::state_property_type const& p) {
@@ -285,3 +312,4 @@ namespace atl {
 }
 
 #endif /* atl_detail_fomula_automaton_hpp */
+
