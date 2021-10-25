@@ -59,7 +59,7 @@ namespace atl::detail {
               variable_set_(x.variable_set_),
               input_variable_set_(x.input_variable_set_),
               control_variable_set_(x.control_variable_set_),
-              item_map_(x.item_map_),
+              id_map_(x.id_map_),
               init_list_(x.init_list_) {}
 
         fomula_automaton_gen& 
@@ -72,7 +72,7 @@ namespace atl::detail {
                 variable_set_ = x.variable_set_;
                 input_variable_set_ = x.input_variable_set_;
                 control_variable_set_ = x.control_variable_set_;
-                item_map_ = x.item_map_;
+                id_map_ = x.id_map_;
                 init_list_ = x.init_list_;
             }
             return *this;
@@ -151,9 +151,9 @@ namespace atl::detail {
             init_list_.clear();
         }
 
-        const unordered_map<Item const*, State>&
-        item_map() const {
-            return item_map_();
+        const unordered_map<string const&, State>&
+        id_map() const {
+            return id_map_();
         }
 
         void 
@@ -196,7 +196,7 @@ namespace atl::detail {
             if (p.type() == "integer") this -> set_flag(1, 1);
             auto state = Base::add_state(p);
             set_state(state);
-            item_map_[&p] = state;
+            id_map_[p.identifier()] = state;
             return state;
         }
 
@@ -205,16 +205,16 @@ namespace atl::detail {
         add_transition(const Variable& v, const Item& i,
                        const Fomula& p) {
             auto source = -1, target = -1;
-            if (item_map_.count(&v) == 0) {
+            if (id_map_.count(v.identifier()) == 0) {
                 source = add_state(v);
                 set_control_state(source);
             } else {
-                source = item_map_.at(&v);
+                source = id_map_.at(v.identifier());
             }
-            if (item_map_.count(&i) == 0) {
+            if (id_map_.count(i.identifier()) == 0) {
                 target = add_state(i);
             } else {
-                target = item_map_.at(&i);
+                target = id_map_.at(i.identifier());
             }
             return add_transition(source, target, p);
         }
@@ -226,7 +226,7 @@ namespace atl::detail {
         VariableSet variable_set_;
         VariableSet input_variable_set_;
         VariableSet control_variable_set_;
-        unordered_map<Item const*, State> item_map_;
+        unordered_map<string const&, State> id_map_;
         std::list<ll::atomic_proposition> init_list_;
     };
 }
@@ -296,6 +296,22 @@ namespace atl {
                    const ll::item& i,
                    typename FOA::fomula_type const& f) {
         return foa.add_transition(v, i, f);
+    }
+
+    template <FOA_PARAMS, typename InputIterator>
+    inline pair<typename FOA::Transition, bool>
+    add_transition(FOA& foa,
+                   const ll::variable& v,
+                   InputIterator first,
+                   InputIterator last,
+                   typename FOA::fomula_type const& f) {
+        string identifier = "{";
+        while (first != last) {
+            identifier += (*first).identifier() + ",";
+            first++;
+        }
+        identifier[identifier.length() - 1] = '}';
+        return foa.add_transition(v, ll::item(identifier), f);
     }
 
     template <FOA_PARAMS>
