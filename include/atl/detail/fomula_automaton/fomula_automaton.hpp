@@ -226,7 +226,7 @@ namespace atl::detail {
         VariableSet variable_set_;
         VariableSet input_variable_set_;
         VariableSet control_variable_set_;
-        unordered_map<string const&, State> id_map_;
+        unordered_map<string, State> id_map_;
         std::list<ll::atomic_proposition> init_list_;
     };
 }
