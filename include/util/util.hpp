@@ -14,9 +14,48 @@
 #include <set>
 #include <cstring>
 #include <vector>
+#include <boost/functional/hash.hpp>
 using std::vector, std::string;
 using std::cout;
 using std::endl;
+
+namespace std {
+    template <class K, class C, class A>
+    struct hash<unordered_set<K, C, A> > {
+        size_t operator() (const unordered_set<K, C, A>& v) const {
+            size_t res = 0;
+            for (auto& i : v) {
+                res ^= boost::hash_value(i);
+            }
+            return res;
+        }
+    };
+
+    template <class K, class C, class A>
+    struct hash<set<K, C, A> > {
+        size_t operator() (const set<K, C, A>& v) const {
+            size_t res = 0;
+            for (auto& i : v) {
+                res ^= boost::hash_value(i);
+            }
+            return res;
+        }
+    };
+
+    template <class T>
+    struct hash<vector<T> > {
+        size_t operator() (const vector<T>& v) const {
+            return boost::hash_range(v.begin(), v.end());
+        }
+    };
+
+    template <class T1, class T2>
+    struct hash<pair<T1, T2> > {
+        size_t operator() (const pair<T1, T2>& p) const {
+            return boost::hash_value(p);
+        }
+    };
+}
 
 namespace util {
     template <class Set>
@@ -190,4 +229,5 @@ namespace util {
 }
 
 #endif /* util_hpp */
+
 
