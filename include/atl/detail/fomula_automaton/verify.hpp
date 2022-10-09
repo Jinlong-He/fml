@@ -22,14 +22,15 @@ namespace atl::detail {
         apply(const FOA& foa,
               const ll::atomic_proposition& p,
               const string& source_file,
-              int timeout) {
+              int timeout,
+              const string& nuxmv_cmd = "nuXmv") {
             std::ofstream out("out.smv");
             out << "MODULE main" << endl;
             translate_nuxmv(foa, out);
             out << "INVARSPEC ! (" + p.to_string() + ")" << endl;
             out.close();
             string time_cmd = "timeout " + std::to_string(timeout);
-            string commond = time_cmd + " nuXmv -source " + source_file + " out.smv";
+            string commond = time_cmd + " " + nuxmv_cmd + " -source " + source_file + " out.smv";
             system(commond.c_str());
         }
     };
