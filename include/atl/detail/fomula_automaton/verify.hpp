@@ -23,7 +23,7 @@ namespace atl::detail {
               const ll::atomic_proposition& p,
               const string& source_file,
               int timeout,
-              const string& nuxmv_cmd = "nuXmv") {
+              const string& nuxmv_cmd) {
             std::ofstream out("out.smv");
             out << "MODULE main" << endl;
             translate_nuxmv(foa, out);
@@ -42,8 +42,9 @@ namespace atl {
     verify_invar_nuxmv(const FOA& foa,
                        const ll::atomic_proposition& p,
                        const string& source_file,
-                       int timeout = 60) {
-        return detail::verify_invar_nuxmv_impl::apply(foa, p, source_file, timeout);
+                       int timeout = 60,
+                       const string& nuxmv_cmd = "nuXmv") {
+        return detail::verify_invar_nuxmv_impl::apply(foa, p, source_file, timeout, nuxmv_cmd);
     }
 }
 
