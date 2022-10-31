@@ -226,6 +226,34 @@ namespace util {
         }
         while(next_permutation(datas.begin(), datas.end()));
     }
+
+    template<class T>
+    static void product(const vector<vector<T> > &datas, vector<vector<T> > &res, int layer, vector<T> &tmp) {
+        if (layer < datas.size() - 1){
+            for (int i = 0; i < datas[layer].size(); i++){
+                vector<double> sb;
+                sb.clear();
+                for (int i = 0; i < tmp.size(); i++){
+                        sb.emplace_back(tmp[i]);
+                }
+                sb.emplace_back(datas[layer][i]);
+                productImplement(datas, res, layer + 1, sb);
+            }
+        }
+        else if (layer == datas.size() - 1){
+            for (int j = 0; j < datas[layer].size(); j++){
+                tmp.emplace_back(datas[layer][j]);
+                res.emplace_back(tmp);
+                tmp.pop_back();
+            }
+        }
+    }
+    template<class T>
+    static void product(vector<vector<T> > datas, vector<vector<T> > &res) {
+        vector<T> tmp;
+        product(datas, res, 0, tmp);
+    }
+
 }
 
 #endif /* util_hpp */
