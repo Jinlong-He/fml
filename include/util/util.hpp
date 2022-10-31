@@ -237,7 +237,7 @@ namespace util {
                         sb.emplace_back(tmp[i]);
                 }
                 sb.emplace_back(datas[layer][i]);
-                productImplement(datas, res, layer + 1, sb);
+                product(datas, res, layer + 1, sb);
             }
         }
         else if (layer == datas.size() - 1){
