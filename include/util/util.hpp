@@ -231,7 +231,7 @@ namespace util {
     static void product(const vector<vector<T> > &datas, vector<vector<T> > &res, int layer, vector<T> &tmp) {
         if (layer < datas.size() - 1){
             for (int i = 0; i < datas[layer].size(); i++){
-                vector<double> sb;
+                vector<T> sb;
                 sb.clear();
                 for (int i = 0; i < tmp.size(); i++){
                         sb.emplace_back(tmp[i]);
