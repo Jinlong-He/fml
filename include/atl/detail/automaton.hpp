@@ -10,6 +10,7 @@
 #ifndef atl_detail_automaton_hpp 
 #define atl_detail_automaton_hpp
 
+#include "atl/detail/fomula_automaton/fomula_automaton.hpp"
 #include <boost/scoped_ptr.hpp>
 #include <boost/graph/adjacency_list.hpp>
 #include <boost/functional/hash.hpp>
@@ -241,6 +242,13 @@ namespace atl {
             BoostGraphPtr graph_;
             Flag flag_;
         };
+        typedef typename graph_traits<BoostGraph>::edge_descriptor Transition;
+        typedef typename graph_traits<BoostGraph>::edge_iterator TransitionIter;
+        typedef typename graph_traits<BoostGraph>::in_edge_iterator InTransitionIter;
+        typedef typename graph_traits<BoostGraph>::out_edge_iterator OutTransitionIter;
+        typedef typename graph_traits<BoostGraph>::vertex_descriptor State;
+        typedef typename graph_traits<BoostGraph>::vertex_iterator StateIter;
+        typedef unordered_set<State> StateSet;
     }
 
     #define AUTOMATON_PARAMS typename TP, typename SP, typename AP
