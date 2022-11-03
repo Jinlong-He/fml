@@ -242,6 +242,9 @@ namespace atl {
             BoostGraphPtr graph_;
             Flag flag_;
         };
+        typedef adjacency_list<listS, vecS, bidirectionalS, 
+                                   StateProperty, TransitionProperty, AutomatonProperty, 
+                                   listS> BoostGraph;
         typedef typename graph_traits<BoostGraph>::edge_descriptor Transition;
         typedef typename graph_traits<BoostGraph>::edge_iterator TransitionIter;
         typedef typename graph_traits<BoostGraph>::in_edge_iterator InTransitionIter;
