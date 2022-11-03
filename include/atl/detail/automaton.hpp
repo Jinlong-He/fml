@@ -10,7 +10,6 @@
 #ifndef atl_detail_automaton_hpp 
 #define atl_detail_automaton_hpp
 
-#include "atl/detail/fomula_automaton/fomula_automaton.hpp"
 #include <boost/scoped_ptr.hpp>
 #include <boost/graph/adjacency_list.hpp>
 #include <boost/functional/hash.hpp>
