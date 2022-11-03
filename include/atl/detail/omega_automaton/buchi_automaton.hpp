@@ -17,17 +17,16 @@ using std::unordered_map;
 
 namespace atl::detail {
     template <class Symbol, 
-              long epsilon_,
               class SymbolProperty,
               class StateProperty, 
               class AutomatonProperty>
     class buchi_automaton_gen
-        : public omega_automaton_gen<Symbol, epsilon_,
+        : public omega_automaton_gen<Symbol,
                                       SymbolProperty,
                                       StateProperty,
                                       AutomatonProperty> {
     public:
-        typedef omega_automaton_gen<Symbol, epsilon_,
+        typedef omega_automaton_gen<Symbol,
                                      SymbolProperty,
                                      StateProperty,
                                      AutomatonProperty> Base;
@@ -218,7 +217,7 @@ namespace atl::detail {
 };
 
 namespace atl {
-    #define BA_PARAMS typename BA_SYMBOL, long BA_EPSILON, typename BA_SYMBOL_PROP, typename BA_STATE_PROP, typename BA_AUT_PROP
+    #define BA_PARAMS typename BA_SYMBOL, BA_SYMBOL BA_EPSILON, typename BA_SYMBOL_PROP, typename BA_STATE_PROP, typename BA_AUT_PROP
     #define BA detail::buchi_automaton_gen<BA_SYMBOL, BA_EPSILON, BA_SYMBOL_PROP, BA_STATE_PROP,BA_AUT_PROP>
 
     template <BA_PARAMS>

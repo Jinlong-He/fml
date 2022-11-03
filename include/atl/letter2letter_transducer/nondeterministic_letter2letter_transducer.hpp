@@ -10,6 +10,7 @@
 #ifndef atl_nondeterministic_letter2letter_transducer_hpp 
 #define atl_nondeterministic_letter2letter_transducer_hpp
 
+#include "atl/detail/finite_automaton/finite_automaton.hpp"
 #include <atl/detail/letter2letter_transducer/nondeterministic_letter2letter_transducer.hpp>
 #include <atl/detail/letter2letter_transducer/deterministic_letter2letter_transducer.hpp>
 #include <atl/detail/letter2letter_transducer/operate.hpp>
@@ -18,35 +19,35 @@
 
 namespace atl {
     template <class Symbol = char, 
-              long epsilon_ = 0,
               class LabelProperty = no_type,
               class StateProperty = no_type, 
               class AutomatonProperty = no_type>
     class nondeterministic_letter2letter_transducer
-        : public detail::nondeterministic_letter2letter_transducer_gen<Symbol, epsilon_,
+        : public detail::nondeterministic_letter2letter_transducer_gen<Symbol,
                                                                        LabelProperty,
                                                                        StateProperty,
                                                                        AutomatonProperty> {
     public:
         typedef Symbol symbol_type;
-        typedef detail::nondeterministic_letter2letter_transducer_gen<Symbol, epsilon_,
+        typedef detail::nondeterministic_letter2letter_transducer_gen<Symbol,
                                                                       LabelProperty,
                                                                       StateProperty,
                                                                       AutomatonProperty> Base;
 
-        typedef detail::finite_automaton_gen<Symbol, epsilon_,
+        typedef detail::finite_automaton_gen<Symbol,
                                              LabelProperty,
                                              StateProperty,
                                              AutomatonProperty> fa_type;
 
-        typedef detail::deterministic_letter2letter_transducer_gen<Symbol, epsilon_, LabelProperty,
+        typedef detail::deterministic_letter2letter_transducer_gen<Symbol, 
+                                                                   LabelProperty,
                                                                    StateProperty,
                                                                    AutomatonProperty> dl2lt_type;
-        typedef nondeterministic_letter2letter_transducer<Symbol, epsilon_,
+        typedef nondeterministic_letter2letter_transducer<Symbol,
                                                           LabelProperty,
                                                           StateProperty,
                                                           AutomatonProperty> nl2lt_type;
-        typedef deterministic_letter2letter_transducer<Symbol, epsilon_, 
+        typedef deterministic_letter2letter_transducer<Symbol,
                                                        LabelProperty,
                                                        StateProperty,
                                                        AutomatonProperty> dl2lt;
@@ -64,14 +65,13 @@ namespace atl {
         typedef typename Base::Symbol2StateSetMap Symbol2StateSetMap;
 
     public:
-        nondeterministic_letter2letter_transducer()
-            : Base() {}
+        nondeterministic_letter2letter_transducer(const SymbolSet& alphabet = SymbolSet(),
+                                                  const Symbol& epsilon = Symbol())
+            : Base(alphabet, epsilon) {}
 
-        nondeterministic_letter2letter_transducer(const SymbolSet& alphabet)
-            : Base(alphabet) {}
-
-        nondeterministic_letter2letter_transducer(const std::initializer_list<Symbol>& alphabet)
-            : Base(alphabet) {}
+        nondeterministic_letter2letter_transducer(const std::initializer_list<Symbol>& alphabet,
+                                                  const Symbol& epsilon = Symbol())
+            : Base(alphabet, epsilon) {}
 
         nondeterministic_letter2letter_transducer(const nondeterministic_letter2letter_transducer& x)
             : Base(x) {}

@@ -10,6 +10,7 @@
 #ifndef atl_detail_letter2letter_transducer_hpp 
 #define atl_detail_letter2letter_transducer_hpp
 
+#include "atl/detail/finite_automaton/finite_automaton.hpp"
 #include <unordered_set>
 #include <unordered_map>
 #include <util/util.hpp>
@@ -61,17 +62,28 @@ namespace atl::detail {
         letter2letter_transducer_gen()
             : symbol_set_() {}
 
-        letter2letter_transducer_gen(const SymbolSet& symbol_set)
-            : symbol_set_(symbol_set) {}
+        letter2letter_transducer_gen(const SymbolSet& symbol_set, 
+                                     const Symbol& epsilon_symbol)
+            : symbol_set_(symbol_set),
+              epsilon_symbol_(epsilon_symbol) {}
 
-        letter2letter_transducer_gen(const std::initializer_list<Symbol>& symbol_set)
-            : symbol_set_(symbol_set) {}
+        letter2letter_transducer_gen(const std::initializer_list<Symbol>& symbol_set,
+                                     const Symbol& epsilon_symbol)
+            : symbol_set_(symbol_set),
+              epsilon_symbol_(epsilon_symbol) {}
 
         letter2letter_transducer_gen(const letter2letter_transducer_gen& x)
-            : symbol_set_(x.symbol_set_) {}
+            : symbol_set_(x.symbol_set_),
+              epsilon_symbol_(x.epsilon_symbol_) {}
 
-        const SymbolSet& symbol_set() const {
+        const SymbolSet& 
+        symbol_set() const {
             return symbol_set_;
+        }
+
+        const Symbol&
+        epsilon_symbol() const {
+            return epsilon_symbol_;
         }
 
         letter2letter_transducer_gen& 
@@ -86,12 +98,17 @@ namespace atl::detail {
             symbol_set_ = symbol_set;
         }
 
+        void set_epsilon_symbol(const Symbol& epsilon_symbol) {
+            epsilon_symbol_ = epsilon_symbol;
+        }
+
         void add_symbol(const Symbol& c) {
             symbol_set_.insert(c);
         }
 
     protected:
         SymbolSet symbol_set_;
+        Symbol epsilon_symbol_;
     };
 };
 
@@ -109,16 +126,29 @@ namespace atl {
     #define L2LT detail::letter2letter_transducer_gen<L2LT_SYMBOL>
 
     template<L2LT_PARAMS>
-    typename L2LT::SymbolSet const&
+    inline typename L2LT::SymbolSet const&
     symbol_set(const L2LT& t) {
         return t.symbol_set();
     }
 
+    template <L2LT_PARAMS>
+    inline L2LT_SYMBOL const&
+    epsilon_symbol(const L2LT& t) {
+        return t.epsilon_symbol();
+    }
+
     template<L2LT_PARAMS>
-    void
+    inline void
     set_symbol_set(L2LT& t,
                    typename L2LT::SymbolSet const& symbol_set) {
         return t.set_symbol_set(symbol_set);
+    }
+
+    template<L2LT_PARAMS>
+    inline void
+    set_epsilon_symbol(L2LT& t,
+                       const L2LT_SYMBOL& epsilon_symbol) {
+        return t.set_epsilon_symbol(epsilon_symbol);
     }
 };
 

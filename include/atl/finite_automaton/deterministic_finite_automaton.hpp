@@ -14,34 +14,34 @@
 #include <atl/detail/finite_automaton/algorithm.hpp>
 #include <atl/detail/finite_automaton/operate.hpp>
 #include <atl/detail/finite_automaton/cast.hpp>
+#include <initializer_list>
 
 namespace atl {
     template <class Symbol = char, 
-              long epsilon_ = 0,
               class SymbolProperty = no_type,
               class StateProperty = no_type, 
               class AutomatonProperty = no_type>
     class deterministic_finite_automaton
-        : public detail::deterministic_finite_automaton_gen<Symbol, epsilon_,
+        : public detail::deterministic_finite_automaton_gen<Symbol,
                                                             SymbolProperty,
                                                             StateProperty,
                                                             AutomatonProperty> {
         public:
             typedef Symbol symbol_type;
-            typedef detail::deterministic_finite_automaton_gen<Symbol, epsilon_,
+            typedef detail::deterministic_finite_automaton_gen<Symbol,
                                                                SymbolProperty,
                                                                StateProperty,
                                                                AutomatonProperty> Base;
 
-            typedef detail::finite_automaton_gen<Symbol, epsilon_,
+            typedef detail::finite_automaton_gen<Symbol,
                                                  SymbolProperty,
                                                  StateProperty,
                                                  AutomatonProperty> fa_type;
-            typedef deterministic_finite_automaton<Symbol, epsilon_,
+            typedef deterministic_finite_automaton<Symbol,
                                                    SymbolProperty,
                                                    StateProperty,
                                                    AutomatonProperty> dfa_type;
-            typedef detail::nondeterministic_finite_automaton_gen<Symbol, epsilon_,
+            typedef detail::nondeterministic_finite_automaton_gen<Symbol,
                                                                   SymbolProperty,
                                                                   StateProperty,
                                                                   AutomatonProperty> 
@@ -61,14 +61,13 @@ namespace atl {
             typedef typename Base::Symbol2StatePairMap Symbol2StatePairMap;
 
         public:
-            deterministic_finite_automaton()
-                : Base() {}
+            deterministic_finite_automaton(const SymbolSet& alphabet = SymbolSet(), 
+                                           const Symbol& epsilon = Symbol())
+                : Base(alphabet, epsilon) {}
 
-            deterministic_finite_automaton(const SymbolSet& alphabet)
-                : Base(alphabet) {}
-
-            deterministic_finite_automaton(const std::initializer_list<Symbol>& alphabet)
-                : Base(alphabet) {}
+            deterministic_finite_automaton(const std::initializer_list<Symbol>& alphabet,
+                                           const Symbol& epsilon = Symbol())
+                : Base(alphabet, epsilon) {}
 
             deterministic_finite_automaton(const deterministic_finite_automaton& x)
                 : Base(x) {}

@@ -10,6 +10,8 @@
 #ifndef atl_detail_deterministic_finite_automaton_hpp 
 #define atl_detail_deterministic_finite_automaton_hpp
 
+#include "atl/detail/letter2letter_transducer/deterministic_letter2letter_transducer.hpp"
+#include "atl/detail/omega_automaton/omega_automaton.hpp"
 #include <map>
 #include <unordered_map>
 #include <atl/detail/finite_automaton/finite_automaton.hpp>
@@ -18,17 +20,16 @@ using std::unordered_map;
 
 namespace atl::detail {
     template <class Symbol, 
-              long epsilon_,
               class SymbolProperty,
               class StateProperty, 
               class AutomatonProperty>
     class deterministic_finite_automaton_gen
-        : public finite_automaton_gen<Symbol, epsilon_,
+        : public finite_automaton_gen<Symbol,
                                       SymbolProperty,
                                       StateProperty,
                                       AutomatonProperty> {
     public:
-        typedef finite_automaton_gen<Symbol, epsilon_,
+        typedef finite_automaton_gen<Symbol,
                                      SymbolProperty,
                                      StateProperty,
                                      AutomatonProperty> Base;
@@ -66,11 +67,12 @@ namespace atl::detail {
         deterministic_finite_automaton_gen()
             : Base() {}
 
-        deterministic_finite_automaton_gen(const SymbolSet& alphabet)
-            : Base(alphabet) {}
+        deterministic_finite_automaton_gen(const SymbolSet& alphabet, const Symbol& epsilon)
+            : Base(alphabet, epsilon) {}
 
-        deterministic_finite_automaton_gen(const std::initializer_list<Symbol>& alphabet)
-            : Base(alphabet) {}
+        deterministic_finite_automaton_gen(const std::initializer_list<Symbol>& alphabet,
+                                           const Symbol& epsilon)
+            : Base(alphabet, epsilon) {}
 
         deterministic_finite_automaton_gen(const deterministic_finite_automaton_gen& x)
             : Base(x),
@@ -197,8 +199,8 @@ namespace atl::detail {
 };
 
 namespace atl {
-    #define DFA_PARAMS typename DFA_SYMBOL, long DFA_EPSILON, typename DFA_SYMBOL_PROP, typename DFA_STATE_PROP, typename DFA_AUT_PROP
-    #define DFA detail::deterministic_finite_automaton_gen<DFA_SYMBOL, DFA_EPSILON, DFA_SYMBOL_PROP, DFA_STATE_PROP,DFA_AUT_PROP>
+    #define DFA_PARAMS typename DFA_SYMBOL, typename DFA_SYMBOL_PROP, typename DFA_STATE_PROP, typename DFA_AUT_PROP
+    #define DFA detail::deterministic_finite_automaton_gen<DFA_SYMBOL, DFA_SYMBOL_PROP, DFA_STATE_PROP,DFA_AUT_PROP>
 
     template <DFA_PARAMS>
     inline typename DFA::TransitionMap const&

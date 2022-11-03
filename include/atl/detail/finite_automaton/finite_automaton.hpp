@@ -10,6 +10,8 @@
 #ifndef atl_detail_finite_automaton_hpp 
 #define atl_detail_finite_automaton_hpp
 
+#include "atl/detail/letter2letter_transducer/deterministic_letter2letter_transducer.hpp"
+#include "atl/detail/letter2letter_transducer/letter2letter_transducer.hpp"
 #include <unordered_set>
 #include <unordered_map>
 #include <util/util.hpp>
@@ -20,20 +22,17 @@ using std::unordered_map, std::unordered_set;
 
 namespace atl::detail {
     template <class Symbol, 
-              long epsilon_,
               class SymbolProperty,
               class StateProperty, 
               class AutomatonProperty> class nondeterministic_finite_automaton_gen;
 
     template <class Symbol, 
-              long epsilon_,
               class SymbolProperty,
               class StateProperty, 
               class AutomatonProperty> class deterministic_finite_automaton_gen;
 
 
     template <class Symbol, 
-              long epsilon_,
               class SymbolProperty,
               class StateProperty, 
               class AutomatonProperty>
@@ -64,13 +63,11 @@ namespace atl::detail {
                               automaton_property_type> Base;
 
         typedef deterministic_finite_automaton_gen<Symbol, 
-                                                   epsilon_,
                                                    SymbolProperty,
                                                    StateProperty,
                                                    AutomatonProperty> dfa_type;
 
         typedef nondeterministic_finite_automaton_gen<Symbol, 
-                                                      epsilon_,
                                                       SymbolProperty,
                                                       StateProperty,
                                                       AutomatonProperty> nfa_type;
@@ -86,22 +83,33 @@ namespace atl::detail {
         typedef unordered_map<State, State> State2Map;
 
     public:
-        finite_automaton_gen(const SymbolSet alphabet = SymbolSet())
+        finite_automaton_gen()
             : Base(),
               initial_state_(-1),
-              alphabet_(alphabet) {}
+              alphabet_(SymbolSet()),
+              epsilon_(Symbol()) {}
 
-        finite_automaton_gen(const std::initializer_list<Symbol> alphabet)
+        finite_automaton_gen(const SymbolSet alphabet,
+                             const Symbol& epsilon)
             : Base(),
               initial_state_(-1),
-              alphabet_(alphabet) {}
+              alphabet_(alphabet),
+              epsilon_(epsilon) {}
+
+        finite_automaton_gen(const std::initializer_list<Symbol> alphabet,
+                             const Symbol& epsilon)
+            : Base(),
+              initial_state_(-1),
+              alphabet_(alphabet),
+              epsilon_(epsilon) {}
 
         finite_automaton_gen(const finite_automaton_gen& x)
             : Base(x),
               initial_state_(x.initial_state_),
               final_state_set_(x.final_state_set_),
               state_set_(x.state_set_),
-              alphabet_(x.alphabet_) {}
+              alphabet_(x.alphabet_),
+              epsilon_(x.epsilon_) {}
 
         ~finite_automaton_gen() {}
 
@@ -170,9 +178,13 @@ namespace atl::detail {
             Base::remove_state(s);
         }
 
-        Symbol
+        const Symbol&
         epsilon() const {
             return epsilon_;
+        }
+
+        void set_epsilon(const Symbol& epsilon) {
+            epsilon_ = epsilon;
         }
 
         transition_property_type
@@ -275,12 +287,13 @@ namespace atl::detail {
         StateSet final_state_set_;
         StateSet state_set_;
         SymbolSet alphabet_;
+        Symbol epsilon_;
     };
 };
 
 namespace atl {
-    #define FA_PARAMS typename FA_SYMBOL, long FA_EPSILON, typename FA_SYMBOL_PROP, typename FA_STATE_PROP, typename FA_AUT_PROP
-    #define FA detail::finite_automaton_gen<FA_SYMBOL, FA_EPSILON, FA_SYMBOL_PROP, FA_STATE_PROP,FA_AUT_PROP>
+    #define FA_PARAMS typename FA_SYMBOL, typename FA_SYMBOL_PROP, typename FA_STATE_PROP, typename FA_AUT_PROP
+    #define FA detail::finite_automaton_gen<FA_SYMBOL, FA_SYMBOL_PROP, FA_STATE_PROP,FA_AUT_PROP>
 
     template <FA_PARAMS>
     inline typename FA::SymbolSet const&
@@ -348,9 +361,16 @@ namespace atl {
     }
 
     template <FA_PARAMS>
-    inline FA_SYMBOL
+    inline FA_SYMBOL const&
     epsilon(const FA& fa) {
         return fa.epsilon();
+    }
+
+    template <FA_PARAMS>
+    inline void
+    set_epsilon(const FA& fa,
+                const FA_SYMBOL& epsilon) {
+        return fa.set_epsilon(epsilon);
     }
 
     template <FA_PARAMS>

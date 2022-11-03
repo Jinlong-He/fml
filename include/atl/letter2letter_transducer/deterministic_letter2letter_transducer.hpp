@@ -10,39 +10,41 @@
 #ifndef atl_deterministic_letter2letter_transducer_hpp 
 #define atl_deterministic_letter2letter_transducer_hpp
 
+#include "atl/detail/finite_automaton/finite_automaton.hpp"
+#include "atl/detail/omega_automaton/omega_automaton.hpp"
 #include <atl/detail/letter2letter_transducer/deterministic_letter2letter_transducer.hpp>
 #include <atl/detail/letter2letter_transducer/nondeterministic_letter2letter_transducer.hpp>
 #include <atl/detail/letter2letter_transducer/operate.hpp>
 #include <atl/detail/finite_automaton/operate.hpp>
+#include <initializer_list>
 
 namespace atl {
     template <class Symbol = char, 
-              long epsilon_ = 0,
               class LabelProperty = no_type,
               class StateProperty = no_type, 
               class AutomatonProperty = no_type>
     class deterministic_letter2letter_transducer
-        : public detail::deterministic_letter2letter_transducer_gen<Symbol, epsilon_,
+        : public detail::deterministic_letter2letter_transducer_gen<Symbol,
                                                                     LabelProperty,
                                                                     StateProperty,
                                                                     AutomatonProperty> {
     public:
         typedef Symbol symbol_type;
-        typedef detail::deterministic_letter2letter_transducer_gen<Symbol, epsilon_,
+        typedef detail::deterministic_letter2letter_transducer_gen<Symbol,
                                                                    LabelProperty,
                                                                    StateProperty,
                                                                    AutomatonProperty> Base;
 
-        typedef detail::finite_automaton_gen<Symbol, epsilon_,
+        typedef detail::finite_automaton_gen<Symbol,
                                              LabelProperty,
                                              StateProperty,
                                              AutomatonProperty> fa_type;
 
-        typedef detail::nondeterministic_letter2letter_transducer_gen<Symbol, epsilon_,
+        typedef detail::nondeterministic_letter2letter_transducer_gen<Symbol,
                                                                       LabelProperty,
                                                                       StateProperty,
                                                                       AutomatonProperty> nl2lt_type;
-        typedef deterministic_letter2letter_transducer<Symbol, epsilon_,
+        typedef deterministic_letter2letter_transducer<Symbol,
                                                        LabelProperty,
                                                        StateProperty,
                                                        AutomatonProperty> dl2lt_type;
@@ -61,14 +63,13 @@ namespace atl {
         typedef typename Base::Symbol2StatePairMap Symbol2StatePairMap;
 
     public:
-        deterministic_letter2letter_transducer()
-            : Base() {}
+        deterministic_letter2letter_transducer(const SymbolSet& alphabet = SymbolSet(), 
+                                               const Symbol& epsilon = Symbol())
+            : Base(alphabet, epsilon) {}
 
-        deterministic_letter2letter_transducer(const SymbolSet& alphabet)
-            : Base(alphabet) {}
-
-        deterministic_letter2letter_transducer(const std::initializer_list<Symbol>& alphabet)
-            : Base(alphabet) {}
+        deterministic_letter2letter_transducer(const std::initializer_list<Symbol>& alphabet,
+                                               const Symbol& epsilon = Symbol())
+            : Base(alphabet, epsilon) {}
 
         deterministic_letter2letter_transducer(const deterministic_letter2letter_transducer& x)
             : Base(x) {}

@@ -16,17 +16,16 @@
 
 namespace atl {
     template <class Symbol = char, 
-              long epsilon_ = -1,
               class SymbolProperty = no_type,
               class StateProperty = no_type, 
               class AutomatonProperty = no_type>
     class push_down_system
-        : public detail::push_down_system_gen<Symbol, epsilon_,
+        : public detail::push_down_system_gen<Symbol,
                                               SymbolProperty,
                                               StateProperty,
                                               AutomatonProperty> {
         public:
-            typedef detail::push_down_system_gen<Symbol, epsilon_,
+            typedef detail::push_down_system_gen<Symbol,
                                                  SymbolProperty,
                                                  StateProperty,
                                                  AutomatonProperty> Base;

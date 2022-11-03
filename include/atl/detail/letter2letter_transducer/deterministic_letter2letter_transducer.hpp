@@ -19,7 +19,6 @@ using std::unordered_map;
 
 namespace atl {
     template <class Symbol,
-              long epsilon_,
               class LabelProperty,
               class StateProperty, 
               class AutomatonProperty>
@@ -27,24 +26,23 @@ namespace atl {
 }
 namespace atl::detail {
     template <class Symbol, 
-              long epsilon_,
               class LabelProperty,
               class StateProperty, 
               class AutomatonProperty>
     class deterministic_letter2letter_transducer_gen
         : public letter2letter_transducer_gen<Symbol>,
-          public deterministic_finite_automaton_gen<L2LTLabel<Symbol>, epsilon_,
+          public deterministic_finite_automaton_gen<L2LTLabel<Symbol>,
                                                     LabelProperty,
                                                     StateProperty,
                                                     AutomatonProperty> {
     public:
         typedef letter2letter_transducer_gen<Symbol> l2lt_type;
-        typedef deterministic_finite_automaton_gen<L2LTLabel<Symbol>, epsilon_,
+        typedef deterministic_finite_automaton_gen<L2LTLabel<Symbol>,
                                                    LabelProperty,
                                                    StateProperty,
                                                    AutomatonProperty> Base;
 
-        typedef nondeterministic_letter2letter_transducer<Symbol, epsilon_,
+        typedef nondeterministic_letter2letter_transducer<Symbol,
                                                           LabelProperty,
                                                           StateProperty,
                                                           AutomatonProperty> nl2lt_type;
@@ -88,20 +86,23 @@ namespace atl::detail {
             : l2lt_type(),
               Base() {}
 
-        deterministic_letter2letter_transducer_gen(const SymbolSet& alphabet)
-            : l2lt_type(alphabet),
+        deterministic_letter2letter_transducer_gen(const SymbolSet& alphabet, const Symbol& epsilon_symbol)
+            : l2lt_type(alphabet, epsilon_symbol),
               Base() { 
                   LabelSet label_set;
                   util::set_product(alphabet, label_set);
                   Base::set_alphabet(label_set);
+                  Base::set_epsilon(label_type(epsilon_symbol));
               }
 
-        deterministic_letter2letter_transducer_gen(const std::initializer_list<Symbol>& alphabet)
-            : l2lt_type(alphabet),
+        deterministic_letter2letter_transducer_gen(const std::initializer_list<Symbol>& alphabet, 
+                                                   const Symbol& epsilon_symbol)
+            : l2lt_type(alphabet, epsilon_symbol),
               Base() {
                   LabelSet label_set;
                   util::set_product(alphabet, label_set);
                   Base::set_alphabet(label_set);
+                  Base::set_epsilon(label_type(epsilon_symbol));
               }
 
         deterministic_letter2letter_transducer_gen(const deterministic_letter2letter_transducer_gen& x)
@@ -125,11 +126,6 @@ namespace atl::detail {
             Base::clear();
             this -> symbol_set_.clear();
             l2ltransition_map_.clear();
-        }
-
-        Symbol
-        epsilon_symbol() const {
-            return epsilon_;
         }
 
         const L2LTransitionMap&
@@ -185,14 +181,8 @@ namespace atl::detail {
 };
 
 namespace atl {
-    #define DL2LT_PARAMS typename DL2LT_SYMBOL, long DL2LT_EPSILON, typename DL2LT_LABEL_PROP, typename DL2LT_STATE_PROP, typename DL2LT_AUT_PROP
-    #define DL2LT detail::deterministic_letter2letter_transducer_gen<DL2LT_SYMBOL, DL2LT_EPSILON, DL2LT_LABEL_PROP, DL2LT_STATE_PROP,DL2LT_AUT_PROP>
-
-    template <DL2LT_PARAMS>
-    inline DL2LT_SYMBOL
-    epsilon_symbol(const DL2LT& dl2lt) {
-        return dl2lt.epsilon_symbol();
-    }
+    #define DL2LT_PARAMS typename DL2LT_SYMBOL, typename DL2LT_LABEL_PROP, typename DL2LT_STATE_PROP, typename DL2LT_AUT_PROP
+    #define DL2LT detail::deterministic_letter2letter_transducer_gen<DL2LT_SYMBOL, DL2LT_LABEL_PROP, DL2LT_STATE_PROP,DL2LT_AUT_PROP>
 
     template <DL2LT_PARAMS>
     inline typename DL2LT::L2LTransitionMap const&

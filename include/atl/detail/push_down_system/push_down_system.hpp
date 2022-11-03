@@ -46,7 +46,6 @@ namespace atl {
         };
 
         template <class Symbol, 
-                  long epsilon_,
                   class SymbolProperty,
                   class StateProperty, 
                   class AutomatonProperty>
@@ -141,11 +140,6 @@ namespace atl {
                 return state;
             }
 
-            transition_property_type 
-            epsilon() const {
-                return transition_property_type(epsilon_);
-            }
-
             const StateSet&
             state_set() const {
                 return state_set_;
@@ -217,8 +211,8 @@ namespace atl {
         };
     }
 
-    #define PDS_PARAMS typename PDS_SYMBOL, long PDS_EPSILON, typename PDS_SYMBOL_PROP, typename PDS_STATE_PROP, typename PDS_AUT_PROP
-    #define PDS detail::push_down_system_gen<PDS_SYMBOL, PDS_EPSILON, PDS_SYMBOL_PROP, PDS_STATE_PROP,PDS_AUT_PROP>
+    #define PDS_PARAMS typename PDS_SYMBOL, typename PDS_SYMBOL_PROP, typename PDS_STATE_PROP, typename PDS_AUT_PROP
+    #define PDS detail::push_down_system_gen<PDS_SYMBOL, PDS_SYMBOL_PROP, PDS_STATE_PROP,PDS_AUT_PROP>
 
     template <PDS_PARAMS>
     inline typename PDS::SymbolSet const&
@@ -257,12 +251,6 @@ namespace atl {
     inline typename PDS::TransitionMap const&
     transition_map(const PDS& pds) {
         return pds.transition_map();
-    }
-
-    template <PDS_PARAMS>
-    inline typename PDS::transition_property_type
-    epsilon(const PDS& pds) {
-        return pds.epsilon();
     }
 
     template <PDS_PARAMS>

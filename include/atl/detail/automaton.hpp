@@ -41,8 +41,8 @@ namespace atl {
                 : default_property(dp),
                   extended_property(ep) {}
 
-            Property(long l) 
-                : default_property(l),
+            Property(const DefaultProperty& dp) 
+                : default_property(dp),
                   extended_property() {}
 
             bool operator== (const Property& p) const {

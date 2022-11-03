@@ -55,8 +55,6 @@ namespace atl {
         
         template <class UpperSymbol, 
                   class LowerSymbol,
-                  long upper_epsilon_,
-                  long lower_epsilon_,
                   class LabelProperty,
                   class StateProperty, 
                   class AutomatonProperty>
@@ -98,19 +96,27 @@ namespace atl {
             typedef unordered_map<State, State> State2Map;
 
         public:
-            finite_transducer_gen(const UpperSymbolSet& upper_alphabet,
-                                  const LowerSymbolSet& lower_alphabet)
+            finite_transducer_gen(const UpperSymbolSet& upper_alphabet = UpperSymbolSet(),
+                                  const LowerSymbolSet& lower_alphabet = LowerSymbolSet(),
+                                  const UpperSymbol& upper_epsilon = UpperSymbol(),
+                                  const LowerSymbol& lower_epsilon = LowerSymbol())
                 : Base(),
                   initial_state_(-1),
                   upper_alphabet_(upper_alphabet),
-                  lower_alphabet_(lower_alphabet) {}
+                  lower_alphabet_(lower_alphabet),
+                  upper_epsilon_(upper_epsilon),
+                  lower_epsilon_(lower_epsilon) {}
 
             finite_transducer_gen(const std::initializer_list<UpperSymbol>& upper_alphabet,
-                                  const std::initializer_list<LowerSymbol>& lower_alphabet)
+                                  const std::initializer_list<LowerSymbol>& lower_alphabet,
+                                  const UpperSymbol& upper_epsilon = UpperSymbol(),
+                                  const LowerSymbol& lower_epsilon = LowerSymbol())
                 : Base(),
                   initial_state_(-1),
                   upper_alphabet_(upper_alphabet),
-                  lower_alphabet_(lower_alphabet) {}
+                  lower_alphabet_(lower_alphabet),
+                  upper_epsilon_(upper_epsilon),
+                  lower_epsilon_(lower_epsilon) {}
 
             finite_transducer_gen(const finite_transducer_gen& x)
                 : Base(x),
@@ -118,7 +124,9 @@ namespace atl {
                   final_state_set_(x.final_state_set_),
                   state_set_(x.state_set_),
                   upper_alphabet_(x.upper_alphabet_),
-                  lower_alphabet_(x.lower_alphabet_) {}
+                  lower_alphabet_(x.lower_alphabet_),
+                  upper_epsilon_(x.upper_epsilon_),
+                  lower_epsilon_(x.lower_epsilon_) {}
 
             ~finite_transducer_gen() {}
 
@@ -292,10 +300,12 @@ namespace atl {
             StateSet state_set_;
             UpperSymbolSet upper_alphabet_;
             LowerSymbolSet lower_alphabet_;
+            UpperSymbol upper_epsilon_;
+            LowerSymbol lower_epsilon_;
         };
     };
 
-    #define FT_PARAMS typename FT_USYMBOL, typename FT_LSYMBOL, long FT_UEPSILON, long FT_LEPSILON,  typename FT_LABEL_PROP, typename FT_STATE_PROP, typename FT_AUT_PROP
+    #define FT_PARAMS typename FT_USYMBOL, typename FT_LSYMBOL, FT_USYMBOL FT_UEPSILON, FT_LSYMBOL FT_LEPSILON,  typename FT_LABEL_PROP, typename FT_STATE_PROP, typename FT_AUT_PROP
     #define FT detail::finite_transducer_gen<FT_USYMBOL, FT_LSYMBOL, FT_UEPSILON, FT_LEPSILON,FT_LABEL_PROP, FT_STATE_PROP,FT_AUT_PROP>
 
     template <FT_PARAMS>

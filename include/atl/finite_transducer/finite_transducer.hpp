@@ -15,31 +15,28 @@
 namespace atl {
     template <class UpperSymbol = char,
               class LowerSymbol = char,
-              long upper_epsilon_ = 0,
-              long lower_epsilon_ = 0,
               class LabelProperty = no_type,
               class StateProperty = no_type, 
               class AutomatonProperty = no_type>
     class finite_transducer
         : public detail::finite_transducer_gen<UpperSymbol,
                                                LowerSymbol,
-                                               upper_epsilon_,
-                                               lower_epsilon_,
                                                LabelProperty,
                                                StateProperty,
                                                AutomatonProperty> {
         public:
             typedef Symbol symbol_type;
-            typedef detail::finite_transducer_gen<Symbol, epsilon_,
-                                                                  SymbolProperty,
-                                                                  StateProperty,
-                                                                  AutomatonProperty> Base;
-            typedef detail::finite_automaton_gen<Symbol, epsilon_,
+            typedef detail::finite_transducer_gen<UpperSymbol,
+                                                  LowerSymbol,
+                                                  SymbolProperty,
+                                                  StateProperty,
+                                                  AutomatonProperty> Base;
+            typedef detail::finite_automaton_gen<Symbol,
                                                  SymbolProperty,
                                                  StateProperty,
                                                  AutomatonProperty> fa_type;
             typedef Base nfa_type;
-            typedef detail::deterministic_finite_automaton_gen<Symbol, epsilon_,
+            typedef detail::deterministic_finite_automaton_gen<Symbol,
                                                                SymbolProperty,
                                                                StateProperty,
                                                                AutomatonProperty> dfa_type;

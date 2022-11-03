@@ -21,7 +21,7 @@ using std::unordered_map, std::unordered_set;
 namespace atl::detail {
 
     template <class Symbol, 
-              long epsilon_,
+              Symbol epsilon_,
               class SymbolProperty,
               class StateProperty, 
               class AutomatonProperty>
@@ -226,7 +226,7 @@ namespace atl::detail {
 };
 
 namespace atl {
-    #define OA_PARAMS typename OA_SYMBOL, long OA_EPSILON, typename OA_SYMBOL_PROP, typename OA_STATE_PROP, typename OA_AUT_PROP
+    #define OA_PARAMS typename OA_SYMBOL, OA_SYMBOL OA_EPSILON, typename OA_SYMBOL_PROP, typename OA_STATE_PROP, typename OA_AUT_PROP
     #define OA detail::omega_automaton_gen<OA_SYMBOL, OA_EPSILON, OA_SYMBOL_PROP, OA_STATE_PROP,OA_AUT_PROP>
 
     template <OA_PARAMS>

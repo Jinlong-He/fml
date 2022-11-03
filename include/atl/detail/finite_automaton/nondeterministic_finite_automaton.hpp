@@ -10,6 +10,7 @@
 #ifndef atl_detail_nondeterministic_finite_automaton_hpp 
 #define atl_detail_nondeterministic_finite_automaton_hpp
 
+#include "atl/detail/letter2letter_transducer/deterministic_letter2letter_transducer.hpp"
 #include <unordered_map>
 #include <atl/detail/finite_automaton/finite_automaton.hpp>
 
@@ -17,17 +18,16 @@ using std::unordered_map;
 
 namespace atl::detail {
     template <class Symbol, 
-              long epsilon_,
               class SymbolProperty,
               class StateProperty, 
               class AutomatonProperty>
     class nondeterministic_finite_automaton_gen
-        : public finite_automaton_gen<Symbol, epsilon_,
+        : public finite_automaton_gen<Symbol,
                                       SymbolProperty,
                                       StateProperty,
                                       AutomatonProperty> {
     public:
-        typedef finite_automaton_gen<Symbol, epsilon_,
+        typedef finite_automaton_gen<Symbol,
                                      SymbolProperty,
                                      StateProperty,
                                      AutomatonProperty> Base;
@@ -59,11 +59,13 @@ namespace atl::detail {
         nondeterministic_finite_automaton_gen()
             : Base() {}
 
-        nondeterministic_finite_automaton_gen(const SymbolSet& alphabet)
-            : Base(alphabet) {}
+        nondeterministic_finite_automaton_gen(const SymbolSet& alphabet, 
+                                              const Symbol& epsilon)
+            : Base(alphabet, epsilon) {}
 
-        nondeterministic_finite_automaton_gen(const std::initializer_list<Symbol>& alphabet)
-            : Base(alphabet) {}
+        nondeterministic_finite_automaton_gen(const std::initializer_list<Symbol>& alphabet,
+                                              const Symbol& epsilon)
+            : Base(alphabet, epsilon) {}
 
         nondeterministic_finite_automaton_gen(const nondeterministic_finite_automaton_gen& x)
             : Base(x),
@@ -212,8 +214,8 @@ namespace atl::detail {
 };
 
 namespace atl {
-    #define NFA_PARAMS typename NFA_SYMBOL, long NFA_EPSILON, typename NFA_SYMBOL_PROP, typename NFA_STATE_PROP, typename NFA_AUT_PROP
-    #define NFA detail::nondeterministic_finite_automaton_gen<NFA_SYMBOL, NFA_EPSILON, NFA_SYMBOL_PROP, NFA_STATE_PROP,NFA_AUT_PROP>
+    #define NFA_PARAMS typename NFA_SYMBOL, typename NFA_SYMBOL_PROP, typename NFA_STATE_PROP, typename NFA_AUT_PROP
+    #define NFA detail::nondeterministic_finite_automaton_gen<NFA_SYMBOL, NFA_SYMBOL_PROP, NFA_STATE_PROP,NFA_AUT_PROP>
 
     template <NFA_PARAMS>
     inline typename NFA::TransitionMap const&
