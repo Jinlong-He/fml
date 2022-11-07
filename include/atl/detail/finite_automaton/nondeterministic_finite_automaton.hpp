@@ -10,9 +10,7 @@
 #ifndef atl_detail_nondeterministic_finite_automaton_hpp 
 #define atl_detail_nondeterministic_finite_automaton_hpp
 
-#include "atl/detail/letter2letter_transducer/deterministic_letter2letter_transducer.hpp"
-#include <unordered_map>
-#include <atl/detail/finite_automaton/finite_automaton.hpp>
+#include <atl/detail/finite_automaton/deterministic_finite_automaton.hpp>
 
 using std::unordered_map;
 
@@ -31,6 +29,11 @@ namespace atl::detail {
                                      SymbolProperty,
                                      StateProperty,
                                      AutomatonProperty> Base;
+
+        typedef deterministic_finite_automaton_gen<Symbol,
+                                                   SymbolProperty,
+                                                   StateProperty,
+                                                   AutomatonProperty> dfa_type;
 
         typedef typename Base::symbol_type symbol_type;
         typedef typename Base::state_property_type state_property_type;

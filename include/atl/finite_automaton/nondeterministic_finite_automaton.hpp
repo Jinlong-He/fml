@@ -186,10 +186,7 @@ namespace atl {
 
             bool
             operator==(const nfa_type& x) {
-                dfa_type dfa_lhs, dfa_rhs;
-                minimize(*this, dfa_lhs);
-                minimize(x, dfa_rhs);
-                return equal_fa(dfa_lhs, dfa_rhs);
+                return equal_fa(*this, x);
             }
 
             bool

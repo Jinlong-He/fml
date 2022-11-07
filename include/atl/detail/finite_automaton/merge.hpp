@@ -98,7 +98,7 @@ namespace atl {
         return detail::union_merge_gen<Prop>();
     }
 
-    template <class LhsProp, class RhsProp>
+    template <class LhsProp, class RhsProp = LhsProp>
     inline detail::equal_gen<LhsProp, RhsProp>
     equal() {
         return detail::equal_gen<LhsProp, RhsProp>();

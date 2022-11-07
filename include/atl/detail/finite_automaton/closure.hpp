@@ -64,9 +64,9 @@ namespace atl {
     template <FA_PARAMS>
     inline void
     reachable_closure(const FA& a,
-                     typename FA::StateSet const& states_in,
-                     typename FA::StateSet& states_out,
-                     detail::Direction direction = detail::forward) {
+                      typename FA::StateSet const& states_in,
+                      typename FA::StateSet& states_out,
+                      detail::Direction direction = detail::forward) {
         detail::reachable_closure_impl::apply(a, states_in, states_out, direction);
     }
 
@@ -75,7 +75,7 @@ namespace atl {
     reachable_closure(const FA& fa,
                       typename FA::StateSet& reachable_closure) {
             typename FA::StateSet forward_states({initial_state(fa)}),
-                                                 backward_states(final_state_set(fa));
+                                  backward_states(final_state_set(fa));
             atl::reachable_closure(fa, forward_states, forward_states, detail::forward);
             atl::reachable_closure(fa, backward_states, backward_states, detail::backward);
             util::set_intersection(forward_states, backward_states, reachable_closure);

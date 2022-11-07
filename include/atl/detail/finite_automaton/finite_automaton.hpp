@@ -10,8 +10,6 @@
 #ifndef atl_detail_finite_automaton_hpp 
 #define atl_detail_finite_automaton_hpp
 
-#include "atl/detail/letter2letter_transducer/deterministic_letter2letter_transducer.hpp"
-#include "atl/detail/letter2letter_transducer/letter2letter_transducer.hpp"
 #include <unordered_set>
 #include <unordered_map>
 #include <util/util.hpp>
@@ -79,7 +77,6 @@ namespace atl::detail {
 
         typedef unordered_set<State> StateSet;
         typedef unordered_set<Symbol> SymbolSet;
-
         typedef unordered_map<State, State> State2Map;
 
     public:

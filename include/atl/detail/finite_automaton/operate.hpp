@@ -10,6 +10,7 @@
 #ifndef atl_detail_finite_automaton_operate_hpp 
 #define atl_detail_finite_automaton_operate_hpp 
 
+#include "atl/detail/automaton.hpp"
 #include <atl/detail/finite_automaton/closure.hpp>
 #include <atl/detail/finite_automaton/merge.hpp>
 #include <atl/detail/finite_automaton/copy.hpp>
@@ -208,9 +209,9 @@ namespace atl {
                  DFA& a_out) {
         DFA dfa;
         detail::intersect_impl::apply(a_lhs, a_rhs, dfa, 
-                                      intersect_merge<typename DFA::symbol_property_type>(),
-                                      intersect_merge<typename DFA::state_property_type>(),
-                                      intersect_merge<typename DFA::automaton_property_type>());
+                                      intersect_merge<DFA_SYMBOL_PROP>(),
+                                      intersect_merge<DFA_STATE_PROP>(),
+                                      intersect_merge<DFA_AUT_PROP>());
         minimize(dfa, a_out);
     }
 
@@ -224,8 +225,8 @@ namespace atl {
         DFA dfa;
         detail::intersect_impl::apply(a_lhs, a_rhs, dfa, 
                                       symbol_property_merge, 
-                                      intersect_merge<typename DFA::state_property_type>(),
-                                      intersect_merge<typename DFA::automaton_property_type>());
+                                      intersect_merge<DFA_STATE_PROP>(),
+                                      intersect_merge<DFA_AUT_PROP>());
         minimize(dfa, a_out);
     }
 
@@ -242,7 +243,7 @@ namespace atl {
         detail::intersect_impl::apply(a_lhs, a_rhs, dfa, 
                                       symbol_property_merge, 
                                       state_property_merge, 
-                                      intersect_merge<typename DFA::automaton_property_type>());
+                                      intersect_merge<DFA_AUT_PROP>());
         minimize(dfa, a_out);
     }
 
@@ -323,9 +324,9 @@ namespace atl {
              const DFA& a_rhs,
              DFA& a_out) {
         detail::union_impl::apply(a_lhs, a_rhs, a_out, 
-                                  union_merge<typename DFA::symbol_property_type>(),
-                                  union_merge<typename DFA::state_property_type>(),
-                                  union_merge<typename DFA::automaton_property_type>());
+                                  union_merge<DFA_SYMBOL_PROP>(),
+                                  union_merge<DFA_STATE_PROP>(),
+                                  union_merge<DFA_AUT_PROP>());
     }
 
     template <DFA_PARAMS, 
@@ -336,8 +337,8 @@ namespace atl {
              DFA& a_out,
              SymbolPropertyMerge symbol_property_merge) {
         detail::union_impl::apply(a_lhs, a_rhs, a_out, symbol_property_merge,
-                                  union_merge<typename DFA::state_property_type>(),
-                                  union_merge<typename DFA::automaton_property_type>());
+                                  union_merge<DFA_STATE_PROP>(),
+                                  union_merge<DFA_AUT_PROP>());
     }
 
     template <DFA_PARAMS, 
@@ -350,7 +351,7 @@ namespace atl {
              SymbolPropertyMerge symbol_property_merge,
              StatePropertyMerge state_property_merge) {
         detail::union_impl::apply(a_lhs, a_rhs, a_out, symbol_property_merge, state_property_merge,
-                                  union_merge<typename DFA::automaton_property_type>());
+                                  union_merge<DFA_AUT_PROP>());
     }
 
     template <DFA_PARAMS, 
@@ -479,9 +480,9 @@ namespace atl {
               const DFA& a_rhs,
               DFA& a_out) {
         detail::concat_impl::apply(a_lhs, a_rhs, a_out, 
-                                   union_merge<typename DFA::symbol_property_type>(),
-                                   union_merge<typename DFA::state_property_type>(),
-                                   union_merge<typename DFA::automaton_property_type>());
+                                   union_merge<DFA_SYMBOL_PROP>(),
+                                   union_merge<DFA_STATE_PROP>(),
+                                   union_merge<DFA_AUT_PROP>());
     }
 
     template <DFA_PARAMS,
@@ -492,8 +493,8 @@ namespace atl {
               DFA& a_out,
               SymbolPropertyMerge symbol_property_merge) {
         detail::concat_impl::apply(a_lhs, a_rhs, a_out, symbol_property_merge,
-                                   union_merge<typename DFA::state_property_type>(),
-                                   union_merge<typename DFA::automaton_property_type>());
+                                   union_merge<DFA_STATE_PROP>(),
+                                   union_merge<DFA_AUT_PROP>());
     }
 
     template <DFA_PARAMS,
@@ -506,7 +507,7 @@ namespace atl {
               SymbolPropertyMerge symbol_property_merge,
               StatePropertyMerge state_property_merge) {
         detail::concat_impl::apply(a_lhs, a_rhs, a_out, symbol_property_merge, state_property_merge,
-                                   union_merge<typename DFA::automaton_property_type>());
+                                   union_merge<DFA_AUT_PROP>());
     }
 
     template <DFA_PARAMS,
@@ -527,15 +528,22 @@ namespace atl {
 
 namespace atl::detail {
     struct equal_impl {
-        template <DFA_PARAMS>
+        template <DFA_PARAMS,
+                  typename SymbolPropertyEqual,
+                  typename StatePropertyEqual,
+                  typename AutomatonPropertyEqual>
         static bool
         apply(const DFA& a_lhs,
-              const DFA& a_rhs) {
+              const DFA& a_rhs,
+              SymbolPropertyEqual symbol_property_equal,
+              StatePropertyEqual state_property_equal,
+              AutomatonPropertyEqual automaton_property_equal) {
             typedef typename DFA::state_property_type StateProperty;
             typedef typename DFA::symbol_property_type SymbolProperty;
             typedef typename DFA::automaton_property_type AutomatonProperty;
             if constexpr (!std::is_same<AutomatonProperty, boost::no_property>::value) {
-                if (atl::get_property(a_lhs) != atl::get_property(a_rhs)) return false;
+                if (!automaton_property_equal(atl::get_property(a_lhs), atl::get_property(a_rhs))) return false;
+                //if (atl::get_property(a_lhs) != atl::get_property(a_rhs)) return false;
             }
             if (is_empty(a_lhs) && is_empty(a_rhs)) return true;
             if (state_set(a_lhs) != state_set(a_rhs)) return false;
@@ -560,8 +568,10 @@ namespace atl::detail {
                         auto state_rhs = iter_rhs -> second;
                         if (state_lhs != state_rhs) return false;
                         if constexpr (!std::is_same<StateProperty, boost::no_property>::value) {
-                            if (atl::get_property(a_lhs, state_lhs) != atl::get_property(a_rhs, state_rhs))
+                            if (!state_property_equal(atl::get_property(a_lhs, state_lhs), atl::get_property(a_rhs, state_rhs))) 
                                 return false;
+                            //if (atl::get_property(a_lhs, state_lhs) != atl::get_property(a_rhs, state_rhs))
+                            //    return false;
                         }
                     } else {
                         const auto& prop_map_lhs = iter_lhs -> second;
@@ -570,13 +580,15 @@ namespace atl::detail {
                         auto iter_lhs1 = prop_map_lhs.begin(), end_lhs1 = prop_map_lhs.end(),
                              iter_rhs1 = prop_map_rhs.begin();
                         while (iter_lhs1 != end_lhs1) {
-                            if (iter_lhs1 -> first != iter_rhs1 -> first) return false;
+                            if (!symbol_property_equal(iter_lhs1 -> first, iter_rhs1 -> first)) return false;
+                            //if (iter_lhs1 -> first != iter_rhs1 -> first) return false;
                             auto state_lhs = iter_lhs1 -> second;
                             auto state_rhs = iter_rhs1 -> second;
                             if (state_lhs != state_rhs) return false;
                             if constexpr (!std::is_same<StateProperty, boost::no_property>::value) {
-                                if (atl::get_property(a_lhs, state_lhs) != 
-                                    atl::get_property(a_rhs, state_rhs)) return false;
+                                if (!state_property_equal(atl::get_property(a_lhs, state_lhs), atl::get_property(a_rhs, state_rhs))) 
+                                    return false;
+                                //if (atl::get_property(a_lhs, state_lhs) != atl::get_property(a_rhs, state_rhs)) return false;
                             }
                             iter_lhs1++;
                             iter_rhs1++;
@@ -596,7 +608,122 @@ namespace atl {
     inline bool
     equal_fa(const DFA& a_lhs,
              const DFA& a_rhs) {
-        return detail::equal_impl::apply(a_lhs, a_rhs);
+        return detail::equal_impl::apply(a_lhs, a_rhs, 
+                                         equal<DFA_SYMBOL_PROP>(), 
+                                         equal<DFA_STATE_PROP>(), 
+                                         equal<DFA_AUT_PROP>());
+    }
+
+    template <DFA_PARAMS,
+              typename SymbolPropertyEqual>
+    inline bool
+    equal_fa(const DFA& a_lhs,
+             const DFA& a_rhs,
+             DFA& a_out,
+             SymbolPropertyEqual symbol_property_equal) {
+        return detail::equal_impl::apply(a_lhs, a_rhs, 
+                                         symbol_property_equal,
+                                         equal<DFA_STATE_PROP>(),
+                                         equal<DFA_AUT_PROP>());
+    }
+
+    template <DFA_PARAMS,
+              typename SymbolPropertyEqual,
+              typename StatePropertyEqual>
+    inline bool
+    equal_fa(const DFA& a_lhs,
+             const DFA& a_rhs,
+             DFA& a_out,
+             SymbolPropertyEqual symbol_property_equal,
+             StatePropertyEqual state_property_equal) {
+        return detail::equal_impl::apply(a_lhs, a_rhs, 
+                                         symbol_property_equal,
+                                         state_property_equal,
+                                         equal<DFA_AUT_PROP>());
+    }
+
+    template <DFA_PARAMS,
+              typename SymbolPropertyEqual,
+              typename StatePropertyEqual,
+              typename AutomatonPropertyEqual>
+    inline bool
+    equal_fa(const DFA& a_lhs,
+             const DFA& a_rhs,
+             DFA& a_out,
+             SymbolPropertyEqual symbol_property_equal,
+             StatePropertyEqual state_property_equal,
+             AutomatonPropertyEqual automaton_property_equal) {
+        return detail::equal_impl::apply(a_lhs, a_rhs, 
+                                         symbol_property_equal,
+                                         state_property_equal,
+                                         automaton_property_equal);
+    }
+
+    template <NFA_PARAMS>
+    inline bool
+    equal_fa(const NFA& a_lhs,
+             const NFA& a_rhs) {
+        typename NFA::dfa_type dfa_lhs, dfa_rhs;
+        minimize(a_lhs, dfa_lhs);
+        minimize(a_rhs, dfa_rhs);
+        return detail::equal_impl::apply(dfa_lhs, dfa_rhs,
+                                         equal<NFA_SYMBOL_PROP>(), 
+                                         equal<NFA_STATE_PROP>(), 
+                                         equal<NFA_AUT_PROP>());
+    }
+
+    template <NFA_PARAMS,
+              typename SymbolPropertyEqual>
+    inline bool
+    equal_fa(const NFA& a_lhs,
+             const NFA& a_rhs,
+             NFA& a_out,
+             SymbolPropertyEqual symbol_property_equal) {
+        typename NFA::dfa_type dfa_lhs, dfa_rhs;
+        minimize(a_lhs, dfa_lhs);
+        minimize(a_rhs, dfa_rhs);
+        return detail::equal_impl::apply(dfa_lhs, dfa_rhs, 
+                                         symbol_property_equal,
+                                         equal<NFA_STATE_PROP>(),
+                                         equal<NFA_AUT_PROP>());
+    }
+
+    template <NFA_PARAMS,
+              typename SymbolPropertyEqual,
+              typename StatePropertyEqual>
+    inline bool
+    equal_fa(const NFA& a_lhs,
+             const NFA& a_rhs,
+             NFA& a_out,
+             SymbolPropertyEqual symbol_property_equal,
+             StatePropertyEqual state_property_equal) {
+        typename NFA::dfa_type dfa_lhs, dfa_rhs;
+        minimize(a_lhs, dfa_lhs);
+        minimize(a_rhs, dfa_rhs);
+        return detail::equal_impl::apply(dfa_lhs, dfa_rhs, 
+                                         symbol_property_equal,
+                                         state_property_equal,
+                                         equal<NFA_AUT_PROP>());
+    }
+
+    template <NFA_PARAMS,
+              typename SymbolPropertyEqual,
+              typename StatePropertyEqual,
+              typename AutomatonPropertyEqual>
+    inline bool
+    equal_fa(const NFA& a_lhs,
+             const NFA& a_rhs,
+             NFA& a_out,
+             SymbolPropertyEqual symbol_property_equal,
+             StatePropertyEqual state_property_equal,
+             AutomatonPropertyEqual automaton_property_equal) {
+        typename NFA::dfa_type dfa_lhs, dfa_rhs;
+        minimize(a_lhs, dfa_lhs);
+        minimize(a_rhs, dfa_rhs);
+        return detail::equal_impl::apply(dfa_lhs, dfa_rhs, 
+                                         symbol_property_equal,
+                                         state_property_equal,
+                                         automaton_property_equal);
     }
 };
 

@@ -10,8 +10,6 @@
 #ifndef atl_detail_deterministic_finite_automaton_hpp 
 #define atl_detail_deterministic_finite_automaton_hpp
 
-#include "atl/detail/letter2letter_transducer/deterministic_letter2letter_transducer.hpp"
-#include "atl/detail/omega_automaton/omega_automaton.hpp"
 #include <map>
 #include <unordered_map>
 #include <atl/detail/finite_automaton/finite_automaton.hpp>
