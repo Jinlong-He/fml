@@ -677,7 +677,6 @@ namespace atl {
     inline bool
     equal_fa(const NFA& a_lhs,
              const NFA& a_rhs,
-             NFA& a_out,
              SymbolPropertyEqual symbol_property_equal) {
         typename NFA::dfa_type dfa_lhs, dfa_rhs;
         minimize(a_lhs, dfa_lhs);
@@ -694,7 +693,6 @@ namespace atl {
     inline bool
     equal_fa(const NFA& a_lhs,
              const NFA& a_rhs,
-             NFA& a_out,
              SymbolPropertyEqual symbol_property_equal,
              StatePropertyEqual state_property_equal) {
         typename NFA::dfa_type dfa_lhs, dfa_rhs;
@@ -713,7 +711,6 @@ namespace atl {
     inline bool
     equal_fa(const NFA& a_lhs,
              const NFA& a_rhs,
-             NFA& a_out,
              SymbolPropertyEqual symbol_property_equal,
              StatePropertyEqual state_property_equal,
              AutomatonPropertyEqual automaton_property_equal) {
