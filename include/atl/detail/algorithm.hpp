@@ -10,8 +10,8 @@
 #ifndef atl_detail_algorithm_hpp 
 #define atl_detail_algorithm_hpp
 
-#include <atl/detail/automaton.hpp>
-#include <atl/detail/finite_automaton/merge.hpp>
+#include <fml/atl/detail/automaton.hpp>
+#include <fml/atl/detail/finite_automaton/merge.hpp>
 
 using std::unordered_map;
 namespace atl::detail {
@@ -28,7 +28,7 @@ namespace atl::detail {
                   class TransitionMerge,
                   class StateMerge,
                   class AutomatonMerge>
-        static void
+        static auto
         apply(const AUTOMATON1& a1,
               const AUTOMATON2& a2,
               AUTOMATON& a_out,
@@ -85,17 +85,18 @@ namespace atl::detail {
                     }
                 }
             }
+            return state2_map;
         }
     };
 
     template <AUTOMATON_PARAMS1,
               AUTOMATON_PARAMS2,
               AUTOMATON_PARAMS>
-    inline void
+    inline auto
     product(const AUTOMATON1& a1,
             const AUTOMATON2& a2,
             AUTOMATON& a_out) {
-        detail::product_impl::apply(a1, a1, a_out, 
+        return detail::product_impl::apply(a1, a1, a_out, 
                                     equal<TP1, TP2>(),
                                     merge<TP1, TP2, TP>(), 
                                     merge<SP1, SP2, SP>(), 
