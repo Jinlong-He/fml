@@ -54,9 +54,10 @@ Now, in the directory where you saved example.cpp, issue the following command:
 ```
 g++ -I path/to/boost -I path/to/fml/include -std=c++17 example.cpp -o example
 ```
-
 Or just compile if you install our library into system.
+
 ---
+
 # Data Structures
 The fml currently provides five automaton classes:
 - [deterministic_finite_automaton](https://github.com/Jinlong-He/fml/blob/master/deterministic_finite_automaton.md)
