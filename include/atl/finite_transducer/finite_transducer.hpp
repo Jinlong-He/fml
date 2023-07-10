@@ -10,7 +10,7 @@
 #ifndef atl_finite_transducer_hpp 
 #define atl_finite_transducer_hpp
 
-#include <atl/detail/finite_transducer/finite_transducer.hpp>
+#include <fml/atl/detail/finite_transducer/finite_transducer.hpp>
 
 namespace atl {
     template <class UpperSymbol = char,

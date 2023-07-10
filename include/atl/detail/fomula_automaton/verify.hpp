@@ -12,7 +12,7 @@
 
 #include <iostream>
 #include <fstream>
-#include <atl/detail/fomula_automaton/fomula_automaton.hpp>
+#include <fml/atl/detail/fomula_automaton/fomula_automaton.hpp>
 using std::endl;
 
 namespace atl::detail {

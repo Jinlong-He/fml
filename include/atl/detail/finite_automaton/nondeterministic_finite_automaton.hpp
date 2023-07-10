@@ -10,7 +10,7 @@
 #ifndef atl_detail_nondeterministic_finite_automaton_hpp 
 #define atl_detail_nondeterministic_finite_automaton_hpp
 
-#include <atl/detail/finite_automaton/deterministic_finite_automaton.hpp>
+#include <fml/atl/detail/finite_automaton/deterministic_finite_automaton.hpp>
 
 using std::unordered_map;
 

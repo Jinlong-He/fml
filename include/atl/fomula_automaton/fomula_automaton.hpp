@@ -10,11 +10,11 @@
 #ifndef atl_fomula_automaton_hpp 
 #define atl_fomula_automaton_hpp
 
-#include <atl/detail/fomula_automaton/fomula_automaton.hpp>
-#include <atl/detail/fomula_automaton/translate.hpp>
-#include <atl/detail/fomula_automaton/verify.hpp>
-#include <atl/detail/fomula_automaton/parse.hpp>
-#include <ll/propositional_logic.hpp>
+#include <fml/atl/detail/fomula_automaton/fomula_automaton.hpp>
+#include <fml/atl/detail/fomula_automaton/translate.hpp>
+#include <fml/atl/detail/fomula_automaton/verify.hpp>
+#include <fml/atl/detail/fomula_automaton/parse.hpp>
+#include <fml/ll/propositional_logic.hpp>
 
 namespace atl {
     template <class Fomula = ll::propositional_fomula>

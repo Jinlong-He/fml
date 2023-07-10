@@ -10,7 +10,7 @@
 #ifndef linear_temporal_logic_fomular_hpp 
 #define linear_temporal_logic_fomular_hpp
 
-#include <ll/propositional_logic/propositional_fomula.hpp>
+#include <fml/ll/propositional_logic/propositional_fomula.hpp>
 
 namespace ll {
     class linear_temporal_logic_fomula : public propositional_fomula {

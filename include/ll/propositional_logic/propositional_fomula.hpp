@@ -10,7 +10,7 @@
 #ifndef propositional_fomular_hpp 
 #define propositional_fomular_hpp
 
-#include <ll/atomic_proposition.hpp>
+#include <fml/ll/atomic_proposition.hpp>
 
 namespace ll {
     class propositional_fomula : public atomic_proposition {

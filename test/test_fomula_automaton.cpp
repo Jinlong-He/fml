@@ -1,7 +1,7 @@
-#include <atl/fomula_automaton/fomula_automaton.hpp>
+#include <fml/atl/fomula_automaton/fomula_automaton.hpp>
 #include <iostream>
 #include "test.hpp"
-#include <atl/automaton_utility.hpp>
+#include <fml/atl/automaton_utility.hpp>
 using namespace atl;
 using namespace ll;
 namespace test {

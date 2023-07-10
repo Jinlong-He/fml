@@ -12,8 +12,8 @@
 
 #include <map>
 #include <unordered_map>
-#include <atl/detail/finite_automaton/nondeterministic_finite_automaton.hpp>
-#include <atl/detail/letter2letter_transducer/letter2letter_transducer.hpp>
+#include <fml/atl/detail/finite_automaton/nondeterministic_finite_automaton.hpp>
+#include <fml/atl/detail/letter2letter_transducer/letter2letter_transducer.hpp>
 
 using std::unordered_map;
 

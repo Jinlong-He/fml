@@ -10,7 +10,7 @@
 #ifndef atl_detail_finite_automaton_merge_hpp 
 #define atl_detail_finite_automaton_merge_hpp 
 
-#include <atl/detail/automaton.hpp>
+#include <fml/atl/detail/automaton.hpp>
 namespace atl::detail {
     template <class Prop>
     struct intersect_merge_gen {

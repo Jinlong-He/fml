@@ -10,10 +10,10 @@
 #ifndef atl_detail_letter2letter_transducer_operate_hpp 
 #define atl_detail_letter2letter_transducer_operate_hpp 
 
-#include <atl/detail/letter2letter_transducer/deterministic_letter2letter_transducer.hpp>
-#include <atl/detail/letter2letter_transducer/nondeterministic_letter2letter_transducer.hpp>
-#include <atl/detail/finite_automaton/copy.hpp>
-#include <atl/detail/finite_automaton/merge.hpp>
+#include <fml/atl/detail/letter2letter_transducer/deterministic_letter2letter_transducer.hpp>
+#include <fml/atl/detail/letter2letter_transducer/nondeterministic_letter2letter_transducer.hpp>
+#include <fml/atl/detail/finite_automaton/copy.hpp>
+#include <fml/atl/detail/finite_automaton/merge.hpp>
 
 namespace atl::detail {
     struct composite_impl {

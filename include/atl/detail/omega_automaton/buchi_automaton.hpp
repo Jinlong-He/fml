@@ -11,7 +11,7 @@
 #define atl_detail_buchi_automaton_hpp
 
 #include <unordered_map>
-#include <atl/detail/omega_automaton/omega_automaton.hpp>
+#include <fml/atl/detail/omega_automaton/omega_automaton.hpp>
 
 using std::unordered_map;
 
