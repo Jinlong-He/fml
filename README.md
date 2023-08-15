@@ -36,7 +36,7 @@ Then, you can include files directly.
 # Build a Simple Program Using fml
 The following program builds a deterministic finite automaton and outputs it.
 ```
-#include <fml/atl/finite_automaton/deterministic_finite_automaton.hpp>
+#include <atl/finite_automaton/deterministic_finite_automaton.hpp>
 using namespace atl;
 
 int main() {

@@ -68,79 +68,81 @@ namespace std {
 namespace test {
     //test finite automaton
 
-    bool test_clear1();
-    bool test_clear2();
-    bool test_clear3();
-    bool test_clear4();
-    bool test_clear5();
-    bool test_clear6();
-    bool test_clear7();
-    bool test_clear8();
+    // bool test_clear1();
+    // bool test_clear2();
+    // bool test_clear3();
+    // bool test_clear4();
+    // bool test_clear5();
+    // bool test_clear6();
+    // bool test_clear7();
+    // bool test_clear8();
 
-    bool test_minimize1();
-    bool test_minimize2();
-    bool test_minimize3();
-    bool test_minimize4();
-    bool test_minimize5();
-    bool test_minimize6();
-    bool test_minimize7();
-    bool test_minimize8();
+    // bool test_minimize1();
+    // bool test_minimize2();
+    // bool test_minimize3();
+    // bool test_minimize4();
+    // bool test_minimize5();
+    // bool test_minimize6();
+    // bool test_minimize7();
+    // bool test_minimize8();
 
-    bool test_basic_regular_expression1();
-    bool test_basic_regular_expression2();
-    bool test_basic_regular_expression3();
-    bool test_basic_regular_expression4();
-    bool test_basic_regular_expression5();
+    // bool test_basic_regular_expression1();
+    // bool test_basic_regular_expression2();
+    // bool test_basic_regular_expression3();
+    // bool test_basic_regular_expression4();
+    // bool test_basic_regular_expression5();
 
-    bool test_intersect1();
-    bool test_intersect2();
-    bool test_intersect3();
-    bool test_intersect4();
-    bool test_intersect5();
+    // bool test_intersect1();
+    // bool test_intersect2();
+    // bool test_intersect3();
+    // bool test_intersect4();
+    // bool test_intersect5();
 
-    bool test_union1();
-    bool test_union2();
-    bool test_union3();
-    bool test_union4();
-    bool test_union5();
-    bool test_union6();
+    // bool test_union1();
+    // bool test_union2();
+    // bool test_union3();
+    // bool test_union4();
+    // bool test_union5();
+    // bool test_union6();
 
-    bool test_concat1();
-    bool test_concat2();
-    bool test_concat3();
-    bool test_concat4();
+    // bool test_concat1();
+    // bool test_concat2();
+    // bool test_concat3();
+    // bool test_concat4();
 
-    bool test_subset1();
-    bool test_subset2();
-    bool test_subset3();
-    bool test_subset4();
+    // bool test_subset1();
+    // bool test_subset2();
+    // bool test_subset3();
+    // bool test_subset4();
 
-    bool test_composite1();
-    bool test_composite2();
-    bool test_composite3();
-    bool test_composite4();
+    // bool test_composite1();
+    // bool test_composite2();
+    // bool test_composite3();
+    // bool test_composite4();
 
-    bool test_left_quotient1();
-    bool test_left_quotient2();
-    bool test_left_quotient3();
-    bool test_left_quotient4();
+    // bool test_left_quotient1();
+    // bool test_left_quotient2();
+    // bool test_left_quotient3();
+    // bool test_left_quotient4();
 
-    bool test_poststar();
-    bool test_prestar();
+    // bool test_poststar();
+    // bool test_prestar();
 
-    bool test_fomula_automaton();
+    // bool test_fomula_automaton();
 
-    bool test_propositional_logic();
-    bool test_ctl();
-    bool test_ltl();
+    // bool test_propositional_logic();
+    // bool test_ctl();
+    // bool test_ltl();
 
-    void test_equal();
+    // void test_equal();
 
-    void test_basic_regular_expression();
-    void test_transducer();
+    // void test_basic_regular_expression();
+    // void test_transducer();
 
-    bool test_combination();
-    bool test_product1();
+    // bool test_combination();
+    // bool test_product1();
+
+    bool test_sra();
 }
 
 #endif /* test_hpp */

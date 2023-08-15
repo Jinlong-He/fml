@@ -24,5 +24,6 @@ int main(int argc, char* argv[]) {
     //cout << test_clear4() << endl;
     //test_fomula_automaton();
     //test_combination();
-    test_product1();
+    // test_product1();
+    test_sra();
 }
